@@ -29,6 +29,8 @@ Dazu benötigt ihr eure Lizenzdatei **`versino.key`** (kommt per E-Mail bzw. üb
 3. Starten und an den LLM-Client anbinden:
    - **Windows:** [docs/installation-windows.md](docs/installation-windows.md)
    - **Linux:** [docs/installation-linux.md](docs/installation-linux.md)
+   - **Zentral (eine Instanz für alle Arbeitsplätze):** [docs/installation-zentral.md](docs/installation-zentral.md)
+4. Als Anwender loslegen → [docs/erste-schritte.md](docs/erste-schritte.md).
 
 ## Systemvoraussetzungen
 
@@ -39,9 +41,12 @@ Dazu benötigt ihr eure Lizenzdatei **`versino.key`** (kommt per E-Mail bzw. üb
 
 ## Dokumentation
 
+- [Erste Schritte (für Anwender)](docs/erste-schritte.md) — Nutzung im Chat nach dem Setup
 - [Installation Windows](docs/installation-windows.md)
 - [Installation Linux](docs/installation-linux.md)
+- [Zentrale Installation (eine Instanz für alle Arbeitsplätze)](docs/installation-zentral.md)
 - [Konfiguration (`.env`)](docs/konfiguration.md)
+- [SSO/ROPC über Keycloak (Kurzanleitung)](docs/sso-keycloak.md)
 - [Lizenz (`versino.key`, Erneuerung, Seats)](docs/lizenz.md)
 - [Troubleshooting](docs/troubleshooting.md)
 
@@ -49,6 +54,10 @@ Dazu benötigt ihr eure Lizenzdatei **`versino.key`** (kommt per E-Mail bzw. üb
 
 Fragen, Lizenzen, Störungen: **support@versino.de**
 
+## Rechtliches
+
+Es gelten die **[Allgemeinen Geschäftsbedingungen](https://aishop.versino.de/agb)**.
+
 ---
-© Versino AG. Nutzung gemäß Lizenzvereinbarung. Das Binary ist ohne gültige
-`versino.key` nicht lauffähig.
+© Versino AG. Nutzung gemäß den [AGB](https://aishop.versino.de/agb) und der
+Lizenzvereinbarung. Das Binary ist ohne gültige `versino.key` nicht lauffähig.

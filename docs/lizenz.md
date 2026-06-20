@@ -23,17 +23,32 @@ gesetzt werden. Alternativ einen expliziten Pfad via `SAP_LICENSE_FILE` angeben.
 | PRO | Lesen + Schreiben (`sap_create`, `sap_update`) |
 | ENTERPRISE | voller Tool-Umfang inkl. `sap_delete`, `sap_action` |
 
-## Erneuerung (Abo)
-Bei monatlicher/jährlicher Abrechnung verlängert sich die Lizenz automatisch. Wenn ihr
-das optionale **Phone-Home** aktiviert habt, übernimmt die Installation den verlängerten
-Schlüssel selbst — **kein manueller Key-Tausch** pro Abrechnungszeitraum:
+## Phone-Home (Manipulationsschutz, Gültigkeitsprüfung & Abo-Erneuerung)
+Optional und standardmäßig **aus**. Aktiviert ihr es, baut die Installation in einem
+festen Intervall eine signierte Verbindung zum Lizenzserver auf. Das erfüllt zwei Zwecke:
+
+- **Gültigkeits-/Sperrprüfung (Manipulationsschutz):** Der Server bestätigt, dass die
+  Lizenz weiterhin gültig ist. Eine serverseitig **gesperrte** Lizenz (z. B. bei Missbrauch
+  oder Zahlungsausfall) wird so erkannt — neue Verbindungen werden dann abgelehnt.
+- **Automatische Abo-Erneuerung:** Bei monatlicher/jährlicher Abrechnung re-signiert der
+  Server den Token mit neuem Ablaufdatum und liefert ihn über **denselben** Kanal aus; die
+  Installation übernimmt ihn selbst — **kein manueller Key-Tausch** pro Abrechnungszeitraum.
+
+Übertragen werden dabei nur Metadaten (`customer_id`, `edition`, `version`, Seat-Anzahl) —
+keine Geschäftsdaten.
+
+Aktivierung in der `.env` (neben dem Binary): es genügt der **Enrollment-Token** aus
+der Auslieferung — die Validation-URL ist **fest ins Produkt eingebaut**, ihr müsst sie
+weder kennen noch setzen:
 ```ini
-SAP_LICENSE_VALIDATION_URL=https://aishop.versino.de/api/v1/validate
-SAP_ENROLLMENT_TOKEN=<einmal-token aus der Auslieferung>
-SAP_LICENSE_CACHE_FILE=license.renewed   # beschreibbarer Pfad → übernimmt den erneuerten Token
+SAP_ENROLLMENT_TOKEN=<einmal-token aus der Auslieferung>   # registriert die Installation einmalig
+SAP_LICENSE_CACHE_FILE=license.renewed                      # optional: beschreibbarer Pfad → übernimmt erneuerte Token
 ```
-**Air-gapped / read-only Betrieb:** diese Variablen einfach weglassen — dann gilt der
-ausgelieferte Token bis zum Ablaufdatum, und ihr erhaltet rechtzeitig eine neue
+(Nur für abweichende/Test-Server: `SAP_LICENSE_VALIDATION_URL` überschreibt den eingebauten Endpoint.)
+
+**Air-gapped / ohne Phone-Home:** Lasst ihr den Enrollment-Token weg, gibt es weder
+Online-Gültigkeitsprüfung noch automatische Erneuerung — der ausgelieferte Token gilt
+unverändert bis zu seinem Ablaufdatum, und ihr erhaltet rechtzeitig vorher eine neue
 `versino.key`.
 
 ## Seats

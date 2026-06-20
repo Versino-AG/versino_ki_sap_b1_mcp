@@ -31,7 +31,8 @@ SAP_ALLOW_SELF_SIGNED_CERT=true      # nur bei selbstsigniertem SL-Zertifikat
 | `SAP_PUBLIC_URL` | öffentliche HTTPS-URL der Instanz (für den Web-Login-Fallback) |
 
 Nur bei `SAP_AUTH_MODE=ropc` (Instanz-Secret aus dem SLD, **kein** Endnutzer-Login):
-`SAP_KEYCLOAK_TOKEN_URL`, `SAP_KEYCLOAK_CLIENT_ID`, `SAP_KEYCLOAK_CLIENT_SECRET`.
+`SAP_KEYCLOAK_TOKEN_URL`, `SAP_KEYCLOAK_CLIENT_ID`, `SAP_KEYCLOAK_CLIENT_SECRET` (optional
+`SAP_KEYCLOAK_SCOPE`). Kurzanleitung: [sso-keycloak.md](sso-keycloak.md).
 
 ## Lizenz
 | Variable | Bedeutung |

@@ -36,6 +36,9 @@ Der MCP-Endpunkt ist dann **`http://127.0.0.1:8000/mcp`**.
   des Servers verwenden (`http://sapb1-mcp.intern:8000/mcp`) und die **Windows-Firewall**
   für den Port freigeben. Für Netzwerkbetrieb wird **TLS** (Reverse-Proxy) empfohlen.
 
+> Für eine **zentrale** Instanz, die alle Arbeitsplätze bedient (ohne Installation je
+> Arbeitsplatz), siehe [installation-zentral.md](installation-zentral.md).
+
 ## 4. An Claude Desktop anbinden
 **Variante A — Custom Connector (URL):** Einstellungen → *Connectors* →
 *Custom connector hinzufügen* → URL `http://127.0.0.1:8000/mcp` (bzw. die interne

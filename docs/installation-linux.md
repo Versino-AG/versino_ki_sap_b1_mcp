@@ -28,6 +28,9 @@ Der MCP-Endpunkt ist dann **`http://127.0.0.1:8000/mcp`**.
 - **Netzwerkzugriff:** `--host 0.0.0.0`, interne IP/DNS in der URL verwenden, Port in der
   Firewall freigeben. Für Netzwerkbetrieb wird **TLS** (Reverse-Proxy) empfohlen.
 
+> Für eine **zentrale** Instanz, die alle Arbeitsplätze bedient (ohne Installation je
+> Arbeitsplatz), siehe [installation-zentral.md](installation-zentral.md).
+
 ## 3. Als systemd-Dienst (optional)
 `/etc/systemd/system/sapb1-mcp.service`:
 ```ini
