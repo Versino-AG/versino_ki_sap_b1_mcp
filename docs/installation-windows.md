@@ -13,12 +13,30 @@ Ordner legen (z. B. `C:\sapb1-mcp\`):
 - `.env` — Konfiguration (→ [konfiguration.md](konfiguration.md))
 
 ## 2. `.env` konfigurieren (minimal)
+**Wichtig:** Kommentare immer in eine **eigene Zeile** schreiben — **nicht** hinter den
+Wert in dieselbe Zeile (Inline-Kommentare können je nach Parser den Wert verfälschen).
+
 ```ini
+# Service-Layer-URL eurer SAP-B1-Instanz
 SAP_BASE_URL=https://ihr-sap-host:50000/b1s/v2/
-SAP_DATABASES=SBO_IhreFirma          # eine oder mehrere, kommagetrennt
-SAP_AUTH_MODE=basic                  # "basic" (User/Passwort) oder "ropc" (Keycloak/SSO)
-SAP_OPERATION_MODE=READ_ONLY         # READ_ONLY oder READ_WRITE
-SAP_ALLOW_SELF_SIGNED_CERT=true      # nur bei selbstsigniertem SL-Zertifikat
+
+# Wählbare CompanyDBs (eine oder mehrere, kommagetrennt)
+SAP_DATABASES=SBO_IhreFirma
+
+# Anmeldemodus: "basic" (User/Passwort) oder "ropc" (Keycloak/SSO)
+SAP_AUTH_MODE=basic
+
+# Zugriffsmodus: READ_ONLY oder READ_WRITE
+SAP_OPERATION_MODE=READ_ONLY
+
+# Nur bei selbstsigniertem SL-Zertifikat
+SAP_ALLOW_SELF_SIGNED_CERT=true
+
+# Öffentliche Adresse dieser Instanz — nötig für den Browser-Login in Claude
+# Desktop (sonst liefert "connect" keinen Login-Link). Lokal/gleiche Maschine:
+# http://127.0.0.1:8000 — der Port MUSS zum Serverstart (Abschnitt 3) passen.
+# Im Netzbetrieb stattdessen die HTTPS-URL (siehe installation-zentral.md).
+SAP_PUBLIC_URL=http://127.0.0.1:8000
 ```
 Die Lizenz wird über `versino.key` neben der .exe gezogen — `SAP_LICENSE_FILE` muss
 **nicht** gesetzt werden. Vollständige Optionsliste: [konfiguration.md](konfiguration.md).

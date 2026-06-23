@@ -35,15 +35,26 @@ beschrieben. Nur **einmal** auf dem Server, nicht pro Arbeitsplatz.
 ## 3. Zentrale `.env`
 Gegenüber dem Einzelplatz-Setup sind drei Einstellungen für den zentralen Betrieb
 wichtig:
+Kommentare jeweils in eine **eigene Zeile** (nicht hinter den Wert):
 ```ini
+# Service-Layer-URL eurer SAP-B1-Instanz
 SAP_BASE_URL=https://ihr-sap-host:50000/b1s/v2/
-SAP_DATABASES=SBO_FirmaA,SBO_FirmaB     # alle wählbaren CompanyDBs
-SAP_AUTH_MODE=basic                     # oder "ropc" bei Keycloak/SSO
-SAP_OPERATION_MODE=READ_ONLY            # READ_WRITE nur bei gewolltem Schreibzugriff
+
+# alle wählbaren CompanyDBs (kommagetrennt)
+SAP_DATABASES=SBO_FirmaA,SBO_FirmaB
+
+# "basic" oder "ropc" (Keycloak/SSO)
+SAP_AUTH_MODE=basic
+
+# READ_WRITE nur bei gewolltem Schreibzugriff
+SAP_OPERATION_MODE=READ_ONLY
 
 # --- zentral besonders relevant ---
-SAP_DISABLE_INLINE_LOGIN=true           # Login NUR über Browser/Dialog, nie als Chat-Argument
-SAP_PUBLIC_URL=https://mcp.kunde.intern # öffentliche HTTPS-URL der Instanz (Web-Login)
+# Login NUR über Browser/Dialog, nie als Chat-Argument
+SAP_DISABLE_INLINE_LOGIN=true
+
+# öffentliche HTTPS-URL der Instanz (die des TLS-Proxys) — für den Web-Login
+SAP_PUBLIC_URL=https://mcp.kunde.intern
 ```
 - **`SAP_PUBLIC_URL`** ist die URL, unter der die Nutzer den Server erreichen (die des
   TLS-Proxys). Sie **muss `https://`** sein — `http://` ist nur für `127.0.0.1` erlaubt.

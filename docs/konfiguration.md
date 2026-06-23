@@ -5,12 +5,27 @@ Der Server liest seine Instanz-Konfiguration aus einer `.env` neben dem Binary
 Instanz-Einstellungen. Jeder Nutzer meldet sich zur Laufzeit selbst an.
 
 ## Minimalkonfiguration
+Kommentare gehören in eine **eigene Zeile** — **nie** hinter den Wert in dieselbe Zeile
+(Inline-Kommentare können je nach Parser den Wert verfälschen).
 ```ini
+# Service-Layer-URL eurer SAP-B1-Instanz
 SAP_BASE_URL=https://ihr-sap-host:50000/b1s/v2/
-SAP_DATABASES=SBO_IhreFirma          # eine oder mehrere, kommagetrennt
-SAP_AUTH_MODE=basic                  # "basic" oder "ropc"
-SAP_OPERATION_MODE=READ_ONLY         # READ_ONLY oder READ_WRITE
-SAP_ALLOW_SELF_SIGNED_CERT=true      # nur bei selbstsigniertem SL-Zertifikat
+
+# Wählbare CompanyDBs (eine oder mehrere, kommagetrennt)
+SAP_DATABASES=SBO_IhreFirma
+
+# Anmeldemodus: "basic" oder "ropc"
+SAP_AUTH_MODE=basic
+
+# Zugriffsmodus: READ_ONLY oder READ_WRITE
+SAP_OPERATION_MODE=READ_ONLY
+
+# Nur bei selbstsigniertem SL-Zertifikat
+SAP_ALLOW_SELF_SIGNED_CERT=true
+
+# Öffentliche Adresse dieser Instanz — nötig für den Browser-Login (Claude Desktop).
+# Lokal: http://127.0.0.1:8000 (Port muss zum Serverstart passen); im Netz die HTTPS-URL.
+SAP_PUBLIC_URL=http://127.0.0.1:8000
 ```
 
 ## Service Layer

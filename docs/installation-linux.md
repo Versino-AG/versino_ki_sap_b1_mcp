@@ -16,7 +16,33 @@ Ausführbar machen:
 chmod +x sapb1-mcp
 ```
 
-## 2. Server starten
+## 2. `.env` (minimal)
+Kommentare immer in eine **eigene Zeile** (nicht hinter den Wert — Inline-Kommentare
+können je nach Parser den Wert verfälschen):
+```ini
+# Service-Layer-URL eurer SAP-B1-Instanz
+SAP_BASE_URL=https://ihr-sap-host:50000/b1s/v2/
+
+# Wählbare CompanyDBs (eine oder mehrere, kommagetrennt)
+SAP_DATABASES=SBO_IhreFirma
+
+# Anmeldemodus: "basic" oder "ropc" (Keycloak/SSO)
+SAP_AUTH_MODE=basic
+
+# Zugriffsmodus: READ_ONLY oder READ_WRITE
+SAP_OPERATION_MODE=READ_ONLY
+
+# Nur bei selbstsigniertem SL-Zertifikat
+SAP_ALLOW_SELF_SIGNED_CERT=true
+
+# Öffentliche Adresse dieser Instanz — nötig für den Browser-Login (sonst liefert
+# "connect" keinen Login-Link). Lokal: http://127.0.0.1:8000 (Port muss zum
+# Serverstart passen). Im Netzbetrieb die HTTPS-URL (siehe installation-zentral.md).
+SAP_PUBLIC_URL=http://127.0.0.1:8000
+```
+Vollständige Optionsliste: [konfiguration.md](konfiguration.md).
+
+## 3. Server starten
 ```bash
 cd /opt/sapb1-mcp
 ./sapb1-mcp --env-file .env --host 127.0.0.1 --port 8000
@@ -31,7 +57,7 @@ Der MCP-Endpunkt ist dann **`http://127.0.0.1:8000/mcp`**.
 > Für eine **zentrale** Instanz, die alle Arbeitsplätze bedient (ohne Installation je
 > Arbeitsplatz), siehe [installation-zentral.md](installation-zentral.md).
 
-## 3. Als systemd-Dienst (optional)
+## 4. Als systemd-Dienst (optional)
 `/etc/systemd/system/sapb1-mcp.service`:
 ```ini
 [Unit]
@@ -51,7 +77,7 @@ WantedBy=multi-user.target
 sudo systemctl enable --now sapb1-mcp
 ```
 
-## 4. An LLM-Clients anbinden
+## 5. An LLM-Clients anbinden
 - **Streamable-HTTP-fähige Clients** (Claude Desktop Custom Connector, Cline, Continue,
   Cursor …): auf `http://<host>:8000/mcp` zeigen.
 - **Nur-stdio-Clients:** Bridge `npx mcp-remote http://<host>:8000/mcp` (benötigt Node.js).
@@ -59,7 +85,7 @@ sudo systemctl enable --now sapb1-mcp
 Die Schritte zur Claude-Desktop-Anbindung sind identisch zu Windows —
 siehe [installation-windows.md](installation-windows.md), Abschnitt 4.
 
-## 5. Erste Nutzung
+## 6. Erste Nutzung
 Im Client das Tool **`connect`** aufrufen → SAP-Anmeldung (Eingabedialog/Browser-Login);
 die Zugangsdaten gelangen nie in den Chat-/LLM-Kontext. Danach stehen die SAP-Tools
 bereit (`sap_query_odata`, `sap_help`, `sap_create`, …).

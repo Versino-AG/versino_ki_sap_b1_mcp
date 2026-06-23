@@ -41,8 +41,11 @@ Aktivierung in der `.env` (neben dem Binary): es genügt der **Enrollment-Token*
 der Auslieferung — die Validation-URL ist **fest ins Produkt eingebaut**, ihr müsst sie
 weder kennen noch setzen:
 ```ini
-SAP_ENROLLMENT_TOKEN=<einmal-token aus der Auslieferung>   # registriert die Installation einmalig
-SAP_LICENSE_CACHE_FILE=license.renewed                      # optional: beschreibbarer Pfad → übernimmt erneuerte Token
+# registriert die Installation einmalig
+SAP_ENROLLMENT_TOKEN=<einmal-token aus der Auslieferung>
+
+# optional: beschreibbarer Pfad → übernimmt erneuerte Token
+SAP_LICENSE_CACHE_FILE=license.renewed
 ```
 (Nur für abweichende/Test-Server: `SAP_LICENSE_VALIDATION_URL` überschreibt den eingebauten Endpoint.)
 

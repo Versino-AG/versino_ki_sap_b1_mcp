@@ -12,15 +12,18 @@ Meldet ihr euch klassisch direkt am Service Layer an, bleibt `SAP_AUTH_MODE=basi
   SAP-Einrichtung — sie sind **instanzweit** und **nicht** die Zugangsdaten eines Endnutzers.
 
 ## `.env`
+Kommentare jeweils in eine **eigene Zeile** (nicht hinter den Wert):
 ```ini
 SAP_AUTH_MODE=ropc
 SAP_KEYCLOAK_TOKEN_URL=https://<auth-host>:40020/auth/realms/sapb1/protocol/openid-connect/token
 SAP_KEYCLOAK_CLIENT_ID=<Client-ID aus dem SLD>
 SAP_KEYCLOAK_CLIENT_SECRET=<Client-Secret>
 
-# optional
-SAP_KEYCLOAK_SCOPE=openid profile email B1.ServiceLayer   # Default (B1.ServiceLayer ist Pflicht)
-SAP_ALLOW_SELF_SIGNED_CERT=true                            # falls Auth-Server UND/ODER SL selbstsigniert
+# optional — Default; B1.ServiceLayer ist Pflicht
+SAP_KEYCLOAK_SCOPE=openid profile email B1.ServiceLayer
+
+# falls Auth-Server und/oder SL selbstsigniert
+SAP_ALLOW_SELF_SIGNED_CERT=true
 ```
 - `SAP_KEYCLOAK_TOKEN_URL` **muss `https://`** sein; Host/Port (typisch `40020`) und Realm
   (`sapb1`) gemäß eurer SLD-Konfiguration anpassen.
