@@ -39,6 +39,12 @@ SAP_ALLOW_SELF_SIGNED_CERT=true
 # "connect" keinen Login-Link). Lokal: http://127.0.0.1:8000 (Port muss zum
 # Serverstart passen). Im Netzbetrieb die HTTPS-URL (siehe installation-zentral.md).
 SAP_PUBLIC_URL=http://127.0.0.1:8000
+
+# Phone-Home / automatische Abo-Erneuerung: Enrollment-Token aus der Auslieferung
+# eintragen — registriert die Installation beim 1. Start, prüft regelmäßig die
+# Lizenz und zieht Verlängerungen automatisch ein. Im Normalfall ausfüllen; nur
+# bei bewusst air-gapped Betrieb (kein Internet) weglassen.
+SAP_ENROLLMENT_TOKEN=<einmal-token aus der Auslieferung>
 ```
 Vollständige Optionsliste: [konfiguration.md](konfiguration.md).
 
