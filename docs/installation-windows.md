@@ -38,11 +38,9 @@ SAP_ALLOW_SELF_SIGNED_CERT=true
 # Im Netzbetrieb stattdessen die HTTPS-URL (siehe installation-zentral.md).
 SAP_PUBLIC_URL=http://127.0.0.1:8000
 
-# Phone-Home / automatische Abo-Erneuerung: Enrollment-Token aus der Auslieferung
-# eintragen — registriert die Installation beim 1. Start, prüft regelmäßig die
-# Lizenz und zieht Verlängerungen automatisch ein. Im Normalfall ausfüllen; nur
-# bei bewusst air-gapped Betrieb (kein Internet) weglassen.
-SAP_ENROLLMENT_TOKEN=<einmal-token aus der Auslieferung>
+# Phone-Home / automatische Abo-Erneuerung läuft automatisch — der Enrollment-Token
+# ist in der versino.key eingebacken, hier ist NICHTS einzutragen. Nur bei bewusst
+# air-gapped Betrieb (kein Internet) findet kein Phone-Home statt.
 ```
 Die Lizenz wird über `versino.key` neben der .exe gezogen — `SAP_LICENSE_FILE` muss
 **nicht** gesetzt werden. Vollständige Optionsliste: [konfiguration.md](konfiguration.md).

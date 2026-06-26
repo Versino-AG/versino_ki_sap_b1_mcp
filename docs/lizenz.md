@@ -37,19 +37,20 @@ festen Intervall eine signierte Verbindung zum Lizenzserver auf. Das erfüllt zw
 Übertragen werden dabei nur Metadaten (`customer_id`, `edition`, `version`, Seat-Anzahl) —
 keine Geschäftsdaten.
 
-Aktivierung in der `.env` (neben dem Binary): es genügt der **Enrollment-Token** aus
-der Auslieferung — die Validation-URL ist **fest ins Produkt eingebaut**, ihr müsst sie
-weder kennen noch setzen:
+Aktivierung: **nichts einzutragen** — der Enrollment-Token ist in eure `versino.key`
+**eingebacken** (signiert), und die Validation-URL ist fest ins Produkt eingebaut.
+Sobald die `versino.key` neben dem Binary liegt, registriert sich die Installation
+beim ersten Start selbst und übernimmt Verlängerungen automatisch. Optional lässt
+sich ein beschreibbarer Renewal-Cache-Pfad setzen (Default: `versino.renewed` neben
+dem Binary):
 ```ini
-# registriert die Installation einmalig
-SAP_ENROLLMENT_TOKEN=<einmal-token aus der Auslieferung>
-
 # optional: beschreibbarer Pfad → übernimmt erneuerte Token
-SAP_LICENSE_CACHE_FILE=license.renewed
+SAP_LICENSE_CACHE_FILE=versino.renewed
 ```
-(Nur für abweichende/Test-Server: `SAP_LICENSE_VALIDATION_URL` überschreibt den eingebauten Endpoint.)
+(Nur für Test/Staging: `SAP_ENROLLMENT_TOKEN` überschreibt den eingebauten Token,
+`SAP_LICENSE_VALIDATION_URL` den eingebauten Endpoint.)
 
-**Air-gapped / ohne Phone-Home:** Lasst ihr den Enrollment-Token weg, gibt es weder
+**Air-gapped / ohne Phone-Home:** In einer Umgebung ohne Internet gibt es weder
 Online-Gültigkeitsprüfung noch automatische Erneuerung — der ausgelieferte Token gilt
 unverändert bis zu seinem Ablaufdatum, und ihr erhaltet rechtzeitig vorher eine neue
 `versino.key`.

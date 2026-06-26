@@ -27,9 +27,9 @@ SAP_ALLOW_SELF_SIGNED_CERT=true
 # Lokal: http://127.0.0.1:8000 (Port muss zum Serverstart passen); im Netz die HTTPS-URL.
 SAP_PUBLIC_URL=http://127.0.0.1:8000
 
-# Phone-Home / automatische Abo-Erneuerung — Enrollment-Token aus der Auslieferung.
-# Im Normalfall ausfüllen; nur bei bewusst air-gapped Betrieb weglassen.
-SAP_ENROLLMENT_TOKEN=<einmal-token aus der Auslieferung>
+# Phone-Home / automatische Abo-Erneuerung läuft automatisch (Enrollment-Token ist
+# in der versino.key eingebacken — hier nichts nötig). Override nur für Test/Staging:
+# SAP_ENROLLMENT_TOKEN=<override-token>
 ```
 
 ## Service Layer
@@ -58,7 +58,7 @@ Nur bei `SAP_AUTH_MODE=ropc` (Instanz-Secret aus dem SLD, **kein** Endnutzer-Log
 |---|---|
 | `SAP_LICENSE_FILE` | Pfad zur `versino.key` — **nicht nötig**, wenn die Datei neben dem Binary liegt (Auto-Discovery) |
 | `SAP_LICENSE` | Lizenz-Token direkt (Alternative zur Datei) |
-| `SAP_ENROLLMENT_TOKEN` | Phone-Home/Auto-Renewal — Token aus der Auslieferung. **Im Normalfall ausfüllen**; nur bei air-gapped Betrieb weglassen |
+| `SAP_ENROLLMENT_TOKEN` | Phone-Home/Auto-Renewal — **normalerweise nicht nötig** (Token ist in der `versino.key` eingebacken). Nur als Override für Test/Staging |
 
 Phone-Home / automatische Abo-Erneuerung (Normalfall): siehe [lizenz.md](lizenz.md).
 
