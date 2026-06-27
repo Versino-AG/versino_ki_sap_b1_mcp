@@ -1,4 +1,9 @@
-# SAP-B1-MCP an Claude Desktop & andere LLMs anbinden (Windows)
+# SAP-B1-MCP an Claude Desktop & andere LLMs anbinden (Windows, manuell)
+
+> **Schneller geht es mit dem geführten Installer** — er nimmt euch die Schritte unten
+> (Download, `.env` schreiben, Lizenz ablegen, Verbindung prüfen, Dienst, Claude-Config)
+> ab: [installer.md](installer.md). Diese Anleitung beschreibt die **manuelle**
+> Einrichtung für eigene Verzeichnisse, eigenen Dienst-Wrapper oder feinere Anpassung.
 
 Anleitung für die Windows-Auslieferung (`sapb1-mcp.exe`). Der Server läuft als
 **per-user HTTP-Server** (Streamable HTTP) — eine Instanz bedient mehrere Nutzer;

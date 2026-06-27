@@ -1,4 +1,8 @@
-# SAP-B1-MCP unter Linux betreiben
+# SAP-B1-MCP unter Linux betreiben (manuell)
+
+> Für **Windows** gibt es einen **geführten Installer**, der den Großteil der Einrichtung
+> automatisiert ([installer.md](installer.md)). Unter Linux erfolgt die Einrichtung
+> manuell — diese Anleitung.
 
 Anleitung für die Linux-Auslieferung (`sapb1-mcp-<version>-linux-x64`). Der Server läuft
 als **per-user HTTP-Server** (Streamable HTTP) — eine Instanz bedient mehrere Nutzer;

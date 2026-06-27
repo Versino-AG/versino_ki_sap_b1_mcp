@@ -14,15 +14,29 @@ Credentials gelangen nie in den Chat-/LLM-Kontext.
 
 Die aktuelle Version liegt unter **[Releases](../../releases/latest)**:
 
-| Plattform | Datei |
-|-----------|-------|
-| Windows (64-bit) | `sapb1-mcp-<version>-windows-x64.exe` |
-| Linux (64-bit)   | `sapb1-mcp-<version>-linux-x64` |
+| Plattform | Datei | Empfehlung |
+|-----------|-------|------------|
+| **Windows — geführter Installer** | `sapb1-mcp-setup-<version>.exe` | **empfohlen** |
+| Windows (64-bit) — Binary | `sapb1-mcp-<version>-windows-x64.exe` | manuell/Anpassung |
+| Linux (64-bit) — Binary | `sapb1-mcp-<version>-linux-x64` | manuell/Anpassung |
 
 Dazu benötigt ihr eure Lizenzdatei **`versino.key`** (kommt per E-Mail bzw. über das
 [Lizenzportal](https://aishop.versino.de)). Siehe [docs/lizenz.md](docs/lizenz.md).
 
 ## Schnellstart
+
+### Empfohlen (Windows): geführter Installer
+
+1. `sapb1-mcp-setup-<version>.exe` aus den [Releases](../../releases/latest) laden und starten.
+2. Dem Assistenten folgen: `versino.key` wählen, SL-URL + CompanyDBs angeben, Optionen
+   setzen — der Installer lädt die Programmdatei, schreibt die `.env`, kopiert die Lizenz
+   und richtet auf Wunsch einen Windows-Dienst sowie die Claude-Desktop-Anbindung ein.
+   → [docs/installer.md](docs/installer.md)
+3. Als Anwender loslegen → [docs/erste-schritte.md](docs/erste-schritte.md).
+
+### Manuell (Windows/Linux): Binary selbst aufsetzen
+
+Für eigene Verzeichnisse, eigenen Dienst-Wrapper, Reverse-Proxy oder Linux:
 
 1. Binary + `versino.key` + `.env` in **einen** Ordner legen.
 2. `.env` konfigurieren → [docs/konfiguration.md](docs/konfiguration.md).
@@ -42,8 +56,9 @@ Dazu benötigt ihr eure Lizenzdatei **`versino.key`** (kommt per E-Mail bzw. üb
 ## Dokumentation
 
 - [Erste Schritte (für Anwender)](docs/erste-schritte.md) — Nutzung im Chat nach dem Setup
-- [Installation Windows](docs/installation-windows.md)
-- [Installation Linux](docs/installation-linux.md)
+- [**Geführte Installation (Windows, empfohlen)**](docs/installer.md)
+- [Installation Windows (manuell)](docs/installation-windows.md)
+- [Installation Linux (manuell)](docs/installation-linux.md)
 - [Zentrale Installation (eine Instanz für alle Arbeitsplätze)](docs/installation-zentral.md)
 - [Konfiguration (`.env`)](docs/konfiguration.md)
 - [SSO/ROPC über Keycloak (Kurzanleitung)](docs/sso-keycloak.md)
