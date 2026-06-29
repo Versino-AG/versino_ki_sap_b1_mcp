@@ -19,8 +19,9 @@ müsstet:
 ## Voraussetzungen
 
 - 64-bit Windows 10/11 oder Windows Server 2019+
-- eure Lizenzdatei **`versino.key`** (per E-Mail bzw. aus dem
-  [Lizenzportal](https://aishop.versino.de)) — siehe [lizenz.md](lizenz.md)
+- euren **Lizenzschlüssel** (per E-Mail bzw. aus dem
+  [Lizenzportal](https://aishop.versino.de)) — als Text zum Einfügen **oder** als
+  Datei `versino.key`; beides funktioniert. Siehe [lizenz.md](lizenz.md)
 - Netzwerkzugriff auf euren SAP-B1-**Service-Layer** (`https://<host>:50000/b1s/v2/`)
 - Internetzugang während der Installation (der Installer lädt die Programmdatei aus dem
   Release)
@@ -43,23 +44,29 @@ Setup starten und dem Assistenten folgen. Er fragt der Reihe nach ab:
 
 1. **AGB** — die [Allgemeinen Geschäftsbedingungen](https://aishop.versino.de/agb)
    bestätigen.
-2. **Zielordner** — wohin installiert wird (Standard: `C:\Program Files\Versino\sapb1-mcp`).
-3. **Lizenzdatei** — eure `versino.key` auswählen. Sie wird in den Zielordner kopiert; der
-   Enrollment-Token (für Lizenzprüfung/Erneuerung) steckt darin — ihr müsst **nichts**
-   von Hand eintragen.
-4. **Programmdatei laden** — der Installer lädt `sapb1-mcp.exe` automatisch herunter.
-5. **Service-Layer-Verbindung** — eure SL-URL eingeben
+2. **Zielordner** — wohin installiert wird (Standard: `%LOCALAPPDATA%\Versino\sapb1-mcp`,
+   z. B. `C:\Users\<Benutzer>\AppData\Local\Versino\sapb1-mcp`). Die Installation
+   läuft ohne Administrator-Rechte; nur die optionale Dienst-Einrichtung fragt einmalig
+   per UAC nach.
+3. **Lizenzschlüssel** — euren von Versino gelieferten Schlüssel in das Feld **einfügen**
+   oder per **„versino.key wählen …“** aus einer Datei laden (beides landet im selben
+   Feld). Der Installer lädt die Programmdatei, schreibt den Schlüssel als `versino.key`
+   in den Zielordner und prüft ihn **sofort offline** (Signatur + Ablauf gegen den
+   eingebauten Schlüssel). Ist er ungültig oder abgelaufen, geht es nicht weiter. Der
+   Enrollment-Token (für Erneuerung) steckt darin — ihr müsst **nichts** weiter von Hand
+   eintragen.
+4. **Service-Layer-Verbindung** — eure SL-URL eingeben
    (`https://<host>:50000/b1s/v2/`). Der Installer prüft die **Erreichbarkeit** des
    Servers. Verlangt der Service Layer (wie üblich) eine Anmeldung, gilt das **als
    erreichbar** — nur eine echte Nichterreichbarkeit (falsche Adresse, Netz/Firewall,
    Zertifikatsproblem) wird gemeldet.
-6. **CompanyDB(s)** — die wählbaren Datenbanken (kommagetrennt). Optional könnt ihr hier
+5. **CompanyDB(s)** — die wählbaren Datenbanken (kommagetrennt). Optional könnt ihr hier
    einen **Test-Login** (Benutzer/Passwort) eingeben; der Installer prüft damit DB-Name
    und Zugang. Diese Test-Zugangsdaten werden **nicht gespeichert**.
-7. **Erreichbarkeit** — Port (Standard `8000`) und optional die öffentliche URL. Lokal
+6. **Erreichbarkeit** — Port (Standard `8000`) und optional die öffentliche URL. Lokal
    genügt der Port; im Netzbetrieb die öffentliche HTTPS-URL (Reverse-Proxy, siehe
    [installation-zentral.md](installation-zentral.md)).
-8. **Optionen**:
+7. **Optionen**:
    - **Schreibzugriff erlauben** (`READ_WRITE` statt nur Lesen)
    - **Selbstsigniertes SL-Zertifikat akzeptieren**
    - **Als Windows-Dienst einrichten** — der Server läuft dann automatisch (auch ohne
