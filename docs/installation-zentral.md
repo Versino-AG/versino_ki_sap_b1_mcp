@@ -43,7 +43,7 @@ SAP_BASE_URL=https://ihr-sap-host:50000/b1s/v2/
 # alle wählbaren CompanyDBs (kommagetrennt)
 SAP_DATABASES=SBO_FirmaA,SBO_FirmaB
 
-# "basic" oder "ropc" (Keycloak/SSO)
+# "basic" oder "oidc" (Browser-SSO über Keycloak)
 SAP_AUTH_MODE=basic
 
 # READ_WRITE nur bei gewolltem Schreibzugriff

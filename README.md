@@ -61,7 +61,7 @@ Für eigene Verzeichnisse, eigenen Dienst-Wrapper, Reverse-Proxy oder Linux:
 - [Installation Linux (manuell)](docs/installation-linux.md)
 - [Zentrale Installation (eine Instanz für alle Arbeitsplätze)](docs/installation-zentral.md)
 - [Konfiguration (`.env`)](docs/konfiguration.md)
-- [SSO/ROPC über Keycloak (Kurzanleitung)](docs/sso-keycloak.md)
+- [SSO über Keycloak (OIDC, Kurzanleitung)](docs/sso-keycloak.md)
 - [Lizenz (`versino.key`, Erneuerung, Seats)](docs/lizenz.md)
 - [Troubleshooting](docs/troubleshooting.md)
 

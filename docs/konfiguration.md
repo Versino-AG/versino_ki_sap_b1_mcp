@@ -14,7 +14,7 @@ SAP_BASE_URL=https://ihr-sap-host:50000/b1s/v2/
 # Wählbare CompanyDBs (eine oder mehrere, kommagetrennt)
 SAP_DATABASES=SBO_IhreFirma
 
-# Anmeldemodus: "basic" oder "ropc"
+# Anmeldemodus: "basic" oder "oidc" (Browser-SSO über Keycloak)
 SAP_AUTH_MODE=basic
 
 # Zugriffsmodus: READ_ONLY oder READ_WRITE
@@ -45,13 +45,15 @@ SAP_PUBLIC_URL=http://127.0.0.1:8000
 ## Authentifizierung
 | Variable | Bedeutung |
 |---|---|
-| `SAP_AUTH_MODE` | `basic` (User/Passwort direkt an SL) oder `ropc` (Keycloak/SSO) |
+| `SAP_AUTH_MODE` | `basic` (User/Passwort direkt an SL) oder `oidc` (Browser-SSO über Keycloak, PKCE) |
 | `SAP_DISABLE_INLINE_LOGIN` | `true` empfohlen: Login nur via Dialog/Web-UI, nie als Chat-Argument |
-| `SAP_PUBLIC_URL` | öffentliche HTTPS-URL der Instanz (für den Web-Login-Fallback) |
+| `SAP_PUBLIC_URL` | öffentliche HTTPS-URL der Instanz (Web-Login-Fallback; **Pflicht bei `oidc`** — Redirect-Ziel `…/callback`) |
 
-Nur bei `SAP_AUTH_MODE=ropc` (Instanz-Secret aus dem SLD, **kein** Endnutzer-Login):
-`SAP_KEYCLOAK_TOKEN_URL`, `SAP_KEYCLOAK_CLIENT_ID`, `SAP_KEYCLOAK_CLIENT_SECRET` (optional
-`SAP_KEYCLOAK_SCOPE`). Kurzanleitung: [sso-keycloak.md](sso-keycloak.md).
+Nur bei `SAP_AUTH_MODE=oidc` (Browser-SSO, PKCE — Passwort erreicht den MCP nie):
+`SAP_PUBLIC_URL` (Pflicht), `SAP_KEYCLOAK_TOKEN_URL`, `SAP_KEYCLOAK_CLIENT_ID`,
+`SAP_KEYCLOAK_CLIENT_SECRET` (optional `SAP_KEYCLOAK_AUTHORIZE_URL`, `SAP_SLD_URL`, `SAP_KEYCLOAK_SCOPE`).
+Die Redirect-URI `<SAP_PUBLIC_URL>/callback` muss am Client (SSO Extension Manager)
+hinterlegt sein. Kurzanleitung: [sso-keycloak.md](sso-keycloak.md).
 
 ## Lizenz
 | Variable | Bedeutung |
@@ -68,3 +70,9 @@ Phone-Home / automatische Abo-Erneuerung (Normalfall): siehe [lizenz.md](lizenz.
 - `SAP_DISABLE_INLINE_LOGIN=true` stellt sicher, dass SAP-Credentials nie in den
   LLM-Kontext geraten (Anmeldung nur über Dialog/Web-UI).
 - Für Netzwerkbetrieb TLS (Reverse-Proxy) vorschalten.
+
+## Logging
+
+Warnungen und Fehler landen immer in `%APPDATA%\Versino\sapb1-mcp\sapb1-mcp.log`
+(JSON-Zeilen, 1-MB-Kappe — älteste Einträge werden automatisch entfernt).
+Der Pfad ist fest, damit der Support ihn immer kennt.
