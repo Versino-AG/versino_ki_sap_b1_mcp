@@ -53,14 +53,16 @@ Vollständige Optionsliste: [konfiguration.md](konfiguration.md).
 ## 3. Server starten
 ```bash
 cd /opt/sapb1-mcp
-./sapb1-mcp --env-file .env --host 127.0.0.1 --port 8000
+./sapb1-mcp --env-file .env --port 8000
 ```
 Erfolg: Log zeigt `server.per_user_start` und `Uvicorn running on http://127.0.0.1:8000`.
 Der MCP-Endpunkt ist dann **`http://127.0.0.1:8000/mcp`**.
 
-- **Lokaler Zugriff:** `--host 127.0.0.1` genügt.
-- **Netzwerkzugriff:** `--host 0.0.0.0`, interne IP/DNS in der URL verwenden, Port in der
-  Firewall freigeben. Für Netzwerkbetrieb wird **TLS** (Reverse-Proxy) empfohlen.
+- **Standard:** Der Server bindet **alle Interfaces** (`0.0.0.0`) — interne IP/DNS in der
+  URL verwenden, Port in der Firewall freigeben. Für Netzwerkbetrieb wird **TLS**
+  (Reverse-Proxy) empfohlen.
+- **Nur lokal:** in der `.env` `SAP_BIND_HOSTS=127.0.0.1` setzen (kommagetrennte Liste
+  möglich); ein explizites `--host` gewinnt.
 
 > Für eine **zentrale** Instanz, die alle Arbeitsplätze bedient (ohne Installation je
 > Arbeitsplatz), siehe [installation-zentral.md](installation-zentral.md).
@@ -74,7 +76,7 @@ After=network-online.target
 
 [Service]
 WorkingDirectory=/opt/sapb1-mcp
-ExecStart=/opt/sapb1-mcp/sapb1-mcp --env-file /opt/sapb1-mcp/.env --host 0.0.0.0 --port 8000
+ExecStart=/opt/sapb1-mcp/sapb1-mcp --env-file /opt/sapb1-mcp/.env --port 8000
 Restart=on-failure
 User=sapb1mcp
 

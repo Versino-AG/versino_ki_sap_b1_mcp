@@ -14,7 +14,8 @@ Ist das Binary noch nicht signiert, kann Windows einen Fehlalarm zeigen.
 
 ## Client erreicht den Server nicht
 - Host/Port und den **`/mcp`**-Pfad in der URL prüfen.
-- Bei Zugriff von anderen Rechnern: Server mit `--host 0.0.0.0` starten, **Firewall**
+- Bei Zugriff von anderen Rechnern: Standard-Bind ist bereits `0.0.0.0` (prüfen, dass kein
+  einschränkendes `SAP_BIND_HOSTS`/`--host` gesetzt ist), **Firewall**
   für den Port freigeben und die **interne IP/DNS** des Servers in der Client-URL verwenden.
 - Claude Desktop bevorzugt **HTTPS**; für blankes `http://` die `mcp-remote`-Bridge nutzen
   (siehe [installation-windows.md](installation-windows.md)).

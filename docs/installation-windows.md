@@ -53,15 +53,16 @@ Die Lizenz wird über `versino.key` neben der .exe gezogen — `SAP_LICENSE_FILE
 ## 3. Server starten
 ```powershell
 cd C:\sapb1-mcp
-.\sapb1-mcp.exe --env-file .env --host 127.0.0.1 --port 8000
+.\sapb1-mcp.exe --env-file .env --port 8000
 ```
 Erfolg: Log zeigt `server.per_user_start` und `Uvicorn running on http://127.0.0.1:8000`.
 Der MCP-Endpunkt ist dann **`http://127.0.0.1:8000/mcp`**.
 
-- **Gleiche Maschine wie der LLM-Client:** `--host 127.0.0.1` genügt.
-- **Andere Rechner im Netz greifen zu:** `--host 0.0.0.0`, in der URL die **interne IP/DNS**
-  des Servers verwenden (`http://sapb1-mcp.intern:8000/mcp`) und die **Windows-Firewall**
+- **Standard:** Der Server bindet **alle Interfaces** (`0.0.0.0`) — andere Rechner im Netz
+  erreichen ihn direkt über `http://<interne-IP/DNS>:8000/mcp`; die **Windows-Firewall**
   für den Port freigeben. Für Netzwerkbetrieb wird **TLS** (Reverse-Proxy) empfohlen.
+- **Nur lokal:** in der `.env` `SAP_BIND_HOSTS=127.0.0.1` setzen (kommagetrennte Liste
+  möglich, z. B. `127.0.0.1,192.168.1.10`); ein explizites `--host` gewinnt.
 
 > Für eine **zentrale** Instanz, die alle Arbeitsplätze bedient (ohne Installation je
 > Arbeitsplatz), siehe [installation-zentral.md](installation-zentral.md).

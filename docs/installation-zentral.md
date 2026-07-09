@@ -79,7 +79,7 @@ After=network-online.target
 
 [Service]
 WorkingDirectory=/opt/sapb1-mcp
-ExecStart=/opt/sapb1-mcp/sapb1-mcp --env-file /opt/sapb1-mcp/.env --host 127.0.0.1 --port 8000
+ExecStart=/opt/sapb1-mcp/sapb1-mcp --env-file /opt/sapb1-mcp/.env --port 8000
 Restart=on-failure
 User=sapb1mcp
 
@@ -92,12 +92,13 @@ sudo systemctl enable --now sapb1-mcp
 
 **Windows (Dienst via NSSM)** — [nssm.cc](https://nssm.cc):
 ```powershell
-nssm install sapb1-mcp "C:\sapb1-mcp\sapb1-mcp.exe" "--env-file" "C:\sapb1-mcp\.env" "--host" "127.0.0.1" "--port" "8000"
+nssm install sapb1-mcp "C:\sapb1-mcp\sapb1-mcp.exe" "--env-file" "C:\sapb1-mcp\.env" "--port" "8000"
 nssm set sapb1-mcp AppDirectory "C:\sapb1-mcp"
 nssm start sapb1-mcp
 ```
-(`--host 127.0.0.1`, weil der Proxy auf derselben Maschine vorgeschaltet wird. Liegt der
-Proxy auf einem anderen Host, `--host 0.0.0.0` und den Port nur intern freigeben.)
+(Der Server bindet standardmäßig alle Interfaces. Sitzt der Reverse-Proxy auf derselben
+Maschine, in der `.env` `SAP_BIND_HOSTS=127.0.0.1` setzen, damit der Port nicht zusätzlich
+nach außen offen ist; liegt der Proxy auf einem anderen Host, den Port nur intern freigeben.)
 
 ## 5. TLS-Reverse-Proxy (für Netzbetrieb erforderlich)
 Im Netz laufen Login-Tickets und Anmeldungen über die Leitung — daher **muss** TLS davor.

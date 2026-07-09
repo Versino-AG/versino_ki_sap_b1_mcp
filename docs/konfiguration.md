@@ -47,6 +47,7 @@ SAP_PUBLIC_URL=http://127.0.0.1:8000
 |---|---|
 | `SAP_AUTH_MODE` | `basic` (User/Passwort direkt an SL) oder `oidc` (Browser-SSO über Keycloak, PKCE) |
 | `SAP_DISABLE_INLINE_LOGIN` | `true` empfohlen: Login nur via Dialog/Web-UI, nie als Chat-Argument |
+| `SAP_BIND_HOSTS` | Bind-Adressen, kommagetrennt (Default: alle Interfaces/`0.0.0.0`; `--host` auf der Kommandozeile gewinnt) |
 | `SAP_PUBLIC_URL` | öffentliche HTTPS-URL der Instanz (Web-Login-Fallback; **Pflicht bei `oidc`** — Redirect-Ziel `…/callback`) |
 
 Nur bei `SAP_AUTH_MODE=oidc` (Browser-SSO, PKCE — Passwort erreicht den MCP nie):
