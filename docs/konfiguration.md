@@ -60,7 +60,8 @@ Browser-SSO mit PKCE — das Passwort erreicht den MCP nie. Pflicht sind
 |---|---|
 | `SAP_IDP_CLIENT_ID` | Client-ID des registrierten Web-App-Clients (`b1-ext-…`) |
 | `SAP_IDP_CLIENT_SECRET` | zugehöriges Client-Secret (wird nur einmal angezeigt) |
-| `SAP_SLD_URL` | SLD-Adresse (z. B. `https://host:40000`) — für die CompanyID-Auflösung **erforderlich**; ermittelt zugleich alle IdP-Endpunkte automatisch |
+| `SAP_SLD_URL` | SLD-Adresse (z. B. `https://host:40000`) — bei Variante A für die CompanyID-Auflösung **erforderlich**; ermittelt zugleich alle IdP-Endpunkte automatisch |
+| `SAP_COMPANY_IDS` | Nur **Variante B** (eigener Identity Provider): die beim Tenant-Binding notierte CompanyID je Datenbank, Format `DB:ID`, mehrere komma-getrennt (`SBO_PROD:1,SBO_TEST:2`). Muss **alle** Datenbanken aus `SAP_DATABASES` abdecken. Ersetzt die SLD-Abfrage — dann ist Port 40000 nicht nötig |
 | `SAP_IDP_TOKEN_URL` | Token-Endpunkt — nur nötig, wenn keine automatische Ermittlung über `SAP_SLD_URL` erfolgen soll |
 | `SAP_IDP_AUTHORIZE_URL` | optional; wird aus der Token-URL abgeleitet. **Pflicht**, wenn der Identity Provider kein Keycloak ist (Entra ID, Okta) |
 | `SAP_IDP_SCOPE` | optional, Default `openid`. Erweiterte Scopes nur, wenn dem Client zugewiesen |

@@ -22,7 +22,7 @@ Unterschieden wird, **wer die Tokens ausstellt**:
 | Variante | Token-Aussteller | Mindestversion | Wann |
 |---|---|---|---|
 | **A — SAP-Authentication-Server** (der Regelfall) | der `sapb1`-Realm eures SAP B1; Client aus dem Extension Single Sign-On Manager (`b1-ext-…`) | SAP B1 10.0 **FP 2208** | immer, wenn die Anmeldung über den SAP-Authentication-Server läuft — **auch dann, wenn dahinter ein externer Provider steht** (AD, Entra ID, Okta, SAP IAS): das SLD legt für ihn eine Broker-Adresse im `sapb1`-Realm an (`…/auth/realms/sapb1/broker/b1-<Alias>/endpoint` — im Leitfaden für AD FS auf S. 20, Entra ID S. 31, Okta S. 39), der Anwender meldet sich beim externen Provider an, das Token stellt aber der `sapb1`-Realm aus |
-| **B — eigener Identity Provider stellt die Tokens selbst aus** | eure eigene IdP-Instanz; SAP nennt das **Principal Propagation** | siehe Hinweis unten | nur, wenn eure Anwendungslandschaft die Tokens selbst ausstellen soll, statt sie beim SAP-Authentication-Server zu holen |
+| **B — eigener Identity Provider stellt die Tokens selbst aus** | eure eigene IdP-Instanz, im Extension SSO Manager als vertrauenswürdiger Provider registriert; SAP nennt das **Principal Propagation** | siehe Hinweis unten | nur, wenn eure Anwendungslandschaft die Tokens selbst ausstellen soll, statt sie beim SAP-Authentication-Server zu holen |
 
 **In der Praxis ist fast immer Variante A richtig.** Die Versionstabelle des
 SAP-Leitfadens (Kap. 6.9) führt selbst für das Szenario „ein oder mehrere
@@ -32,13 +32,13 @@ im SLD als Identity Provider aktiviert, meldet sich der Anwender dort an — das
 **Token für den Service Layer kommt aber weiterhin vom
 SAP-Authentication-Server**. Das ist Variante A.
 
-> **Hinweis zu Variante B:** Der Leitfaden beschreibt Principal Propagation nur
-> konzeptionell (Kap. 6.10) und verweist für die Details auf ein separates
-> SAP-Dokument („Principal Propagation for SAP Business One"). Er nennt dort
-> **keine** Mindestversion und keine Einrichtungsschritte. Die verbreitete
-> Angabe „ab FP 2411" ist über diesen Leitfaden **nicht** belegt. Wenn ihr
-> Variante B braucht, klären wir Version und Vorgehen vorab mit SAP — planbar
-> ist heute Variante A.
+> **Hinweis zu Variante B:** Der IAM-Leitfaden beschreibt Principal Propagation
+> nur konzeptionell (Kap. 6.10) und verweist auf das eigene SAP-Dokument
+> **„Principal Propagation for SAP Business One" (Security Guide, Version 1.0 –
+> 2025-03-25)**. Dort stehen die Einrichtungsschritte (siehe Schritt 4 unten).
+> Eine **Mindestversion nennt auch dieses Dokument nicht** — die verbreitete
+> Angabe „ab FP 2411" ist damit in keiner der drei SAP-Quellen belegt. Klärt euer
+> Feature Package deshalb vorab mit uns ab.
 
 Beide Varianten brauchen SLD-Zugriff (Port 40000) für die Auflösung der
 CompanyID.
@@ -67,11 +67,12 @@ CompanyID.
 >   klassischen Login ausdrücklich nur, wenn **ausschließlich** der
 >   Authentication Server aktiv ist. Sind beide aktiv, ist für **keinen**
 >   Benutzer belegt, dass `basic` weiter funktioniert — auch nicht für die am
->   Authentication Server gebundenen. Wir testen das im Zweifel gemeinsam, statt
->   es zuzusagen.
+>   Authentication Server gebundenen. In dieser Konstellation stimmen wir das
+>   Vorgehen gemeinsam ab.
 > - Benutzer mit **Zwei-Faktor-Authentifizierung** können den klassischen Weg
->   ebenfalls nicht nutzen (belegt für den DTW-Kommandomodus, Kap. 7 — für den
->   Service Layer analog zu erwarten, von uns nicht live geprüft).
+>   ebenfalls nicht nutzen. Der Leitfaden belegt das für den
+>   DTW-Kommandomodus (Kap. 7) und führt es für den Service Layer nicht
+>   ausdrücklich auf.
 
 ## 2. Voraussetzungen SAP-seitig — in dieser Reihenfolge
 
@@ -99,15 +100,32 @@ Systemen (z. B. Cloudiax) ggf. gemeinsam mit dem Provider (SLD-Zugang, Ports).
    - ⚠️ Das **Client-Secret wird nur einmal angezeigt** — sofort sichern.
    - Optional (für zentrales Abmelden, ab FP 2508): zusätzlich die Back-Channel-Logout-URL
      `<SAP_PUBLIC_URL>/backchannel-logout` hinterlegen.
-4. **Nur bei Variante B (eigener Identity Provider stellt die Tokens aus):**
-   Diese Einrichtung ist im SAP-Leitfaden **nicht** beschrieben — sie steht im
-   separaten Dokument „Principal Propagation for SAP Business One“. Bitte vorab
-   mit uns abstimmen; wir nennen euch dann die konkreten Schritte. Für Variante A
-   entfällt dieser Schritt.
+4. **Nur bei Variante B (eigener Identity Provider stellt die Tokens aus).**
+   Für Variante A entfällt dieser Schritt komplett. Quelle: SAP Security Guide
+   „Principal Propagation for SAP Business One" (Version 1.0), Kap. 1.2/1.3.
+   - **Voraussetzungen:** Euer Identity Provider ist im SLD als Drittanbieter-IdP
+     konfiguriert; er stellt Access Tokens im **JWT-Format** aus und hat eine
+     **eigene Discovery-URL**; die Benutzeridentität wird über die
+     **E-Mail-Adresse** geführt, die **landschaftsweit eindeutig** sein muss
+     („one e-mail address exclusively represents one user only").
+   - **IdP registrieren:** *Extension Single Sign-On Manager → Principal
+     Propagation → Identity Providers → Register*. Einzutragen sind: **Name**,
+     **Discovery Endpoint** (`…/.well-known/openid-configuration`) und **Identity
+     Claim Name** — über letzteren liest SAP die E-Mail aus dem Token. Der Claim
+     muss im Token enthalten sein und die korrekte E-Mail des Anwenders tragen.
+   - **Company binden:** *Principal Propagation → Tenants → Bind*. Nur die
+     Company-Datenbanken binden, die wirklich zugänglich sein sollen — SAP nennt
+     beides ausdrücklich sicherheitskritisch. **Die dort ausgegebene Company-ID
+     notieren**, wir brauchen sie für die Konfiguration.
+   - **Änderungen:** Ein registrierter IdP lässt sich **nicht** bearbeiten —
+     löschen und neu anlegen (*Delete* im selben Pfad).
 5. **Netzwerk:** Vom MCP-Server aus erreichbar sein müssen Port **50000**
-   (Service Layer), **40020** (Authentication Server) und **40000** (SLD). Der **Browser der Anwender**
-   muss Port **40020** erreichen (die Keycloak-Anmeldeseite). Bei gehosteten
-   Systemen ggf. Freigaben beim Provider beantragen.
+   (Service Layer) und — bei **Variante A** — **40020** (Authentication
+   Server) sowie **40000** (SLD, für die CompanyID). Der **Browser der
+   Anwender** muss die Anmeldeseite erreichen: bei Variante A Port **40020**,
+   bei Variante B euren eigenen Provider. **Variante B braucht Port 40000
+   nicht**, wenn die CompanyIDs konfiguriert sind (siehe Abschnitt 3). Bei
+   gehosteten Systemen ggf. Freigaben beim Provider beantragen.
 
 ## 3. `.env` — zwei Wege
 
@@ -170,9 +188,47 @@ Hinweise:
 - `SAP_ALLOW_SELF_SIGNED_CERT` gilt **gemeinsam** für Service Layer und Keycloak
   und ist als **Übergangslösung** gedacht — mittelfristig ein gültiges Zertifikat
   einrichten und den Wert auf `false` setzen.
-- Bei Variante B (eigener Identity Provider) zeigt `SAP_IDP_TOKEN_URL` auf euren
-  Provider; `SAP_SLD_URL` muss dann zwingend gesetzt werden (es lässt sich nicht
-  aus dem Provider-Host ableiten).
+- Für **Variante B** gilt ein eigener Block — siehe unten.
+
+### Variante B: eigener Identity Provider (Principal Propagation)
+
+Hier stellt **euer** Identity Provider die Tokens aus. Zwei Dinge sind anders als
+bei Variante A:
+
+1. `SAP_IDP_TOKEN_URL` zeigt auf **euren** Provider, nicht auf den
+   SAP-Authentication-Server.
+2. Die **CompanyID wird fest konfiguriert**, statt sie zur Laufzeit bei der SLD
+   zu erfragen. Ihr habt sie beim Binden der Company notiert (Schritt 4 oben,
+   *Principal Propagation → Tenants*). Damit braucht diese Betriebsart **Port
+   40000 überhaupt nicht** — die SLD wird nicht mehr angesprochen.
+
+```ini
+SAP_AUTH_MODE=bearer
+SAP_PUBLIC_URL=https://mcp.euer-host.de
+
+# Euer eigener Identity Provider
+SAP_IDP_TOKEN_URL=https://idp.euer-host.de/realms/<realm>/protocol/openid-connect/token
+SAP_IDP_CLIENT_ID=<Client-ID in EUREM Provider>
+SAP_IDP_CLIENT_SECRET=<Client-Secret>
+
+# PFLICHT bei Variante B: die beim Tenant-Binding notierte CompanyID je
+# Company-Datenbank. Format: DB:ID, mehrere komma-getrennt.
+SAP_COMPANY_IDS=SBO_PROD:1,SBO_TEST:2
+
+# Kein SAP_SLD_URL nötig — die CompanyID steht ja oben.
+```
+
+Zu `SAP_COMPANY_IDS`:
+- Es müssen **alle** Datenbanken aus `SAP_DATABASES` aufgeführt sein. Fehlt eine,
+  startet der Server nicht und nennt die fehlende — so fällt niemand unbemerkt auf
+  die SLD-Abfrage zurück.
+- Der Wert wird unverändert als `X-b1-companyid` gesendet. Übernimmt ihn genau so,
+  wie der Extension Single Sign-On Manager ihn anzeigt.
+- Ist euer Provider **kein** Keycloak (z. B. Entra ID, Okta), setzt zusätzlich
+  `SAP_IDP_AUTHORIZE_URL` — die Ableitung funktioniert nur bei Keycloak-Pfaden.
+- Ab **FP 2602** prüft der Service Layer den `audience`-Claim. Bei Variante B muss
+  **euer** Provider die Service-Layer-Client-ID in die Audience schreiben (siehe
+  Hinweis in Abschnitt 7).
 
 ## 4. Reverse Proxy
 
@@ -221,6 +277,9 @@ dem Server (Remotedesktop) durchführen.
 | Login klappt, Zugriff wird aber abgewiesen (401/403) | Benutzer ist nicht (oder auf eine andere Company-DB) gebunden → SLD *Users* prüfen (der Leitfaden nennt für den nicht authentifizierten Fall 401, Kap. 6.8.2) |
 | „Keine SLD-Company-Bindung gefunden" | Benutzerbindung fehlt, oder Port 40000 ist vom MCP-Server nicht erreichbar |
 | Anmeldeformular `/login` zeigt „Browser-SSO" | korrekt — in den SSO-Modi läuft die Anmeldung über `connect`, nicht über das Formular |
+| Start bricht ab: „SAP_COMPANY_IDS must cover every CompanyDB" | Variante B: eine Datenbank aus `SAP_DATABASES` hat keine CompanyID. Ergänzen — oder `SAP_COMPANY_IDS` ganz entfernen, wenn die SLD sie ermitteln soll |
+| Start bricht ab: „SAP_COMPANY_IDS names unknown CompanyDB" | Tippfehler im Datenbanknamen — er muss genau einem Eintrag aus `SAP_DATABASES` entsprechen |
+| Zugriff wird abgewiesen, obwohl die CompanyID konfiguriert ist | Wert gegen das Tenant-Binding im Extension Single Sign-On Manager prüfen; er wird unverändert als `X-b1-companyid` gesendet |
 
 ### Hinweis zur Audience-Prüfung (ab SAP B1 10.0 FP 2602)
 
@@ -237,12 +296,10 @@ neu starten) — für den Produktivbetrieb ist der Audience-Mapper der richtige 
 Details im SAP-Leitfaden „Identity and Authentication
 Management in SAP Business One", Abschnitt „Configuring Audience in Keycloak".
 
-### Nicht abgedeckt
+### Inbetriebnahme
 
-Der klassische Anmeldeweg (`basic`) und der SSO-Weg (`bearer`) sind gegen die
-SAP-Vorgaben umgesetzt, aber SSO ist **noch nicht** auf einer
-Produktivinstallation abgenommen — die Erstinbetriebnahme begleiten wir daher
-gemeinsam. Bitte plant dafür ein kurzes Zeitfenster mit euren
-SAP-Administratoren ein.
+Die SAP-seitigen Schritte (Abschnitt 2) erfordern Rechte im SLD und im Extension
+Single Sign-On Manager. Die Erstinbetriebnahme begleiten wir gemeinsam — bitte
+plant dafür ein kurzes Zeitfenster mit euren SAP-Administratoren ein.
 
 Weitere Hilfe: **support@versino.de**.
