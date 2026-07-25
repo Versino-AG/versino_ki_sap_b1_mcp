@@ -23,7 +23,7 @@ Ist das Binary noch nicht signiert, kann Windows einen Fehlalarm zeigen.
 ## Verbindung zu SAP schlägt fehl
 - `SAP_BASE_URL` korrekt? (`https://<host>:50000/b1s/v2/`)
 - selbstsigniertes SL-Zertifikat → `SAP_ALLOW_SELF_SIGNED_CERT=true`.
-- richtiger `SAP_AUTH_MODE` (`basic` vs `oidc`)?
+- richtiger `SAP_AUTH_MODE` (`basic` vs. `bearer`)?
 - gewählte CompanyDB in `SAP_DATABASES` enthalten?
 
 ## Schreib-Tools fehlen / werden abgelehnt

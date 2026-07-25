@@ -14,7 +14,8 @@ SAP_BASE_URL=https://ihr-sap-host:50000/b1s/v2/
 # Wählbare CompanyDBs (eine oder mehrere, kommagetrennt)
 SAP_DATABASES=SBO_IhreFirma
 
-# Anmeldemodus: "basic" oder "oidc" (Browser-SSO über Keycloak)
+# Anmeldemodus: "basic" (User/Passwort) oder "bearer" (Browser-SSO bei aktivem
+# IAM) — Einrichtung siehe sso-keycloak.md
 SAP_AUTH_MODE=basic
 
 # Zugriffsmodus: READ_ONLY oder READ_WRITE
@@ -45,16 +46,30 @@ SAP_PUBLIC_URL=http://127.0.0.1:8000
 ## Authentifizierung
 | Variable | Bedeutung |
 |---|---|
-| `SAP_AUTH_MODE` | `basic` (User/Passwort direkt an SL) oder `oidc` (Browser-SSO über Keycloak, PKCE) |
+| `SAP_AUTH_MODE` | `basic` (User/Passwort direkt an SL) oder `bearer` (Browser-SSO mit PKCE, Token bei jedem Aufruf — ab FP 2208 mit Tokens des SAP-Authentication-Servers; stellt ein eigener Identity Provider die Tokens selbst aus, siehe Hinweis in sso-keycloak.md) |
 | `SAP_DISABLE_INLINE_LOGIN` | `true` empfohlen: Login nur via Dialog/Web-UI, nie als Chat-Argument |
 | `SAP_BIND_HOSTS` | Bind-Adressen, kommagetrennt (Default: alle Interfaces/`0.0.0.0`; `--host` auf der Kommandozeile gewinnt) |
-| `SAP_PUBLIC_URL` | öffentliche HTTPS-URL der Instanz (Web-Login-Fallback; **Pflicht bei `oidc`** — Redirect-Ziel `…/callback`) |
+| `SAP_PUBLIC_URL` | öffentliche HTTPS-URL der Instanz (Web-Login-Fallback; **Pflicht bei `bearer`** — Redirect-Ziel `…/callback`) |
 
-Nur bei `SAP_AUTH_MODE=oidc` (Browser-SSO, PKCE — Passwort erreicht den MCP nie):
-`SAP_PUBLIC_URL` (Pflicht), `SAP_KEYCLOAK_TOKEN_URL`, `SAP_KEYCLOAK_CLIENT_ID`,
-`SAP_KEYCLOAK_CLIENT_SECRET` (optional `SAP_KEYCLOAK_AUTHORIZE_URL`, `SAP_SLD_URL`, `SAP_KEYCLOAK_SCOPE`).
-Die Redirect-URI `<SAP_PUBLIC_URL>/callback` muss am Client (SSO Extension Manager)
-hinterlegt sein. Kurzanleitung: [sso-keycloak.md](sso-keycloak.md).
+### Nur bei `SAP_AUTH_MODE=bearer`
+
+Browser-SSO mit PKCE — das Passwort erreicht den MCP nie. Pflicht sind
+`SAP_PUBLIC_URL` sowie die Client-Daten aus dem Extension Single Sign-On Manager:
+
+| Variable | Bedeutung |
+|---|---|
+| `SAP_IDP_CLIENT_ID` | Client-ID des registrierten Web-App-Clients (`b1-ext-…`) |
+| `SAP_IDP_CLIENT_SECRET` | zugehöriges Client-Secret (wird nur einmal angezeigt) |
+| `SAP_SLD_URL` | SLD-Adresse (z. B. `https://host:40000`) — für die CompanyID-Auflösung **erforderlich**; ermittelt zugleich alle IdP-Endpunkte automatisch |
+| `SAP_IDP_TOKEN_URL` | Token-Endpunkt — nur nötig, wenn keine automatische Ermittlung über `SAP_SLD_URL` erfolgen soll |
+| `SAP_IDP_AUTHORIZE_URL` | optional; wird aus der Token-URL abgeleitet. **Pflicht**, wenn der Identity Provider kein Keycloak ist (Entra ID, Okta) |
+| `SAP_IDP_SCOPE` | optional, Default `openid`. Erweiterte Scopes nur, wenn dem Client zugewiesen |
+| `SAP_IDP_END_SESSION_URL` / `SAP_IDP_JWKS_URL` | optional (Abmeldung/zentrales Logout); kommen ebenfalls aus der automatischen Ermittlung |
+
+Die früheren Namen `SAP_KEYCLOAK_*` gelten weiterhin (gleiche Bedeutung).
+Die Redirect-URI `<SAP_PUBLIC_URL>/callback` muss am Client (Extension Single
+Sign-On Manager) hinterlegt sein. Vollständige Anleitung inklusive der
+SAP-seitigen Schritte: [sso-keycloak.md](sso-keycloak.md).
 
 ## Lizenz
 | Variable | Bedeutung |
