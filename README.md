@@ -7,8 +7,10 @@ fertige Binaries, Installationsanleitungen und Betriebsdoku.
 
 Der Server stellt SAP Business One (Service Layer) als **MCP-Server** bereit, sodass
 LLM-Clients wie Claude Desktop direkt mit eurem SAP B1 arbeiten können. Er läuft
-**per-user**: jeder Nutzer meldet sich mit den **eigenen** SAP-Zugangsdaten an —
-Credentials gelangen nie in den Chat-/LLM-Kontext.
+**per-user**: jeder Nutzer meldet sich mit der **eigenen** SAP-Identität an —
+klassisch mit Benutzer/Passwort oder per **Single Sign-On** (Browser-Anmeldung
+beim Identity Provider, siehe [docs/sso-keycloak.md](docs/sso-keycloak.md)).
+Zugangsdaten gelangen nie in den Chat-/LLM-Kontext.
 
 ## Download
 

@@ -9,15 +9,22 @@ Schreibt im Chat einfach in normaler Sprache, z. B.:
 
 > **Verbinde mich mit SAP.**
 
-Daraufhin meldet sich der Assistent und gibt euch einen **Anmelde-Link** (Browser),
-ungefähr so:
-```
-Bitte melde dich über diesen Link an: https://…/login?t=…
-```
+Daraufhin gibt euch der Assistent einen **Anmelde-Link** (Browser). Je nach
+Einrichtung eures Systems seht ihr dort:
 
-1. **Link anklicken** → eine Login-Seite öffnet sich im Browser.
-2. Dort euren **SAP-B1-Benutzer + Passwort** eingeben und die **Datenbank (Firma)** wählen.
-3. Nach „Login erfolgreich" zurück in den Chat wechseln und kurz **„fertig"** schreiben.
+- **Anmeldeseite des Assistenten** (klassische Anmeldung): Dort euren
+  **SAP-B1-Benutzer + Passwort** eingeben und die **Datenbank (Firma)** wählen.
+- **Single Sign-On:** Bei mehreren Firmen erscheint zuerst eine kleine Seite
+  **„Datenbank wählen"** — Firma auswählen, **„Weiter zur Anmeldung"** klicken.
+  Danach (oder direkt, wenn es nur eine Firma gibt) landet ihr auf der
+  **zentralen Anmeldeseite eures Unternehmens**: Dort meldet ihr euch mit eurer
+  **E-Mail-Adresse** an — wie bei anderen Firmenanwendungen; oft seid ihr schon
+  angemeldet und es ist nur ein Klick. Benutzer oder Passwort fragt der
+  Assistent **nie** ab.
+
+Tipp: Ihr könnt die Firma auch gleich im Chat nennen
+(*„Verbinde mich mit SAP, Datenbank XY"*) — dann entfällt die Auswahlseite.
+Danach zurück in den Chat wechseln und kurz **„fertig"** schreiben.
 
 > 🔒 **Wichtig:** Tippt euer SAP-Passwort **nie direkt in den Chat** — immer nur auf der
 > Login-Seite im Browser. Der Assistent fragt euch nie nach dem Passwort im Chat.
@@ -50,7 +57,9 @@ SAP-Rechten ab. Falls aktiviert, geht z. B.:
 
 ## 4. Firma/Datenbank wechseln
 Mehrere CompanyDBs? Sagt z. B. *„Trenne die Verbindung"* und danach *„Verbinde mich mit
-SAP, Datenbank XY"* — oder ruft die Anmeldung erneut auf und wählt eine andere Datenbank.
+SAP, Datenbank XY"*. Bei Single Sign-On besteht eure Browser-Anmeldung meist noch —
+der zweite Login ist dann nur ein Klick. Eine Sitzung ist immer mit **einer**
+Datenbank verbunden.
 
 ## 5. Tipps
 - **Präzise fragen** liefert bessere Antworten: Zeitraum, Firma, Feld nennen.

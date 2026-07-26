@@ -79,14 +79,32 @@ CompanyID.
 Ausführende Rolle: **B1-Administrator / Landscape-Administrator**. Bei gehosteten
 Systemen (z. B. Cloudiax) ggf. gemeinsam mit dem Provider (SLD-Zugang, Ports).
 
-1. **IAM prüfen** — SLD Control Center (`https://<sap-host>:40000/ControlCenter`),
-   Reiter *Identity Providers*: Mindestens ein Identity Provider muss **Active**
-   sein (SAP Business One Authentication Server, Active Directory Domain Services
-   oder ein externer OIDC-Provider).
+> **Zwei Verwaltungsoberflächen — prüft zuerst, welche ihr habt.** SAP
+> dokumentiert IAM in zwei Leitfäden, und die Wege unterscheiden sich:
+> - **On-Premise / gehostet:** *SLD Control Center*, typisch
+>   `https://<sap-host>:40000/ControlCenter`. Die Schritte unten sind so
+>   beschrieben.
+> - **SAP Business One Cloud:** *Cloud Control Center*. Dort heißen die Bereiche
+>   *System Configuration → Identity Providers* bzw. *Customer Management →
+>   Customers → Customer Details → Identity Providers*, und die SLD- und
+>   Authentication-Service-Adressen werden dort konfiguriert — sie sind also nicht
+>   zwangsläufig `<host>:40000` / `<host>:40020`.
+>   ⚠️ Zusätzlich muss dort **einmalig** *System Configuration → Global Settings →
+>   **Enable Third Party Identity Provider** = On* gesetzt werden; erst danach
+>   erscheint der *Add*-Button für Identity Provider. Voraussetzung dafür ist ein
+>   registriertes Software-Repository für **FP 2405 oder höher**.
+>
+> Alles Übrige (Client-Registrierung im Extension Single Sign-On Manager,
+> Benutzerbindung, Token-Transport) ist in beiden Varianten identisch.
+
+1. **IAM prüfen** — Control Center (siehe Kasten), Reiter *Identity Providers*:
+   Mindestens ein Identity Provider muss **Active** sein (SAP Business One
+   Authentication Server, Active Directory Domain Services oder ein externer
+   OIDC-Provider).
    ⚠️ Vor dem Aktivieren **alle** Benutzer binden (Schritt 2) — danach melden sich
    gebundene Benutzer mit den Zugangsdaten des Identity Providers an, nicht mehr
    mit dem B1-Benutzercode (siehe Kasten oben).
-2. **Benutzer binden** — SLD Control Center, Reiter *Users*: Jeden Anwender, der den
+2. **Benutzer binden** — Control Center, Reiter *Users*: Jeden Anwender, der den
    MCP nutzen soll, markieren → **Bind** → Server, Company-Datenbank(en) und
    B1-Benutzercode zuordnen. Ohne diese Bindung schlägt die Anmeldung fehl.
 3. **OAuth-Client anlegen** — **SAP Business One Extension Single Sign-On Manager**
@@ -245,11 +263,38 @@ Zusätzlich: Antwort-Pufferung für `/mcp` abschalten und großzügige Timeouts 
 
 ## 5. Ablauf für Anwender
 
-Im Client `connect` aufrufen → es kommt eine **Browser-Login-URL** zurück. Der Nutzer
-meldet sich im Browser bei Keycloak an (bestehende SSO-Session greift). Danach im
-Client einmal `connect(ticket="…")` aufrufen — fertig. Zugangsdaten gehen **nur** an
-Keycloak, nie an den MCP oder in den Chat. Das Anmeldeformular des MCP (`/login`) ist
-in den SSO-Modi bewusst deaktiviert.
+**Wichtig vorab:** In den SSO-Modi nimmt der MCP **niemals Zugangsdaten**
+entgegen — die Anmeldung passiert immer beim Identity Provider. Die Seite unter
+`/login` zeigt deshalb **nur eine Datenbank-Auswahl** (bei mehreren
+Company-Datenbanken), keine Benutzer- oder Passwortfelder.
+
+Der Ablauf, Schritt für Schritt:
+
+1. **`connect` aufrufen** — der Anwender sagt im Chat einfach *„Verbinde mich
+   mit SAP"*. Er bekommt einen **Anmelde-Link** zurück.
+   - *Mehrere Datenbanken:* Der Link öffnet zuerst die **Datenbank-Auswahl**
+     („Datenbank wählen" mit Dropdown und „Weiter zur Anmeldung") und leitet
+     nach der Wahl automatisch zur Anmeldeseite des Identity Providers weiter.
+   - *Eine Datenbank* oder Datenbank schon im Chat genannt (*„… Datenbank
+     BRAGI_TEST"*): Der Link führt **direkt** zur Anmeldeseite des Identity
+     Providers — die Auswahl entfällt.
+2. **Beim Identity Provider anmelden.** Dort meldet sich der Anwender mit
+   seiner **E-Mail-Adresse** und dem IdP-Kennwort an (eine bestehende
+   SSO-Session greift; MFA und Verbund-Logins funktionieren). Zugangsdaten
+   gehen **nie** an den MCP oder in den Chat.
+3. **Zurück im Chat** einmal `connect(ticket="…")` aufrufen (bzw. „fertig"
+   schreiben, der Client erledigt das) — verbunden.
+
+**Mehrere Datenbanken:** Eine Sitzung ist immer mit **einer** Datenbank
+verbunden. Wechseln: *„Trenne die Verbindung"* (`disconnect`), dann neu
+verbinden — auf der Auswahlseite die andere Datenbank wählen (oder sie gleich
+im Chat nennen); die SSO-Session im Browser besteht meist noch, der zweite
+Login ist dann nur ein Klick. Ob ein Anwender eine Datenbank überhaupt
+nutzen darf, entscheidet SAP: Bei Variante A muss sein **User-Binding** die
+gewählte Datenbank umfassen (sonst: „Keine SLD-Company-Bindung für … gefunden" —
+Abhilfe: Binding im SLD um diese Company erweitern); bei Variante B lehnt der
+Service Layer den Zugriff ab, wenn die Berechtigung fehlt. Innerhalb der
+Verbindung gelten immer die **eigenen SAP-Rechte** des Anwenders.
 
 **Abmelden:** `disconnect` beendet die Session und widerruft das Token beim Identity
 Provider. Ist die Back-Channel-Logout-URL hinterlegt (Schritt 3), beendet auch ein
@@ -276,7 +321,7 @@ dem Server (Remotedesktop) durchführen.
 | Login klappt, Zugriff aber 401 | Token wird vom Service Layer abgelehnt: Feature Package prüfen (Variante A ab FP 2208) bzw. die Client-Registrierung im Extension Single Sign-On Manager. **Ab FP 2602** prüft der Service Layer zusätzlich den `audience`-Claim (siehe Hinweis unter der Tabelle) |
 | Login klappt, Zugriff wird aber abgewiesen (401/403) | Benutzer ist nicht (oder auf eine andere Company-DB) gebunden → SLD *Users* prüfen (der Leitfaden nennt für den nicht authentifizierten Fall 401, Kap. 6.8.2) |
 | „Keine SLD-Company-Bindung gefunden" | Benutzerbindung fehlt, oder Port 40000 ist vom MCP-Server nicht erreichbar |
-| Anmeldeformular `/login` zeigt „Browser-SSO" | korrekt — in den SSO-Modi läuft die Anmeldung über `connect`, nicht über das Formular |
+| `/login` zeigt nur eine Datenbank-Auswahl, keine Anmeldefelder | korrekt — in den SSO-Modi meldet man sich beim Identity Provider an, nie beim MCP; die Seite wählt nur die Firma |
 | Start bricht ab: „SAP_COMPANY_IDS must cover every CompanyDB" | Variante B: eine Datenbank aus `SAP_DATABASES` hat keine CompanyID. Ergänzen — oder `SAP_COMPANY_IDS` ganz entfernen, wenn die SLD sie ermitteln soll |
 | Start bricht ab: „SAP_COMPANY_IDS names unknown CompanyDB" | Tippfehler im Datenbanknamen — er muss genau einem Eintrag aus `SAP_DATABASES` entsprechen |
 | Zugriff wird abgewiesen, obwohl die CompanyID konfiguriert ist | Wert gegen das Tenant-Binding im Extension Single Sign-On Manager prüfen; er wird unverändert als `X-b1-companyid` gesendet |
