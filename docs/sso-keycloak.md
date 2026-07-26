@@ -278,7 +278,9 @@ Der Ablauf, Schritt für Schritt:
    - *Eine Datenbank* oder Datenbank schon im Chat genannt (*„… Datenbank
      BRAGI_TEST"*): Der Link führt **direkt** zur Anmeldeseite des Identity
      Providers — die Auswahl entfällt.
-2. **Beim Identity Provider anmelden.** Dort meldet sich der Anwender mit
+2. **Beim Identity Provider anmelden.** Die Auswahlseite leitet dazu per
+   JavaScript weiter (kein zusätzlicher Pfad am Reverse Proxy nötig — es
+   bleibt bei `/login`). Dort meldet sich der Anwender mit
    seiner **E-Mail-Adresse** und dem IdP-Kennwort an (eine bestehende
    SSO-Session greift; MFA und Verbund-Logins funktionieren). Zugangsdaten
    gehen **nie** an den MCP oder in den Chat.
@@ -322,6 +324,7 @@ dem Server (Remotedesktop) durchführen.
 | Login klappt, Zugriff wird aber abgewiesen (401/403) | Benutzer ist nicht (oder auf eine andere Company-DB) gebunden → SLD *Users* prüfen (der Leitfaden nennt für den nicht authentifizierten Fall 401, Kap. 6.8.2) |
 | „Keine SLD-Company-Bindung gefunden" | Benutzerbindung fehlt, oder Port 40000 ist vom MCP-Server nicht erreichbar |
 | `/login` zeigt nur eine Datenbank-Auswahl, keine Anmeldefelder | korrekt — in den SSO-Modi meldet man sich beim Identity Provider an, nie beim MCP; die Seite wählt nur die Firma |
+| Klick auf „Weiter zur Anmeldung" bewirkt nichts | Browser-Konsole prüfen. Ist dort eine `Content Security Policy`-Meldung zu `form-action`, läuft eine Version vor **3.2.1** — bitte aktualisieren. Ansonsten: JavaScript im Browser aktiviert? Die Seite braucht es für die Weiterleitung (ohne JS greift ein Fallback, der bei manchen Identity Providern an der CSP scheitert) |
 | Start bricht ab: „SAP_COMPANY_IDS must cover every CompanyDB" | Variante B: eine Datenbank aus `SAP_DATABASES` hat keine CompanyID. Ergänzen — oder `SAP_COMPANY_IDS` ganz entfernen, wenn die SLD sie ermitteln soll |
 | Start bricht ab: „SAP_COMPANY_IDS names unknown CompanyDB" | Tippfehler im Datenbanknamen — er muss genau einem Eintrag aus `SAP_DATABASES` entsprechen |
 | Zugriff wird abgewiesen, obwohl die CompanyID konfiguriert ist | Wert gegen das Tenant-Binding im Extension Single Sign-On Manager prüfen; er wird unverändert als `X-b1-companyid` gesendet |
