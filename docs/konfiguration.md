@@ -42,6 +42,17 @@ SAP_PUBLIC_URL=http://127.0.0.1:8000
 | `SAP_ALLOW_SELF_SIGNED_CERT` | `false` | selbstsigniertes SL-Zertifikat zulassen |
 | `SAP_MAX_PAGE_SIZE` | `200` | max. Zeilen pro Seite |
 | `SAP_MAX_CONCURRENT_REQUESTS` | `10` | parallele SL-Requests |
+| `SAP_AUTO_DEPLOY_QUERIES` | `true` | mitgelieferte Auswertungen beim ersten Verbinden je CompanyDB ausbringen |
+
+### Mitgelieferte Auswertungen
+Der Server bringt seine fertigen Auswertungen (`AI_*`-Abfragen in
+`SQLQueries`) beim **ersten Verbinden** je CompanyDB selbst aus — einmal pro
+Serverlauf. Voraussetzungen: `SAP_OPERATION_MODE=READ_WRITE` und ein
+B1-Benutzer, der Abfragen anlegen darf. Im Lesebetrieb (`READ_ONLY`) wird das
+übersprungen; die Auswertungen fehlen dann, alles andere funktioniert
+unverändert. Selbst geschriebene `AI_*`-Abfragen werden nie überschrieben.
+Bei Bedarf lässt sich die Ausbringung im Chat gezielt anstoßen
+(`sap_deploy_queries`) oder mit `SAP_AUTO_DEPLOY_QUERIES=false` abschalten.
 
 ## Authentifizierung
 | Variable | Bedeutung |
