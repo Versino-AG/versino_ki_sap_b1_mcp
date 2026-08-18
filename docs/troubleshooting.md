@@ -64,3 +64,11 @@ Die `mcp-remote`-Bridge benötigt **Node.js**. Node LTS von
 - 64-bit Linux mit glibc (x86-64) vorausgesetzt.
 
 Weiterhin Probleme? **support@versino.de** (bitte mit Logausschnitt und Versionsnummer).
+
+## Lizenz abgelaufen / Abo-Verlängerung
+- Die exe holt eine fällige **Abo-Verlängerung automatisch beim Start** (sofern
+  Internet + gültiges Abo). Zusätzlich gibt es **3 Tage Grace-Period** nach
+  Ablauf, in denen der Server auch ohne erfolgreiches Phone-Home noch startet.
+- Startet die exe nach Ablauf dauerhaft nicht mehr, prüfen: Internetzugang zum
+  Lizenzserver vorhanden? Abo im Lizenzportal (aishop.versino.de) aktiv/bezahlt?
+  Im Zweifel bei **support@versino.de** einen frischen `versino.key` anfordern.
