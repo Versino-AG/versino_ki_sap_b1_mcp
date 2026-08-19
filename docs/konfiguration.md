@@ -59,6 +59,12 @@ Bei Bedarf lässt sich die Ausbringung im Chat gezielt anstoßen
 |---|---|
 | `SAP_AUTH_MODE` | `basic` (User/Passwort direkt an SL) oder `bearer` (Browser-SSO mit PKCE, Token bei jedem Aufruf — ab FP 2208 mit Tokens des SAP-Authentication-Servers; stellt ein eigener Identity Provider die Tokens selbst aus, siehe Hinweis in sso-keycloak.md) |
 | `SAP_DISABLE_INLINE_LOGIN` | `true` empfohlen: Login nur via Dialog/Web-UI, nie als Chat-Argument |
+| `SAP_TLS_CERT_FILE` | Server-Zertifikat (PEM) für eingehendes HTTPS — zusammen mit `SAP_TLS_KEY_FILE`; sonst HTTP |
+| `SAP_TLS_KEY_FILE` | Privater Schlüssel (PEM) für eingehendes HTTPS |
+| `SAP_TLS_KEY_PASSWORD` | Passwort für einen verschlüsselten TLS-Schlüssel (optional) |
+| `SAP_TLS_MIN_VERSION` | Mindest-TLS-Version für eingehendes HTTPS: `1.2` (Default) oder `1.3` |
+| `SAP_TLS_CIPHERS` | OpenSSL-Cipher-String pinnen (nur TLS 1.2; leer = sichere Defaults) |
+| `SAP_TLS_CLIENT_CA_FILE` | Client-CA (PEM) → erzwingt Client-Zertifikate (mTLS) |
 | `SAP_BIND_HOSTS` | Bind-Adressen, kommagetrennt (Default: alle Interfaces/`0.0.0.0`; `--host` auf der Kommandozeile gewinnt) |
 | `SAP_PUBLIC_URL` | öffentliche HTTPS-URL der Instanz (Web-Login-Fallback; **Pflicht bei `bearer`** — Redirect-Ziel `…/callback`) |
 

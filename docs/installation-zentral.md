@@ -100,11 +100,37 @@ nssm start sapb1-mcp
 Maschine, in der `.env` `SAP_BIND_HOSTS=127.0.0.1` setzen, damit der Port nicht zusätzlich
 nach außen offen ist; liegt der Proxy auf einem anderen Host, den Port nur intern freigeben.)
 
-## 5. TLS-Reverse-Proxy (für Netzbetrieb erforderlich)
-Im Netz laufen Login-Tickets und Anmeldungen über die Leitung — daher **muss** TLS davor.
+## 5. TLS für den Netzbetrieb (erforderlich)
+Im Netz laufen Login-Tickets und Anmeldungen über die Leitung — daher **muss** TLS an.
+Es gibt zwei Wege:
+
+### Variante A — TLS direkt im MCP (nativ, ohne Proxy)
+Der MCP-Server terminiert HTTPS selbst. In der `.env`:
+```ini
+SAP_TLS_CERT_FILE=/etc/ssl/mcp.crt      # Zertifikat/Kette (PEM)
+SAP_TLS_KEY_FILE=/etc/ssl/mcp.key       # privater Schlüssel (PEM)
+# SAP_TLS_KEY_PASSWORD=...               # nur bei verschlüsseltem Schlüssel
+SAP_PUBLIC_URL=https://mcp.kunde.intern:8000
+
+# Härtung (Rechenzentrum):
+# SAP_TLS_MIN_VERSION=1.2                 # Mindest-TLS-Version (1.2 Default, 1.3 möglich)
+# SAP_TLS_CIPHERS=...                     # OpenSSL-Cipher-String pinnen (nur TLS 1.2)
+# SAP_TLS_CLIENT_CA_FILE=/etc/ssl/ca.pem # erzwingt Client-Zertifikate (mTLS)
+```
+Ohne diese Variablen bleibt es bei HTTP. Klar getrennt von
+`SAP_ALLOW_SELF_SIGNED_CERT` (das gilt **ausgehend** zu SAP/Keycloak). Der Server
+baut den TLS-Kontext gehärtet auf: erzwungene Mindestversion, Server-Cipher-
+Preference, Kompression/Renegotiation aus; optional feste Ciphers und **mTLS**
+(Client-Zertifikatspflicht via `SAP_TLS_CLIENT_CA_FILE`). Eine unvollständige
+TLS-Config (nur Cert/Key, fehlende Datei, ungültige Mindestversion) meldet der
+Start deutlich. Danach ist der Endpunkt direkt `https://<host>:<port>/mcp` —
+Firewall entsprechend öffnen (Abschnitt 6).
+
+### Variante B — TLS-Reverse-Proxy (davorgeschaltet)
 Der Proxy terminiert HTTPS und leitet **alle** Pfade (`/mcp`, `/login`, `/api/login`) an
 den lokalen Server weiter. Wichtig: **langes Lese-Timeout** und **kein Response-Buffering**
-(Streamable HTTP / Server-Sent Events).
+(Streamable HTTP / Server-Sent Events). Sinnvoll, wenn ohnehin ein zentraler Proxy
+existiert oder automatische Zertifikate (z. B. Caddy/Let's Encrypt) gewünscht sind.
 
 **Caddy** (einfachste Variante inkl. automatischem Zertifikat) — `Caddyfile`:
 ```
