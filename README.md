@@ -2,6 +2,8 @@
 
 # Versino KI SAP B1 MCP — Builds & Dokumentation
 
+> 🌐 Die Dokumentation gibt es in drei Sprachen: **Deutsch** (dieses README, `docs/*.de.md`) · English (`docs/*.md`) · Česky (`docs/*.cs.md`). Jede Doku-Seite verlinkt oben ihre Sprachvarianten. Die Sprache der Server-Meldungen (Start, Web-Login, Fehler) stellt `SAP_LANG=de|en|cs` in der `.env` ein (Default `de`); passende `.env`-Vorlagen: `.env.example` (DE), `.env.en.example`, `.env.cs.example`.
+
 Offizielles Bezugs-Repository für den **Versino-KI-SAP-Business-One-MCP-Server** der Versino AG:
 fertige Binaries, Installationsanleitungen und Betriebsdoku.
 
@@ -9,7 +11,7 @@ Der Server stellt SAP Business One (Service Layer) als **MCP-Server** bereit, so
 LLM-Clients wie Claude Desktop direkt mit eurem SAP B1 arbeiten können. Er läuft
 **per-user**: jeder Nutzer meldet sich mit der **eigenen** SAP-Identität an —
 klassisch mit Benutzer/Passwort oder per **Single Sign-On** (Browser-Anmeldung
-beim Identity Provider, siehe [docs/sso-keycloak.md](docs/sso-keycloak.md)).
+beim Identity Provider, siehe [docs/sso-keycloak.de.md](docs/sso-keycloak.de.md)).
 Zugangsdaten gelangen nie in den Chat-/LLM-Kontext.
 
 ## Download
@@ -23,7 +25,7 @@ Die aktuelle Version liegt unter **[Releases](../../releases/latest)**:
 | Linux (64-bit) — Binary | `sapb1-mcp-<version>-linux-x64` | manuell/Anpassung |
 
 Dazu benötigt ihr eure Lizenzdatei **`versino.key`** (kommt per E-Mail bzw. über das
-[Lizenzportal](https://aishop.versino.de)). Siehe [docs/lizenz.md](docs/lizenz.md).
+[Lizenzportal](https://aishop.versino.de)). Siehe [docs/lizenz.de.md](docs/lizenz.de.md).
 
 ## Schnellstart
 
@@ -33,20 +35,20 @@ Dazu benötigt ihr eure Lizenzdatei **`versino.key`** (kommt per E-Mail bzw. üb
 2. Dem Assistenten folgen: `versino.key` wählen, SL-URL + CompanyDBs angeben, Optionen
    setzen — der Installer lädt die Programmdatei, schreibt die `.env`, kopiert die Lizenz
    und richtet auf Wunsch einen Windows-Dienst sowie die Claude-Desktop-Anbindung ein.
-   → [docs/installer.md](docs/installer.md)
-3. Als Anwender loslegen → [docs/erste-schritte.md](docs/erste-schritte.md).
+   → [docs/installer.de.md](docs/installer.de.md)
+3. Als Anwender loslegen → [docs/erste-schritte.de.md](docs/erste-schritte.de.md).
 
 ### Manuell (Windows/Linux): Binary selbst aufsetzen
 
 Für eigene Verzeichnisse, eigenen Dienst-Wrapper, Reverse-Proxy oder Linux:
 
 1. Binary + `versino.key` + `.env` in **einen** Ordner legen.
-2. `.env` konfigurieren → [docs/konfiguration.md](docs/konfiguration.md).
+2. `.env` konfigurieren → [docs/konfiguration.de.md](docs/konfiguration.de.md).
 3. Starten und an den LLM-Client anbinden:
-   - **Windows:** [docs/installation-windows.md](docs/installation-windows.md)
-   - **Linux:** [docs/installation-linux.md](docs/installation-linux.md)
-   - **Zentral (eine Instanz für alle Arbeitsplätze):** [docs/installation-zentral.md](docs/installation-zentral.md)
-4. Als Anwender loslegen → [docs/erste-schritte.md](docs/erste-schritte.md).
+   - **Windows:** [docs/installation-windows.de.md](docs/installation-windows.de.md)
+   - **Linux:** [docs/installation-linux.de.md](docs/installation-linux.de.md)
+   - **Zentral (eine Instanz für alle Arbeitsplätze):** [docs/installation-zentral.de.md](docs/installation-zentral.de.md)
+4. Als Anwender loslegen → [docs/erste-schritte.de.md](docs/erste-schritte.de.md).
 
 ## Systemvoraussetzungen
 
@@ -57,15 +59,15 @@ Für eigene Verzeichnisse, eigenen Dienst-Wrapper, Reverse-Proxy oder Linux:
 
 ## Dokumentation
 
-- [Erste Schritte (für Anwender)](docs/erste-schritte.md) — Nutzung im Chat nach dem Setup
-- [**Geführte Installation (Windows, empfohlen)**](docs/installer.md)
-- [Installation Windows (manuell)](docs/installation-windows.md)
-- [Installation Linux (manuell)](docs/installation-linux.md)
-- [Zentrale Installation (eine Instanz für alle Arbeitsplätze)](docs/installation-zentral.md)
-- [Konfiguration (`.env`)](docs/konfiguration.md)
-- [SSO über Keycloak (OIDC) — Einrichtungsanleitung](docs/sso-keycloak.md)
-- [Lizenz (`versino.key`, Erneuerung, Seats)](docs/lizenz.md)
-- [Troubleshooting](docs/troubleshooting.md)
+- [Erste Schritte (für Anwender)](docs/erste-schritte.de.md) — Nutzung im Chat nach dem Setup
+- [**Geführte Installation (Windows, empfohlen)**](docs/installer.de.md)
+- [Installation Windows (manuell)](docs/installation-windows.de.md)
+- [Installation Linux (manuell)](docs/installation-linux.de.md)
+- [Zentrale Installation (eine Instanz für alle Arbeitsplätze)](docs/installation-zentral.de.md)
+- [Konfiguration (`.env`)](docs/konfiguration.de.md)
+- [SSO über Keycloak (OIDC) — Einrichtungsanleitung](docs/sso-keycloak.de.md)
+- [Lizenz (`versino.key`, Erneuerung, Seats)](docs/lizenz.de.md)
+- [Troubleshooting](docs/troubleshooting.de.md)
 
 ## Support
 

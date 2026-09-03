@@ -1,112 +1,122 @@
-# Konfiguration (`.env`)
+# Configuration (`.env`)
 
-Der Server liest seine Instanz-Konfiguration aus einer `.env` neben dem Binary
-(oder via `--env-file`). Hier stehen **keine Endnutzer-Zugangsdaten** — nur die
-Instanz-Einstellungen. Jeder Nutzer meldet sich zur Laufzeit selbst an.
+> 🌐 **English** · [Deutsch](konfiguration.de.md) · [Česky](konfiguration.cs.md)
 
-## Minimalkonfiguration
-Kommentare gehören in eine **eigene Zeile** — **nie** hinter den Wert in dieselbe Zeile
-(Inline-Kommentare können je nach Parser den Wert verfälschen).
+The server reads its instance configuration from a `.env` next to the binary
+(or via `--env-file`). It contains **no end-user credentials** — only the
+instance settings. Every user signs in themselves at runtime.
+
+## Minimal configuration
+Comments belong on their **own line** — **never** behind the value on the same
+line (inline comments can corrupt the value depending on the parser).
 ```ini
-# Service-Layer-URL eurer SAP-B1-Instanz
-SAP_BASE_URL=https://ihr-sap-host:50000/b1s/v2/
+# Service Layer URL of your SAP B1 instance
+SAP_BASE_URL=https://your-sap-host:50000/b1s/v2/
 
-# Wählbare CompanyDBs (eine oder mehrere, kommagetrennt)
-SAP_DATABASES=SBO_IhreFirma
+# Selectable CompanyDBs (one or more, comma-separated)
+SAP_DATABASES=SBO_YourCompany
 
-# Anmeldemodus: "basic" (User/Passwort) oder "bearer" (Browser-SSO bei aktivem
-# IAM) — Einrichtung siehe sso-keycloak.md
+# Auth mode: "basic" (user/password) or "bearer" (browser SSO with active
+# IAM) — setup see sso-keycloak.md
 SAP_AUTH_MODE=basic
 
-# Zugriffsmodus: READ_ONLY oder READ_WRITE
+# Access mode: READ_ONLY or READ_WRITE
 SAP_OPERATION_MODE=READ_ONLY
 
-# Nur bei selbstsigniertem SL-Zertifikat
+# Only with a self-signed SL certificate
 SAP_ALLOW_SELF_SIGNED_CERT=true
 
-# Öffentliche Adresse dieser Instanz — nötig für den Browser-Login (Claude Desktop).
-# Lokal: http://127.0.0.1:8000 (Port muss zum Serverstart passen); im Netz die HTTPS-URL.
+# Public address of this instance — needed for the browser login (Claude Desktop).
+# Local: http://127.0.0.1:8000 (port must match the server start); on the network
+# the HTTPS URL.
 SAP_PUBLIC_URL=http://127.0.0.1:8000
 
-# Phone-Home / automatische Abo-Erneuerung läuft automatisch (Enrollment-Token ist
-# in der versino.key eingebacken — hier nichts nötig). Override nur für Test/Staging:
+# Phone-home / automatic subscription renewal runs automatically (the enrollment
+# token is baked into versino.key — nothing needed here). Override only for
+# test/staging:
 # SAP_ENROLLMENT_TOKEN=<override-token>
 ```
 
 ## Service Layer
-| Variable | Default | Bedeutung |
+| Variable | Default | Meaning |
 |---|---|---|
-| `SAP_BASE_URL` | – | Service-Layer-URL, z. B. `https://host:50000/b1s/v2/` |
-| `SAP_DATABASES` | – | Wählbare CompanyDBs (Komma-Liste) |
-| `SAP_OPERATION_MODE` | `READ_ONLY` | `READ_ONLY` oder `READ_WRITE` (Schreib-Tools) |
-| `SAP_ALLOW_SELF_SIGNED_CERT` | `false` | selbstsigniertes SL-Zertifikat zulassen |
-| `SAP_MAX_PAGE_SIZE` | `200` | max. Zeilen pro Seite |
-| `SAP_MAX_CONCURRENT_REQUESTS` | `10` | parallele SL-Requests |
-| `SAP_AUTO_DEPLOY_QUERIES` | `true` | mitgelieferte Auswertungen beim ersten Verbinden je CompanyDB ausbringen |
+| `SAP_BASE_URL` | – | Service Layer URL, e.g. `https://host:50000/b1s/v2/` |
+| `SAP_DATABASES` | – | selectable CompanyDBs (comma list) |
+| `SAP_OPERATION_MODE` | `READ_ONLY` | `READ_ONLY` or `READ_WRITE` (write tools) |
+| `SAP_ALLOW_SELF_SIGNED_CERT` | `false` | allow a self-signed SL certificate |
+| `SAP_MAX_PAGE_SIZE` | `200` | max. rows per page |
+| `SAP_MAX_CONCURRENT_REQUESTS` | `10` | parallel SL requests |
+| `SAP_TIMEOUT_SECONDS` | `60` | HTTP timeout for Service Layer requests |
+| `SAP_IDLE_LOGOUT_SECONDS` | `1500` | idle time after which a user session is signed out automatically |
+| `SAP_PHONE_HOME_INTERVAL_SECONDS` | `3600` | interval of the license phone-home check |
+| `SAP_DB_SERVER_TYPE` | _auto_ | override the database type (`HANA` / `MSSQL`); normally detected automatically — set only if detection is wrong |
+| `SAP_AUTO_DEPLOY_QUERIES` | `true` | deploy the bundled reports on first connect per CompanyDB |
 
-### Mitgelieferte Auswertungen
-Der Server bringt seine fertigen Auswertungen (`AI_*`-Abfragen in
-`SQLQueries`) beim **ersten Verbinden** je CompanyDB selbst aus — einmal pro
-Serverlauf. Voraussetzungen: `SAP_OPERATION_MODE=READ_WRITE` und ein
-B1-Benutzer, der Abfragen anlegen darf. Im Lesebetrieb (`READ_ONLY`) wird das
-übersprungen; die Auswertungen fehlen dann, alles andere funktioniert
-unverändert. Selbst geschriebene `AI_*`-Abfragen werden nie überschrieben.
-Bei Bedarf lässt sich die Ausbringung im Chat gezielt anstoßen
-(`sap_deploy_queries`) oder mit `SAP_AUTO_DEPLOY_QUERIES=false` abschalten.
+### Bundled reports
+The server deploys its ready-made reports (`AI_*` queries in `SQLQueries`) on
+the **first connect** per CompanyDB by itself — once per server run.
+Prerequisites: `SAP_OPERATION_MODE=READ_WRITE` and a B1 user allowed to create
+queries. In read-only mode (`READ_ONLY`) this is skipped; the reports are then
+missing, everything else works unchanged. Self-written `AI_*` queries are never
+overwritten. If needed, trigger the deployment in the chat
+(`sap_deploy_queries`) or disable it with `SAP_AUTO_DEPLOY_QUERIES=false`.
 
-## Authentifizierung
-| Variable | Bedeutung |
+## Authentication
+| Variable | Meaning |
 |---|---|
-| `SAP_AUTH_MODE` | `basic` (User/Passwort direkt an SL) oder `bearer` (Browser-SSO mit PKCE, Token bei jedem Aufruf — ab FP 2208 mit Tokens des SAP-Authentication-Servers; stellt ein eigener Identity Provider die Tokens selbst aus, siehe Hinweis in sso-keycloak.md) |
-| `SAP_DISABLE_INLINE_LOGIN` | `true` empfohlen: Login nur via Dialog/Web-UI, nie als Chat-Argument |
-| `SAP_TLS_CERT_FILE` | Server-Zertifikat (PEM) für eingehendes HTTPS — zusammen mit `SAP_TLS_KEY_FILE`; sonst HTTP |
-| `SAP_TLS_KEY_FILE` | Privater Schlüssel (PEM) für eingehendes HTTPS |
-| `SAP_TLS_KEY_PASSWORD` | Passwort für einen verschlüsselten TLS-Schlüssel (optional) |
-| `SAP_TLS_MIN_VERSION` | Mindest-TLS-Version für eingehendes HTTPS: `1.2` (Default) oder `1.3` |
-| `SAP_TLS_CIPHERS` | OpenSSL-Cipher-String pinnen (nur TLS 1.2; leer = sichere Defaults) |
-| `SAP_TLS_CLIENT_CA_FILE` | Client-CA (PEM) → erzwingt Client-Zertifikate (mTLS) |
-| `SAP_BIND_HOSTS` | Bind-Adressen, kommagetrennt (Default: alle Interfaces/`0.0.0.0`; `--host` auf der Kommandozeile gewinnt) |
-| `SAP_PUBLIC_URL` | öffentliche HTTPS-URL der Instanz (Web-Login-Fallback; **Pflicht bei `bearer`** — Redirect-Ziel `…/callback`) |
+| `SAP_AUTH_MODE` | `basic` (user/password straight to the SL) or `bearer` (browser SSO with PKCE, token on every call — from FP 2208 with tokens of the SAP Authentication Server; if your own identity provider issues the tokens itself, see the note in sso-keycloak.md) |
+| `SAP_DISABLE_INLINE_LOGIN` | `true` recommended: login only via dialog/web UI, never as a chat argument |
+| `SAP_TLS_CERT_FILE` | server certificate (PEM) for inbound HTTPS — together with `SAP_TLS_KEY_FILE`; otherwise HTTP |
+| `SAP_TLS_KEY_FILE` | private key (PEM) for inbound HTTPS |
+| `SAP_TLS_KEY_PASSWORD` | password for an encrypted TLS key (optional) |
+| `SAP_TLS_MIN_VERSION` | minimum TLS version for inbound HTTPS: `1.2` (default) or `1.3` |
+| `SAP_TLS_CIPHERS` | pin an OpenSSL cipher string (TLS 1.2 only; empty = safe defaults) |
+| `SAP_TLS_CLIENT_CA_FILE` | client CA (PEM) → requires client certificates (mTLS) |
+| `SAP_BIND_HOSTS` | bind addresses, comma-separated (default: all interfaces/`0.0.0.0`; `--host` on the command line wins) |
+| `SAP_LANG` | language of the server messages (exe startup, web login, auth errors): `de` (default), `en`, `cs`. The assistant's chat replies automatically follow the user's language |
+| `SAP_PUBLIC_URL` | public HTTPS URL of the instance (web-login fallback; **required with `bearer`** — redirect target `…/callback`) |
 
-### Nur bei `SAP_AUTH_MODE=bearer`
+### Only with `SAP_AUTH_MODE=bearer`
 
-Browser-SSO mit PKCE — das Passwort erreicht den MCP nie. Pflicht sind
-`SAP_PUBLIC_URL` sowie die Client-Daten aus dem Extension Single Sign-On Manager:
+Browser SSO with PKCE — the password never reaches the MCP. Required are
+`SAP_PUBLIC_URL` plus the client data from the Extension Single Sign-On Manager:
 
-| Variable | Bedeutung |
+| Variable | Meaning |
 |---|---|
-| `SAP_IDP_CLIENT_ID` | Client-ID des registrierten Web-App-Clients (`b1-ext-…`) |
-| `SAP_IDP_CLIENT_SECRET` | zugehöriges Client-Secret (wird nur einmal angezeigt) |
-| `SAP_SLD_URL` | SLD-Adresse (z. B. `https://host:40000`) — bei Variante A für die CompanyID-Auflösung **erforderlich**; ermittelt zugleich alle IdP-Endpunkte automatisch |
-| `SAP_COMPANY_IDS` | Nur **Variante B** (eigener Identity Provider): die beim Tenant-Binding notierte CompanyID je Datenbank, Format `DB:ID`, mehrere komma-getrennt (`SBO_PROD:1,SBO_TEST:2`). Muss **alle** Datenbanken aus `SAP_DATABASES` abdecken. Ersetzt die SLD-Abfrage — dann ist Port 40000 nicht nötig |
-| `SAP_IDP_TOKEN_URL` | Token-Endpunkt — nur nötig, wenn keine automatische Ermittlung über `SAP_SLD_URL` erfolgen soll |
-| `SAP_IDP_AUTHORIZE_URL` | optional; wird aus der Token-URL abgeleitet. **Pflicht**, wenn der Identity Provider kein Keycloak ist (Entra ID, Okta) |
-| `SAP_IDP_SCOPE` | optional, Default `openid`. Erweiterte Scopes nur, wenn dem Client zugewiesen |
-| `SAP_IDP_END_SESSION_URL` / `SAP_IDP_JWKS_URL` | optional (Abmeldung/zentrales Logout); kommen ebenfalls aus der automatischen Ermittlung |
+| `SAP_IDP_CLIENT_ID` | client id of the registered web-app client (`b1-ext-…`) |
+| `SAP_IDP_CLIENT_SECRET` | its client secret (shown only once) |
+| `SAP_SLD_URL` | SLD address (e.g. `https://host:40000`) — **required** for CompanyID resolution in variant A; also discovers all IdP endpoints automatically |
+| `SAP_COMPANY_IDS` | **Variant B** only (own identity provider): the CompanyID per database noted during tenant binding, format `DB:ID`, several comma-separated (`SBO_PROD:1,SBO_TEST:2`). Must cover **all** databases from `SAP_DATABASES`. Replaces the SLD lookup — port 40000 is then not needed |
+| `SAP_IDP_TOKEN_URL` | token endpoint — only needed when no automatic discovery via `SAP_SLD_URL` should happen |
+| `SAP_IDP_AUTHORIZE_URL` | optional; derived from the token URL. **Required** when the identity provider is not a Keycloak (Entra ID, Okta) |
+| `SAP_IDP_SCOPE` | optional, default `openid`. Extended scopes only if assigned to the client |
+| `SAP_IDP_END_SESSION_URL` / `SAP_IDP_JWKS_URL` | optional (sign-out/central logout); also come from the automatic discovery |
+| `SAP_IDP_ISSUER` / `SAP_IDP_REVOCATION_URL` | optional (token issuer / token revocation); normally discovered automatically via `SAP_SLD_URL` — set only when the auto-discovery must be overridden |
 
-Die früheren Namen `SAP_KEYCLOAK_*` gelten weiterhin (gleiche Bedeutung).
-Die Redirect-URI `<SAP_PUBLIC_URL>/callback` muss am Client (Extension Single
-Sign-On Manager) hinterlegt sein. Vollständige Anleitung inklusive der
-SAP-seitigen Schritte: [sso-keycloak.md](sso-keycloak.md).
+The former `SAP_KEYCLOAK_*` names keep working (same meaning).
+The redirect URI `<SAP_PUBLIC_URL>/callback` must be registered on the client
+(Extension Single Sign-On Manager). Full guide incl. the SAP-side steps:
+[sso-keycloak.md](sso-keycloak.md).
 
-## Lizenz
-| Variable | Bedeutung |
+## License
+| Variable | Meaning |
 |---|---|
-| `SAP_LICENSE_FILE` | Pfad zur `versino.key` — **nicht nötig**, wenn die Datei neben dem Binary liegt (Auto-Discovery) |
-| `SAP_LICENSE` | Lizenz-Token direkt (Alternative zur Datei) |
-| `SAP_ENROLLMENT_TOKEN` | Phone-Home/Auto-Renewal — **normalerweise nicht nötig** (Token ist in der `versino.key` eingebacken). Nur als Override für Test/Staging |
+| `SAP_LICENSE_FILE` | path to the `versino.key` — **not needed** when the file sits next to the binary (auto-discovery) |
+| `SAP_LICENSE` | license token inline (alternative to the file) |
+| `SAP_ENROLLMENT_TOKEN` | phone-home/auto-renewal — **normally not needed** (the token is baked into `versino.key`). Only as an override for test/staging |
 
-Phone-Home / automatische Abo-Erneuerung (Normalfall): siehe [lizenz.md](lizenz.md).
+Phone-home / automatic subscription renewal (the normal case): see
+[lizenz.md](lizenz.md).
 
-## Sicherheitshinweise
-- `SAP_OPERATION_MODE=READ_ONLY` als Standard; `READ_WRITE` nur, wenn Schreibzugriff
-  wirklich gewünscht ist.
-- `SAP_DISABLE_INLINE_LOGIN=true` stellt sicher, dass SAP-Credentials nie in den
-  LLM-Kontext geraten (Anmeldung nur über Dialog/Web-UI).
-- Für Netzwerkbetrieb TLS (Reverse-Proxy) vorschalten.
+## Security notes
+- `SAP_OPERATION_MODE=READ_ONLY` as the default; `READ_WRITE` only when write
+  access is really wanted.
+- `SAP_DISABLE_INLINE_LOGIN=true` makes sure SAP credentials never enter the
+  LLM context (sign-in only via dialog/web UI).
+- For network operation put TLS in front (native or reverse proxy).
 
 ## Logging
 
-Warnungen und Fehler landen immer in `%APPDATA%\Versino\sapb1-mcp\sapb1-mcp.log`
-(JSON-Zeilen, 1-MB-Kappe — älteste Einträge werden automatisch entfernt).
-Der Pfad ist fest, damit der Support ihn immer kennt.
+Warnings and errors always land in `%APPDATA%\Versino\sapb1-mcp\sapb1-mcp.log`
+(JSON lines, 1 MB cap — the oldest entries are pruned automatically).
+The path is fixed so support always knows where to look.

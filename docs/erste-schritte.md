@@ -1,72 +1,76 @@
-# Erste Schritte (für Anwender)
+# Getting started (for end users)
 
-Diese Anleitung ist für **Anwender**: Der Server ist bereits eingerichtet und euer
-LLM-Client (z. B. Claude Desktop) ist mit ihm verbunden. Hier geht es nur darum, wie ihr
-SAP Business One im Chat nutzt. Ihr braucht **keine** Technikkenntnisse.
+> 🌐 **English** · [Deutsch](erste-schritte.de.md) · [Česky](erste-schritte.cs.md)
 
-## 1. Mit SAP verbinden
-Schreibt im Chat einfach in normaler Sprache, z. B.:
+This guide is for **end users**: the server is already set up and your LLM
+client (e.g. Claude Desktop) is connected to it. It only covers how you use
+SAP Business One in the chat. You need **no** technical knowledge.
 
-> **Verbinde mich mit SAP.**
+## 1. Connect to SAP
+Just write in the chat in plain language, e.g.:
 
-Daraufhin gibt euch der Assistent einen **Anmelde-Link** (Browser). Je nach
-Einrichtung eures Systems seht ihr dort:
+> **Connect me to SAP.**
 
-- **Anmeldeseite des Assistenten** (klassische Anmeldung): Dort euren
-  **SAP-B1-Benutzer + Passwort** eingeben und die **Datenbank (Firma)** wählen.
-- **Single Sign-On:** Bei mehreren Firmen erscheint zuerst eine kleine Seite
-  **„Datenbank wählen"** — Firma auswählen, **„Weiter zur Anmeldung"** klicken.
-  Danach (oder direkt, wenn es nur eine Firma gibt) landet ihr auf der
-  **zentralen Anmeldeseite eures Unternehmens**: Dort meldet ihr euch mit eurer
-  **E-Mail-Adresse** an — wie bei anderen Firmenanwendungen; oft seid ihr schon
-  angemeldet und es ist nur ein Klick. Benutzer oder Passwort fragt der
-  Assistent **nie** ab.
+The assistant then gives you a **sign-in link** (browser). Depending on how your
+system is set up, you will see:
 
-Tipp: Ihr könnt die Firma auch gleich im Chat nennen
-(*„Verbinde mich mit SAP, Datenbank XY"*) — dann entfällt die Auswahlseite.
-Danach zurück in den Chat wechseln und kurz **„fertig"** schreiben.
+- **The assistant's sign-in page** (classic login): enter your
+  **SAP B1 user + password** there and choose the **database (company)**.
+- **Single sign-on:** with several companies a small page
+  **"Choose database"** appears first — pick the company, click
+  **"Continue to sign-in"**. After that (or directly, if there is only one
+  company) you land on your **company's central sign-in page**: sign in there
+  with your **e-mail address** — like with other company applications; often
+  you are already signed in and it is just one click. The assistant **never**
+  asks for user or password.
 
-> 🔒 **Wichtig:** Tippt euer SAP-Passwort **nie direkt in den Chat** — immer nur auf der
-> Login-Seite im Browser. Der Assistent fragt euch nie nach dem Passwort im Chat.
+Tip: you can also name the company right in the chat
+(*"Connect me to SAP, database XY"*) — the chooser page is then skipped.
+Afterwards switch back to the chat and briefly write **"done"**.
 
-Die Anmeldung gilt für die laufende Sitzung. Ihr arbeitet mit **euren** SAP-Rechten —
-ihr seht und ändert nur, was euer SAP-Benutzer ohnehin darf.
+> 🔒 **Important:** never type your SAP password **directly into the chat** —
+> only on the sign-in page in the browser. The assistant never asks for the
+> password in the chat.
 
-## 2. Fragen stellen (Lesen)
-Sobald ihr verbunden seid, fragt einfach in normaler Sprache. Beispiele:
+The sign-in lasts for the current session. You work with **your** SAP
+permissions — you only see and change what your SAP user may anyway.
 
-- *„Zeig mir die letzten 10 Angebote."*
-- *„Welche offenen Rechnungen hat der Kunde Mustermann GmbH?"*
-- *„Finde den Artikel ‚Pumpe 24V'."*
-- *„Wie viele Aufträge gab es diesen Monat, gruppiert nach Kunde?"*
-- *„Welche Firmen/Datenbanken kann ich auswählen?"*
+## 2. Asking questions (reading)
+Once connected, just ask in plain language. Examples:
 
-Der Assistent holt die Daten live aus SAP und antwortet im Chat. Fragt ruhig nach
-(„… und davon nur die über 1.000 €") — er verfeinert das Ergebnis.
+- *"Show me the last 10 quotations."*
+- *"Which open invoices does the customer Mustermann GmbH have?"*
+- *"Find the item 'Pump 24V'."*
+- *"How many orders were there this month, grouped by customer?"*
+- *"Which companies/databases can I choose?"*
 
-## 3. Daten anlegen oder ändern (nur mit Schreibrechten)
-Ob ihr **schreiben** dürft, hängt von der Einrichtung (Edition + Freischaltung) und euren
-SAP-Rechten ab. Falls aktiviert, geht z. B.:
+The assistant fetches the data live from SAP and answers in the chat. Feel free
+to follow up ("… and of those only the ones above €1,000") — it refines the
+result.
 
-- *„Lege einen neuen Geschäftspartner ‚Beispiel AG' als Kunde an."*
-- *„Setze beim Auftrag 1234 das Lieferdatum auf nächsten Freitag."*
+## 3. Creating or changing data (write permissions only)
+Whether you may **write** depends on the setup (edition + activation) and your
+SAP permissions. If enabled, things like this work:
 
-> ⚠️ Änderungen wirken **direkt im echten SAP**. Prüft, was der Assistent vorschlägt, bevor
-> ihr bestätigt. Sind keine Schreib-Tools verfügbar, ist die Instanz im **Nur-Lese-Modus**
-> oder eure Edition erlaubt kein Schreiben.
+- *"Create a new business partner 'Beispiel AG' as a customer."*
+- *"Set the delivery date of order 1234 to next Friday."*
 
-## 4. Firma/Datenbank wechseln
-Mehrere CompanyDBs? Sagt z. B. *„Trenne die Verbindung"* und danach *„Verbinde mich mit
-SAP, Datenbank XY"*. Bei Single Sign-On besteht eure Browser-Anmeldung meist noch —
-der zweite Login ist dann nur ein Klick. Eine Sitzung ist immer mit **einer**
-Datenbank verbunden.
+> ⚠️ Changes take effect **directly in the real SAP**. Review what the assistant
+> proposes before you confirm. If no write tools are available, the instance is
+> in **read-only mode** or your edition does not allow writing.
 
-## 5. Tipps
-- **Präzise fragen** liefert bessere Antworten: Zeitraum, Firma, Feld nennen.
-- Der Assistent kennt das SAP-Datenmodell — ihr könnt auch fragen *„Welche Felder hat ein
-  Geschäftspartner?"* oder *„Erklär mir die Tabelle OCRD."*
-- Funktioniert etwas nicht (kein Login-Link, Seite reagiert nicht), schaut in
-  [troubleshooting.md](troubleshooting.md) oder meldet euch bei eurer IT.
+## 4. Switching company/database
+Several CompanyDBs? Say e.g. *"Disconnect"* and then *"Connect me to SAP,
+database XY"*. With single sign-on your browser session usually still exists —
+the second sign-in is then just one click. A session is always connected to
+**one** database.
 
-## Hilfe
-Technische Probleme oder Fragen zur Freischaltung: eure IT bzw. **support@versino.de**.
+## 5. Tips
+- **Precise questions** get better answers: name the period, company, field.
+- The assistant knows the SAP data model — you can also ask *"Which fields does
+  a business partner have?"* or *"Explain the table OCRD to me."*
+- If something does not work (no sign-in link, page not responding), check
+  [troubleshooting.md](troubleshooting.md) or contact your IT.
+
+## Help
+Technical problems or activation questions: your IT or **support@versino.de**.

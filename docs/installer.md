@@ -1,103 +1,105 @@
-# Geführte Installation (Windows, empfohlen)
+# Guided installation (Windows, recommended)
 
-Der **geführte Windows-Installer** richtet den SAP-B1-MCP-Server in wenigen Schritten
-vollständig ein. Er nimmt euch die manuellen Schritte ab, die ihr sonst von Hand machen
-müsstet:
+> 🌐 **English** · [Deutsch](installer.de.md) · [Česky](installer.cs.md)
 
-- Programmdatei herunterladen und ablegen
-- `.env` von Hand schreiben (richtige Schlüssel, keine Tippfehler, korrektes Encoding)
-- `versino.key` an die richtige Stelle kopieren
-- Service-Layer-Erreichbarkeit prüfen
-- optional einen Windows-Dienst einrichten
-- optional Claude Desktop konfigurieren
+The **guided Windows installer** sets up the SAP B1 MCP server completely in a
+few steps. It takes the manual steps off your hands that you would otherwise do
+by hand:
 
-> Wer den Server **manuell** aufsetzen oder feiner anpassen möchte (eigene Verzeichnisse,
-> eigener Dienst-Wrapper, Reverse-Proxy, Linux), nutzt stattdessen die manuellen
-> Anleitungen: [installation-windows.md](installation-windows.md) /
+- download and place the program file
+- write the `.env` by hand (right keys, no typos, correct encoding)
+- copy `versino.key` to the right place
+- check Service Layer reachability
+- optionally set up a Windows service
+- optionally configure Claude Desktop
+
+> If you want to set the server up **manually** or tune it further (custom
+> directories, your own service wrapper, reverse proxy, Linux), use the manual
+> guides instead: [installation-windows.md](installation-windows.md) /
 > [installation-linux.md](installation-linux.md).
 
-## Voraussetzungen
+## Prerequisites
 
-- 64-bit Windows 10/11 oder Windows Server 2019+
-- euren **Lizenzschlüssel** (per E-Mail bzw. aus dem
-  [Lizenzportal](https://aishop.versino.de)) — als Text zum Einfügen **oder** als
-  Datei `versino.key`; beides funktioniert. Siehe [lizenz.md](lizenz.md)
-- Netzwerkzugriff auf euren SAP-B1-**Service-Layer** (`https://<host>:50000/b1s/v2/`)
-- Internetzugang während der Installation (der Installer lädt die Programmdatei aus dem
-  Release)
+- 64-bit Windows 10/11 or Windows Server 2019+
+- your **license key** (by e-mail or from the
+  [license portal](https://aishop.versino.de)) — as text to paste **or** as a
+  `versino.key` file; both work. See [lizenz.md](lizenz.md)
+- network access to your SAP B1 **Service Layer** (`https://<host>:50000/b1s/v2/`)
+- internet access during the installation (the installer downloads the program
+  file from the release)
 
-## Herunterladen
+## Download
 
-Aus den [Releases](../../releases/latest) das Setup laden:
+Get the setup from the [releases](../../releases/latest):
 
-| Datei | Zweck |
+| File | Purpose |
 |-------|-------|
-| `sapb1-mcp-setup-<version>.exe` | geführter Installer |
+| `sapb1-mcp-setup-<version>.exe` | guided installer |
 
-Das Setup ist von der **Versino AG signiert** (Authenticode) — Windows zeigt „Versino AG"
-als Herausgeber. Die eigentliche Server-Programmdatei lädt der Installer während der
-Installation passend zur Version selbst herunter.
+The setup is **signed by Versino AG** (Authenticode) — Windows shows
+"Versino AG" as the publisher. The actual server program file is downloaded by
+the installer during installation, matching the version.
 
-## Der Installationsablauf
+## The installation flow
 
-Setup starten und dem Assistenten folgen. Er fragt der Reihe nach ab:
+Start the setup and follow the wizard. It asks in order:
 
-1. **AGB** — die [Allgemeinen Geschäftsbedingungen](https://aishop.versino.de/agb)
-   bestätigen.
-2. **Zielordner** — wohin installiert wird (Standard: `%LOCALAPPDATA%\Versino\sapb1-mcp`,
-   z. B. `C:\Users\<Benutzer>\AppData\Local\Versino\sapb1-mcp`). Die Installation
-   läuft ohne Administrator-Rechte; nur die optionale Dienst-Einrichtung fragt einmalig
-   per UAC nach.
-3. **Lizenzschlüssel** — euren von Versino gelieferten Schlüssel in das Feld **einfügen**
-   oder per **„versino.key wählen …“** aus einer Datei laden (beides landet im selben
-   Feld). Der Installer lädt die Programmdatei, schreibt den Schlüssel als `versino.key`
-   in den Zielordner und prüft ihn **sofort offline** (Signatur + Ablauf gegen den
-   eingebauten Schlüssel). Ist er ungültig oder abgelaufen, geht es nicht weiter. Der
-   Enrollment-Token (für Erneuerung) steckt darin — ihr müsst **nichts** weiter von Hand
-   eintragen.
-4. **Service-Layer-Verbindung** — eure SL-URL eingeben
-   (`https://<host>:50000/b1s/v2/`). Der Installer prüft die **Erreichbarkeit** des
-   Servers. Verlangt der Service Layer (wie üblich) eine Anmeldung, gilt das **als
-   erreichbar** — nur eine echte Nichterreichbarkeit (falsche Adresse, Netz/Firewall,
-   Zertifikatsproblem) wird gemeldet.
-5. **CompanyDB(s)** — die wählbaren Datenbanken (kommagetrennt). Optional könnt ihr hier
-   einen **Test-Login** (Benutzer/Passwort) eingeben; der Installer prüft damit DB-Name
-   und Zugang. Diese Test-Zugangsdaten werden **nicht gespeichert**.
-6. **Erreichbarkeit** — Port (Standard `8000`) und optional die öffentliche URL. Lokal
-   genügt der Port; im Netzbetrieb die öffentliche HTTPS-URL (Reverse-Proxy, siehe
-   [installation-zentral.md](installation-zentral.md)).
-7. **Optionen**:
-   - **Schreibzugriff erlauben** (`READ_WRITE` statt nur Lesen)
-   - **Selbstsigniertes SL-Zertifikat akzeptieren**
-   - **Als Windows-Dienst einrichten** — der Server läuft dann automatisch (auch ohne
-     angemeldeten Benutzer)
-   - **Claude-Desktop-Konfiguration automatisch eintragen** (standardmäßig an)
+1. **Terms** — confirm the [terms and conditions](https://aishop.versino.de/agb).
+2. **Target folder** — where to install (default:
+   `%LOCALAPPDATA%\Versino\sapb1-mcp`, e.g.
+   `C:\Users\<user>\AppData\Local\Versino\sapb1-mcp`). The installation runs
+   without administrator rights; only the optional service setup asks once via
+   UAC.
+3. **License key** — **paste** the key delivered by Versino into the field or
+   load it from a file via **"Choose versino.key …"** (both end up in the same
+   field). The installer downloads the program file, writes the key as
+   `versino.key` into the target folder and validates it **immediately offline**
+   (signature + expiry against the embedded key). If it is invalid or expired,
+   the flow stops. The enrollment token (for renewal) is inside — you need to
+   enter **nothing** else by hand.
+4. **Service Layer connection** — enter your SL URL
+   (`https://<host>:50000/b1s/v2/`). The installer checks the server's
+   **reachability**. If the Service Layer (as usual) demands a sign-in, that
+   counts **as reachable** — only true unreachability (wrong address,
+   network/firewall, certificate problem) is reported.
+5. **CompanyDB(s)** — the selectable databases (comma-separated). Optionally you
+   can enter a **test login** (user/password) here; the installer verifies DB
+   name and access with it. These test credentials are **not stored**.
+6. **Reachability** — port (default `8000`) and optionally the public URL.
+   Locally the port suffices; on the network the public HTTPS URL (reverse
+   proxy, see [installation-zentral.md](installation-zentral.md)).
+7. **Options**:
+   - **Allow write access** (`READ_WRITE` instead of read-only)
+   - **Accept self-signed SL certificate**
+   - **Set up as a Windows service** — the server then runs automatically
+     (even without a signed-in user)
+   - **Add the Claude Desktop configuration automatically** (on by default)
 
-## Nach der Installation
+## After the installation
 
-Im Zielordner liegen dann:
+The target folder then contains:
 
-- `sapb1-mcp.exe` — der Server
-- `versino.key` — eure Lizenz
-- `.env` — die vorausgefüllte Konfiguration aus euren Eingaben
+- `sapb1-mcp.exe` — the server
+- `versino.key` — your license
+- `.env` — the pre-filled configuration from your inputs
 
-Je nach gewählten Optionen zusätzlich:
+Depending on the chosen options additionally:
 
-- ein **Windows-Dienst** `SAPB1-MCP`, der den Server automatisch startet
-- der **Claude-Desktop-Eintrag** ist gesetzt (bestehende Einträge bleiben erhalten) —
-  Claude Desktop danach neu starten
+- a **Windows service** `SAPB1-MCP` that starts the server automatically
+- the **Claude Desktop entry** is set (existing entries are kept) —
+  restart Claude Desktop afterwards
 
-Wurde **kein** Dienst gewählt, startet ihr den Server wie in
-[installation-windows.md](installation-windows.md), Abschnitt 3 beschrieben.
+If **no** service was chosen, start the server as described in
+[installation-windows.md](installation-windows.md), section 3.
 
-## Erste Nutzung
+## First use
 
-Im LLM-Client das Tool **`connect`** aufrufen → SAP-Anmeldung (Eingabedialog bzw.
-Browser-Login). Die **Zugangsdaten gelangen nie in den Chat-/LLM-Kontext**. Danach stehen
-die SAP-Tools bereit; `list_databases` zeigt die CompanyDBs. Siehe auch
+Call the **`connect`** tool in the LLM client → SAP sign-in (input dialog or
+browser login). The **credentials never enter the chat/LLM context**. After that
+the SAP tools are available; `list_databases` shows the CompanyDBs. See also
 [erste-schritte.md](erste-schritte.md).
 
 ## Troubleshooting
 
-Häufige Fälle (Defender-Warnung, `license.refused`, Verbindungsprobleme) findet ihr in
+Common cases (Defender warning, `license.refused`, connection problems) are in
 [troubleshooting.md](troubleshooting.md).

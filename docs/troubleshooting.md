@@ -1,74 +1,82 @@
 # Troubleshooting
 
-## `license.refused` beim Start
-Keine gültige Lizenz gefunden. Prüfen:
-- liegt `versino.key` **neben** dem Binary? (oder zeigt `SAP_LICENSE_FILE` darauf?)
-- ist der Schlüssel nicht abgelaufen? (neue über das [Lizenzportal](https://aishop.versino.de))
+> 🌐 **English** · [Deutsch](troubleshooting.de.md) · [Česky](troubleshooting.cs.md)
+
+## `license.refused` at startup
+No valid license found. Check:
+- is `versino.key` **next to** the binary? (or does `SAP_LICENSE_FILE` point to it?)
+- is the key not expired? (get a new one via the [license portal](https://aishop.versino.de))
 
 Details: [lizenz.md](lizenz.md).
 
-## Windows-Defender / SmartScreen-Warnung
-Ist das Binary noch nicht signiert, kann Windows einen Fehlalarm zeigen.
-- „Weitere Informationen" → „Trotzdem ausführen", bzw. die Datei in Defender zulassen.
-- Für die produktive Auslieferung ist Code-Signing vorgesehen — dann entfällt die Warnung.
+## Windows Defender / SmartScreen warning
+If the binary is not signed yet, Windows may show a false positive.
+- "More info" → "Run anyway", or allow the file in Defender.
+- Code signing is planned for the production delivery — the warning then disappears.
 
-## Client erreicht den Server nicht
-- Host/Port und den **`/mcp`**-Pfad in der URL prüfen.
-- Bei Zugriff von anderen Rechnern: Standard-Bind ist bereits `0.0.0.0` (prüfen, dass kein
-  einschränkendes `SAP_BIND_HOSTS`/`--host` gesetzt ist), **Firewall**
-  für den Port freigeben und die **interne IP/DNS** des Servers in der Client-URL verwenden.
-- Claude Desktop bevorzugt **HTTPS**; für blankes `http://` die `mcp-remote`-Bridge nutzen
-  (siehe [installation-windows.md](installation-windows.md)).
+## Client cannot reach the server
+- Check host/port and the **`/mcp`** path in the URL.
+- Access from other machines: the default bind is already `0.0.0.0` (check that no
+  restricting `SAP_BIND_HOSTS`/`--host` is set), open the **firewall**
+  for the port and use the server's **internal IP/DNS** in the client URL.
+- Claude Desktop prefers **HTTPS**; for plain `http://` use the `mcp-remote` bridge
+  (see [installation-windows.md](installation-windows.md)).
 
-## Verbindung zu SAP schlägt fehl
-- `SAP_BASE_URL` korrekt? (`https://<host>:50000/b1s/v2/`)
-- selbstsigniertes SL-Zertifikat → `SAP_ALLOW_SELF_SIGNED_CERT=true`.
-- richtiger `SAP_AUTH_MODE` (`basic` vs. `bearer`)?
-- gewählte CompanyDB in `SAP_DATABASES` enthalten?
+## Connection to SAP fails
+- `SAP_BASE_URL` correct? (`https://<host>:50000/b1s/v2/`)
+- self-signed SL certificate → `SAP_ALLOW_SELF_SIGNED_CERT=true`.
+- right `SAP_AUTH_MODE` (`basic` vs. `bearer`)?
+- is the chosen CompanyDB listed in `SAP_DATABASES`?
 
-## Schreib-Tools fehlen / werden abgelehnt
-- `SAP_OPERATION_MODE=READ_WRITE` setzen (Default ist `READ_ONLY`).
-- Schreib-/Lösch-Tools sind zusätzlich an die **Edition** gebunden (PRO/ENTERPRISE),
-  siehe [lizenz.md](lizenz.md).
+## Write tools missing / refused
+- Set `SAP_OPERATION_MODE=READ_WRITE` (default is `READ_ONLY`).
+- Write/delete tools are additionally bound to the **edition** (PRO/ENTERPRISE),
+  see [lizenz.md](lizenz.md).
 
-## Windows: Fenster schließt sich sofort wieder
-Meist ist der **Port schon belegt** (ein anderer Dienst lauscht auf `8000`; im Log
-`WinError 10048` / „… nur jeweils einmal verwendet werden"). Lösung:
-- Server auf einem **freien Port** starten: `sapb1-mcp.exe --port 8765` — und im Client
-  dieselbe Portnummer verwenden (`…:8765/mcp`).
-- Oder den belegenden Dienst beenden.
-- Damit ihr die Fehlermeldung **seht** statt eines sofort schließenden Fensters: die `.exe`
-  aus einem geöffneten Terminal (PowerShell) starten, nicht per Doppelklick.
+## Windows: window closes again immediately
+Usually the **port is already taken** (another service listens on `8000`; the log
+shows `WinError 10048` / "… only be used once"). Fix:
+- Start the server on a **free port**: `sapb1-mcp.exe --port 8765` — and use the
+  same port number in the client (`…:8765/mcp`).
+- Or stop the occupying service.
+- To actually **see** the error message instead of an instantly closing window:
+  start the `.exe` from an open terminal (PowerShell), not by double-click.
 
-## `connect` liefert keinen Login-Link (Web-Login)
-Der Browser-Login-Fallback braucht die **öffentliche Adresse** der Instanz. In der `.env`
-`SAP_PUBLIC_URL` setzen (im Netz `https://…`, lokal `http://127.0.0.1:8000`) und den Server
-neu starten. Siehe [konfiguration.md](konfiguration.md) und
+## `connect` returns no sign-in link (web login)
+The browser-login fallback needs the instance's **public address**. Set
+`SAP_PUBLIC_URL` in the `.env` (on the network `https://…`, locally
+`http://127.0.0.1:8000`) and restart the server. See
+[konfiguration.md](konfiguration.md) and
 [installation-zentral.md](installation-zentral.md).
 
-## Login-Seite reagiert beim Klick nicht / keine Bestätigung
-Beim Klick auf „Anmelden" passiert nichts und es kommt keine Erfolgsseite — fast immer ist
-der **SAP Service Layer nicht erreichbar** (die Anmeldung läuft ins Leere/Timeout):
-- Ist der SAP-Host vom **Server** aus erreichbar? (oft **VPN** nötig, Firewall, Port `50000`).
-  Test: `Test-NetConnection <sap-host> -Port 50000` (Windows) bzw. `nc -vz <sap-host> 50000`.
-- `SAP_BASE_URL` korrekt (`https://<host>:50000/b1s/v2/`)?
-- Tickets sind kurzlebig: zwischen Linköffnen und Login nicht zu lange warten.
+## Sign-in page does not react on click / no confirmation
+Nothing happens on "Sign in" and no success page appears — almost always the
+**SAP Service Layer is unreachable** (the sign-in runs into a void/timeout):
+- Is the SAP host reachable from the **server**? (often **VPN** needed, firewall,
+  port `50000`). Test: `Test-NetConnection <sap-host> -Port 50000` (Windows) or
+  `nc -vz <sap-host> 50000`.
+- `SAP_BASE_URL` correct (`https://<host>:50000/b1s/v2/`)?
+- Tickets are short-lived: do not wait too long between opening the link and
+  signing in.
 
-## `npx` / Node.js nicht gefunden (Bridge)
-Die `mcp-remote`-Bridge benötigt **Node.js**. Node LTS von
-[nodejs.org](https://nodejs.org) installieren, Client neu starten. Tipp: in der Client-Config
-`npx` durch `cmd /c npx` ersetzen (Windows), falls der Befehl nicht gefunden wird.
+## `npx` / Node.js not found (bridge)
+The `mcp-remote` bridge requires **Node.js**. Install Node LTS from
+[nodejs.org](https://nodejs.org), restart the client. Tip: in the client config
+replace `npx` with `cmd /c npx` (Windows) if the command is not found.
 
-## Linux: Binary startet nicht
-- ausführbar gemacht? `chmod +x sapb1-mcp`
-- 64-bit Linux mit glibc (x86-64) vorausgesetzt.
+## Linux: binary does not start
+- made executable? `chmod +x sapb1-mcp`
+- 64-bit Linux with glibc (x86-64) required.
 
-Weiterhin Probleme? **support@versino.de** (bitte mit Logausschnitt und Versionsnummer).
+Still stuck? **support@versino.de** (please include a log excerpt and the
+version number).
 
-## Lizenz abgelaufen / Abo-Verlängerung
-- Die exe holt eine fällige **Abo-Verlängerung automatisch beim Start** (sofern
-  Internet + gültiges Abo). Zusätzlich gibt es **3 Tage Grace-Period** nach
-  Ablauf, in denen der Server auch ohne erfolgreiches Phone-Home noch startet.
-- Startet die exe nach Ablauf dauerhaft nicht mehr, prüfen: Internetzugang zum
-  Lizenzserver vorhanden? Abo im Lizenzportal (aishop.versino.de) aktiv/bezahlt?
-  Im Zweifel bei **support@versino.de** einen frischen `versino.key` anfordern.
+## License expired / subscription renewal
+- The exe fetches a due **subscription renewal automatically at startup** (given
+  internet + an active subscription). In addition there is a **3-day grace
+  period** after expiry during which the server still starts even without a
+  successful phone-home.
+- If the exe permanently refuses to start after expiry, check: internet access
+  to the license server available? Subscription active/paid in the license
+  portal (aishop.versino.de)? When in doubt request a fresh `versino.key` from
+  **support@versino.de**.

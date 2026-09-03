@@ -1,80 +1,86 @@
-# SAP-B1-MCP an Claude Desktop & andere LLMs anbinden (Windows, manuell)
+# Connecting SAP B1 MCP to Claude Desktop & other LLMs (Windows, manual)
 
-> **Schneller geht es mit dem geführten Installer** — er nimmt euch die Schritte unten
-> (Download, `.env` schreiben, Lizenz ablegen, Verbindung prüfen, Dienst, Claude-Config)
-> ab: [installer.md](installer.md). Diese Anleitung beschreibt die **manuelle**
-> Einrichtung für eigene Verzeichnisse, eigenen Dienst-Wrapper oder feinere Anpassung.
+> 🌐 **English** · [Deutsch](installation-windows.de.md) · [Česky](installation-windows.cs.md)
 
-Anleitung für die Windows-Auslieferung (`sapb1-mcp.exe`). Der Server läuft als
-**per-user HTTP-Server** (Streamable HTTP) — eine Instanz bedient mehrere Nutzer;
-jeder meldet sich beim Verbinden mit seinen **eigenen** SAP-B1-Zugangsdaten an.
+> **The guided installer is faster** — it takes the steps below off your hands
+> (download, writing the `.env`, placing the license, connection check, service,
+> Claude config): [installer.md](installer.md). This guide describes the
+> **manual** setup for custom directories, your own service wrapper or finer
+> tuning.
 
-## 1. Herunterladen & ablegen
-Aus den [Releases](../../releases/latest) `sapb1-mcp-<version>-windows-x64.exe` laden.
-Zur Vereinfachung in `sapb1-mcp.exe` umbenennen und mit den übrigen Dateien in **einen**
-Ordner legen (z. B. `C:\sapb1-mcp\`):
-- `sapb1-mcp.exe` — der Server
-- `versino.key` — eure Lizenz (wird **automatisch neben der .exe** gefunden, kein Pfad nötig)
-- `.env` — Konfiguration (→ [konfiguration.md](konfiguration.md))
+Guide for the Windows delivery (`sapb1-mcp.exe`). The server runs as a
+**per-user HTTP server** (Streamable HTTP) — one instance serves several users;
+each signs in on connect with their **own** SAP B1 credentials.
 
-## 2. `.env` konfigurieren (minimal)
-**Wichtig:** Kommentare immer in eine **eigene Zeile** schreiben — **nicht** hinter den
-Wert in dieselbe Zeile (Inline-Kommentare können je nach Parser den Wert verfälschen).
+## 1. Download & place
+Download `sapb1-mcp-<version>-windows-x64.exe` from the
+[releases](../../releases/latest). For convenience rename it to `sapb1-mcp.exe`
+and put it with the other files into **one** folder (e.g. `C:\sapb1-mcp\`):
+- `sapb1-mcp.exe` — the server
+- `versino.key` — your license (found **automatically next to the .exe**, no path needed)
+- `.env` — configuration (→ [konfiguration.md](konfiguration.md))
+
+## 2. Configure the `.env` (minimal)
+**Important:** always put comments on their **own line** — **not** behind the
+value on the same line (inline comments can corrupt the value depending on the
+parser).
 
 ```ini
-# Service-Layer-URL eurer SAP-B1-Instanz
-SAP_BASE_URL=https://ihr-sap-host:50000/b1s/v2/
+# Service Layer URL of your SAP B1 instance
+SAP_BASE_URL=https://your-sap-host:50000/b1s/v2/
 
-# Wählbare CompanyDBs (eine oder mehrere, kommagetrennt)
-SAP_DATABASES=SBO_IhreFirma
+# Selectable CompanyDBs (one or more, comma-separated)
+SAP_DATABASES=SBO_YourCompany
 
-# Anmeldemodus: "basic" (User/Passwort) oder "bearer" (Browser-SSO über Keycloak)
+# Auth mode: "basic" (user/password) or "bearer" (browser SSO via Keycloak)
 SAP_AUTH_MODE=basic
 
-# Zugriffsmodus: READ_ONLY oder READ_WRITE
+# Access mode: READ_ONLY or READ_WRITE
 SAP_OPERATION_MODE=READ_ONLY
 
-# Nur bei selbstsigniertem SL-Zertifikat
+# Only with a self-signed SL certificate
 SAP_ALLOW_SELF_SIGNED_CERT=true
 
-# Öffentliche Adresse dieser Instanz — nötig für den Browser-Login in Claude
-# Desktop (sonst liefert "connect" keinen Login-Link). Lokal/gleiche Maschine:
-# http://127.0.0.1:8000 — der Port MUSS zum Serverstart (Abschnitt 3) passen.
-# Im Netzbetrieb stattdessen die HTTPS-URL (siehe installation-zentral.md).
+# Public address of this instance — needed for the browser login in Claude
+# Desktop (otherwise "connect" returns no sign-in link). Local/same machine:
+# http://127.0.0.1:8000 — the port MUST match the server start (section 3).
+# On the network use the HTTPS URL instead (see installation-zentral.md).
 SAP_PUBLIC_URL=http://127.0.0.1:8000
 
-# Phone-Home / automatische Abo-Erneuerung läuft automatisch — der Enrollment-Token
-# ist in der versino.key eingebacken, hier ist NICHTS einzutragen. Nur bei bewusst
-# air-gapped Betrieb (kein Internet) findet kein Phone-Home statt.
+# Phone-home / automatic subscription renewal runs automatically — the
+# enrollment token is baked into versino.key, NOTHING to enter here. Only in a
+# deliberately air-gapped setup (no internet) no phone-home happens.
 ```
-Die Lizenz wird über `versino.key` neben der .exe gezogen — `SAP_LICENSE_FILE` muss
-**nicht** gesetzt werden. Vollständige Optionsliste: [konfiguration.md](konfiguration.md).
+The license is picked up via `versino.key` next to the .exe — `SAP_LICENSE_FILE`
+does **not** need to be set. Full option list: [konfiguration.md](konfiguration.md).
 
-## 3. Server starten
+## 3. Start the server
 ```powershell
 cd C:\sapb1-mcp
 .\sapb1-mcp.exe --env-file .env --port 8000
 ```
-Erfolg: Log zeigt `server.per_user_start` und `Uvicorn running on http://127.0.0.1:8000`.
-Der MCP-Endpunkt ist dann **`http://127.0.0.1:8000/mcp`**.
+Success: the log shows `server.per_user_start` and
+`Uvicorn running on http://127.0.0.1:8000`. The MCP endpoint is then
+**`http://127.0.0.1:8000/mcp`**.
 
-- **Standard:** Der Server bindet **alle Interfaces** (`0.0.0.0`) — andere Rechner im Netz
-  erreichen ihn direkt über `http://<interne-IP/DNS>:8000/mcp`; die **Windows-Firewall**
-  für den Port freigeben. Für Netzwerkbetrieb wird **TLS** (Reverse-Proxy) empfohlen.
-- **Nur lokal:** in der `.env` `SAP_BIND_HOSTS=127.0.0.1` setzen (kommagetrennte Liste
-  möglich, z. B. `127.0.0.1,192.168.1.10`); ein explizites `--host` gewinnt.
+- **Default:** the server binds **all interfaces** (`0.0.0.0`) — other machines
+  on the network reach it directly via `http://<internal-IP/DNS>:8000/mcp`; open
+  the **Windows firewall** for the port. For network operation **TLS**
+  (reverse proxy) is recommended.
+- **Local only:** set `SAP_BIND_HOSTS=127.0.0.1` in the `.env` (comma-separated
+  list possible, e.g. `127.0.0.1,192.168.1.10`); an explicit `--host` wins.
 
-> Für eine **zentrale** Instanz, die alle Arbeitsplätze bedient (ohne Installation je
-> Arbeitsplatz), siehe [installation-zentral.md](installation-zentral.md).
+> For a **central** instance serving all workstations (no per-workstation
+> install) see [installation-zentral.md](installation-zentral.md).
 
-## 4. An Claude Desktop anbinden
-**Variante A — Custom Connector (URL):** Einstellungen → *Connectors* →
-*Custom connector hinzufügen* → URL `http://127.0.0.1:8000/mcp` (bzw. die interne
-HTTPS-URL). *Hinweis:* Claude Desktop bevorzugt **HTTPS** — für blankes `http://`
-nutzt Variante B.
+## 4. Connect to Claude Desktop
+**Option A — custom connector (URL):** Settings → *Connectors* →
+*Add custom connector* → URL `http://127.0.0.1:8000/mcp` (or the internal
+HTTPS URL). *Note:* Claude Desktop prefers **HTTPS** — for plain `http://` use
+option B.
 
-**Variante B — Bridge über die Konfigdatei** (funktioniert auch mit `http://`;
-benötigt Node.js): `%APPDATA%\Claude\claude_desktop_config.json`:
+**Option B — bridge via the config file** (also works with `http://`;
+requires Node.js): `%APPDATA%\Claude\claude_desktop_config.json`:
 ```json
 {
   "mcpServers": {
@@ -85,18 +91,19 @@ benötigt Node.js): `%APPDATA%\Claude\claude_desktop_config.json`:
   }
 }
 ```
-Danach Claude Desktop neu starten.
+Then restart Claude Desktop.
 
-## 5. Andere MCP-Clients (Cline, Continue, Cursor, eigene Agents …)
-- **Streamable-HTTP-fähige Clients:** direkt auf `http://<host>:8000/mcp` zeigen.
-- **Nur-stdio-Clients:** dieselbe `mcp-remote`-Bridge wie oben (`npx mcp-remote <url>`).
+## 5. Other MCP clients (Cline, Continue, Cursor, custom agents …)
+- **Streamable-HTTP-capable clients:** point directly at `http://<host>:8000/mcp`.
+- **stdio-only clients:** the same `mcp-remote` bridge as above (`npx mcp-remote <url>`).
 
-## 6. Erste Nutzung
-Im Client das Tool **`connect`** aufrufen. Der Server fordert die SAP-Anmeldung an
-(Eingabedialog des Clients bzw. Browser-Login) — die **Zugangsdaten gelangen nie in
-den Chat-/LLM-Kontext**. Danach stehen die SAP-Tools bereit
-(`sap_query_odata`, `sap_help`, `sap_create`, …); `list_databases` zeigt die CompanyDBs.
+## 6. First use
+Call the **`connect`** tool in the client. The server requests the SAP sign-in
+(client input dialog or browser login) — the **credentials never enter the
+chat/LLM context**. After that the SAP tools are available
+(`sap_query_odata`, `sap_help`, `sap_create`, …); `list_databases` shows the
+CompanyDBs.
 
 ## Troubleshooting
-Häufige Fälle (Defender-Warnung, `license.refused`, Verbindungsprobleme) findet ihr in
+Common cases (Defender warning, `license.refused`, connection problems) are in
 [troubleshooting.md](troubleshooting.md).

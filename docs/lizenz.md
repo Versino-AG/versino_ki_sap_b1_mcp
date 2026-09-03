@@ -1,62 +1,65 @@
-# Lizenz (`versino.key`)
+# License (`versino.key`)
 
-Der SAP-B1-MCP-Server ist lizenzpflichtig. Die Lizenz ist eine **signierte
-Offline-Datei** (`versino.key`) — ohne gültige Lizenz startet der Server nicht
+> 🌐 **English** · [Deutsch](lizenz.de.md) · [Česky](lizenz.cs.md)
+
+The SAP B1 MCP server requires a license. The license is a **signed offline
+file** (`versino.key`) — without a valid license the server does not start
 (fail-closed).
 
-## Lizenz beziehen
-Nach dem Kauf bzw. über das **[Lizenzportal](https://aishop.versino.de)** erhaltet ihr
-die `versino.key` (auch per E-Mail). Sie enthält:
-- **Edition**: BASIC / PRO / ENTERPRISE (bestimmt die verfügbaren Tools),
-- **max. Seats**: Anzahl distinkter SAP-Nutzer,
-- **Ablaufdatum**.
+## Obtaining a license
+After purchase, or via the **[license portal](https://aishop.versino.de)**, you
+receive the `versino.key` (also by e-mail). It contains:
+- **Edition**: BASIC / PRO / ENTERPRISE (determines the available tools),
+- **max. seats**: number of distinct SAP users,
+- **expiry date**.
 
-## Lizenz anwenden
-Die `versino.key` **neben das Binary** legen (gleicher Ordner wie `sapb1-mcp.exe`
-bzw. `sapb1-mcp`). Sie wird automatisch gefunden — `SAP_LICENSE_FILE` muss **nicht**
-gesetzt werden. Alternativ einen expliziten Pfad via `SAP_LICENSE_FILE` angeben.
+## Applying the license
+Place the `versino.key` **next to the binary** (same folder as `sapb1-mcp.exe`
+or `sapb1-mcp`). It is found automatically — `SAP_LICENSE_FILE` does **not**
+need to be set. Alternatively, point `SAP_LICENSE_FILE` at an explicit path.
 
-## Editionen (Kurzüberblick)
-| Edition | Umfang |
+## Editions (short overview)
+| Edition | Scope |
 |---|---|
-| BASIC | Lesen von Stammdaten, begrenzte Query-Rate |
-| PRO | Lesen + Schreiben (`sap_create`, `sap_update`) |
-| ENTERPRISE | voller Tool-Umfang inkl. `sap_delete`, `sap_action` |
+| BASIC | reading master data, limited query rate |
+| PRO | read + write (`sap_create`, `sap_update`) |
+| ENTERPRISE | full tool set incl. `sap_delete`, `sap_action` |
 
-## Phone-Home (Manipulationsschutz, Gültigkeitsprüfung & Abo-Erneuerung)
-Optional und standardmäßig **aus**. Aktiviert ihr es, baut die Installation in einem
-festen Intervall eine signierte Verbindung zum Lizenzserver auf. Das erfüllt zwei Zwecke:
+## Phone-home (tamper protection, validity check & subscription renewal)
+Optional and **off** by default. When enabled, the installation contacts the
+license server at a fixed interval over a signed connection. That serves two
+purposes:
 
-- **Gültigkeits-/Sperrprüfung (Manipulationsschutz):** Der Server bestätigt, dass die
-  Lizenz weiterhin gültig ist. Eine serverseitig **gesperrte** Lizenz (z. B. bei Missbrauch
-  oder Zahlungsausfall) wird so erkannt — neue Verbindungen werden dann abgelehnt.
-- **Automatische Abo-Erneuerung:** Bei monatlicher/jährlicher Abrechnung re-signiert der
-  Server den Token mit neuem Ablaufdatum und liefert ihn über **denselben** Kanal aus; die
-  Installation übernimmt ihn selbst — **kein manueller Key-Tausch** pro Abrechnungszeitraum.
+- **Validity/revocation check (tamper protection):** the server confirms the
+  license is still valid. A license **revoked** server-side (e.g. abuse or
+  payment failure) is detected this way — new connections are then refused.
+- **Automatic subscription renewal:** with monthly/yearly billing the server
+  re-signs the token with a new expiry date and delivers it over the **same**
+  channel; the installation adopts it by itself — **no manual key swap** per
+  billing period.
 
-Übertragen werden dabei nur Metadaten (`customer_id`, `edition`, `version`, Seat-Anzahl) —
-keine Geschäftsdaten.
+Only metadata is transmitted (`customer_id`, `edition`, `version`, seat count) —
+no business data.
 
-Aktivierung: **nichts einzutragen** — der Enrollment-Token ist in eure `versino.key`
-**eingebacken** (signiert), und die Validation-URL ist fest ins Produkt eingebaut.
-Sobald die `versino.key` neben dem Binary liegt, registriert sich die Installation
-beim ersten Start selbst und übernimmt Verlängerungen automatisch. Optional lässt
-sich ein beschreibbarer Renewal-Cache-Pfad setzen (Default: `versino.renewed` neben
-dem Binary):
+Activation: **nothing to configure** — the enrollment token is **baked into**
+your `versino.key` (signed), and the validation URL is built into the product.
+As soon as the `versino.key` sits next to the binary, the installation enrolls
+itself on first start and adopts renewals automatically. Optionally set a
+writable renewal-cache path (default: `versino.renewed` next to the binary):
 ```ini
-# optional: beschreibbarer Pfad → übernimmt erneuerte Token
+# optional: writable path → adopts renewed tokens
 SAP_LICENSE_CACHE_FILE=versino.renewed
 ```
-(Nur für Test/Staging: `SAP_ENROLLMENT_TOKEN` überschreibt den eingebauten Token,
-`SAP_LICENSE_VALIDATION_URL` den eingebauten Endpoint.)
+(Test/staging only: `SAP_ENROLLMENT_TOKEN` overrides the built-in token,
+`SAP_LICENSE_VALIDATION_URL` the built-in endpoint.)
 
-**Air-gapped / ohne Phone-Home:** In einer Umgebung ohne Internet gibt es weder
-Online-Gültigkeitsprüfung noch automatische Erneuerung — der ausgelieferte Token gilt
-unverändert bis zu seinem Ablaufdatum, und ihr erhaltet rechtzeitig vorher eine neue
-`versino.key`.
+**Air-gapped / without phone-home:** in an environment without internet there is
+neither an online validity check nor automatic renewal — the delivered token
+stays valid unchanged until its expiry date, and you receive a new
+`versino.key` in good time before that.
 
 ## Seats
-`max_seats` begrenzt die Anzahl **distinkter** SAP-Nutzer. Werden mehr benötigt, über
-das Lizenzportal aufstocken — die neue `versino.key` ersetzt die alte.
+`max_seats` limits the number of **distinct** SAP users. If you need more,
+upgrade via the license portal — the new `versino.key` replaces the old one.
 
-Fragen zur Lizenz: **support@versino.de**
+License questions: **support@versino.de**
