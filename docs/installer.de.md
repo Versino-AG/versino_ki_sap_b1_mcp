@@ -1,4 +1,4 @@
-<!-- translation-of: installer.md@abf974d8ecf0 -->
+<!-- translation-of: installer.md@b35cc94027fb -->
 # Geführte Installation (Windows, empfohlen)
 
 > 🌐 [English](installer.md) · **Deutsch** · [Česky](installer.cs.md)
@@ -13,6 +13,7 @@ müsstet:
 - Service-Layer-Erreichbarkeit prüfen
 - optional einen Windows-Dienst einrichten
 - optional Claude Desktop konfigurieren
+- Sprache wählen (Englisch / Deutsch / Tschechisch) — sie wird zur Server-Sprache (`SAP_LANG`)
 
 > Wer den Server **manuell** aufsetzen oder feiner anpassen möchte (eigene Verzeichnisse,
 > eigener Dienst-Wrapper, Reverse-Proxy, Linux), nutzt stattdessen die manuellen

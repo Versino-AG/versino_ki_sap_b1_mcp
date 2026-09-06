@@ -1,4 +1,4 @@
-<!-- translation-of: konfiguration.md@8927fe18f26f -->
+<!-- translation-of: konfiguration.md@be04f0ea06e3 -->
 
 # Konfigurace (`.env`)
 
@@ -73,7 +73,7 @@ nasazení v chatu cíleně spustit (`sap_deploy_queries`) nebo vypnout přes
 | `SAP_TLS_CIPHERS` | pevný OpenSSL cipher string (jen TLS 1.2; prázdné = bezpečné výchozí) |
 | `SAP_TLS_CLIENT_CA_FILE` | klientská CA (PEM) → vynutí klientské certifikáty (mTLS) |
 | `SAP_BIND_HOSTS` | bind adresy, oddělené čárkou (výchozí: všechna rozhraní/`0.0.0.0`; `--host` na příkazové řádce má přednost) |
-| `SAP_LANG` | jazyk zpráv serveru (start exe, web login, chyby ověření): `de` (výchozí), `en`, `cs`. Odpovědi asistenta v chatu automaticky sledují jazyk uživatele |
+| `SAP_LANG` | jazyk všech textů na straně serveru (start exe, `doctor`, web login včetně výsledkových/chybových hlášení, chyby ověření): `de` (výchozí), `en`, `cs`. Řízený instalátor sem zapíše jazyk zvolený v jeho dialogu. Odpovědi asistenta v chatu automaticky sledují jazyk uživatele |
 | `SAP_PUBLIC_URL` | veřejná HTTPS URL instance (fallback web-login; **povinné při `bearer`** — cíl přesměrování `…/callback`) |
 
 ### Jen při `SAP_AUTH_MODE=bearer`

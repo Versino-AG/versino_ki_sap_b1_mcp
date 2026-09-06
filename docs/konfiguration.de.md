@@ -1,4 +1,4 @@
-<!-- translation-of: konfiguration.md@8927fe18f26f -->
+<!-- translation-of: konfiguration.md@be04f0ea06e3 -->
 # Konfiguration (`.env`)
 
 > 🌐 [English](konfiguration.md) · **Deutsch** · [Česky](konfiguration.cs.md)
@@ -73,7 +73,7 @@ Bei Bedarf lässt sich die Ausbringung im Chat gezielt anstoßen
 | `SAP_TLS_CIPHERS` | OpenSSL-Cipher-String pinnen (nur TLS 1.2; leer = sichere Defaults) |
 | `SAP_TLS_CLIENT_CA_FILE` | Client-CA (PEM) → erzwingt Client-Zertifikate (mTLS) |
 | `SAP_BIND_HOSTS` | Bind-Adressen, kommagetrennt (Default: alle Interfaces/`0.0.0.0`; `--host` auf der Kommandozeile gewinnt) |
-| `SAP_LANG` | Sprache der Server-Meldungen (exe-Start, Web-Login, Auth-Fehler): `de` (Default), `en`, `cs`. Chat-Antworten des Assistenten folgen automatisch der Sprache des Nutzers |
+| `SAP_LANG` | Sprache aller serverseitigen Texte (exe-Start, `doctor`, Web-Login inkl. Ergebnis-/Fehlermeldungen, Auth-Fehler): `de` (Default), `en`, `cs`. Der geführte Installer trägt hier die in seinem Dialog gewählte Sprache ein. Chat-Antworten des Assistenten folgen automatisch der Sprache des Nutzers |
 | `SAP_PUBLIC_URL` | öffentliche HTTPS-URL der Instanz (Web-Login-Fallback; **Pflicht bei `bearer`** — Redirect-Ziel `…/callback`) |
 
 ### Nur bei `SAP_AUTH_MODE=bearer`

@@ -1,4 +1,4 @@
-<!-- translation-of: installer.md@abf974d8ecf0 -->
+<!-- translation-of: installer.md@b35cc94027fb -->
 
 # Řízená instalace (Windows, doporučeno)
 
@@ -13,6 +13,7 @@ Odebere vám manuální kroky, které byste jinak museli dělat ručně:
 - ověření dostupnosti Service Layeru
 - volitelně nastavení Windows služby
 - volitelně nastavení Claude Desktop
+- volba jazyka (angličtina / němčina / čeština) — stane se jazykem serveru (`SAP_LANG`)
 
 > Kdo chce server nastavit **manuálně** nebo jemněji přizpůsobit (vlastní adresáře,
 > vlastní service-wrapper, reverse-proxy, Linux), použije místo toho manuální návody:

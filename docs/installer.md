@@ -12,6 +12,7 @@ by hand:
 - check Service Layer reachability
 - optionally set up a Windows service
 - optionally configure Claude Desktop
+- pick the language (English / German / Czech) — it becomes the server language (`SAP_LANG`)
 
 > If you want to set the server up **manually** or tune it further (custom
 > directories, your own service wrapper, reverse proxy, Linux), use the manual

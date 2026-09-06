@@ -73,7 +73,7 @@ overwritten. If needed, trigger the deployment in the chat
 | `SAP_TLS_CIPHERS` | pin an OpenSSL cipher string (TLS 1.2 only; empty = safe defaults) |
 | `SAP_TLS_CLIENT_CA_FILE` | client CA (PEM) → requires client certificates (mTLS) |
 | `SAP_BIND_HOSTS` | bind addresses, comma-separated (default: all interfaces/`0.0.0.0`; `--host` on the command line wins) |
-| `SAP_LANG` | language of the server messages (exe startup, web login, auth errors): `de` (default), `en`, `cs`. The assistant's chat replies automatically follow the user's language |
+| `SAP_LANG` | language of all server-side texts (exe startup, `doctor`, web login incl. result/error messages, auth errors): `de` (default), `en`, `cs`. The guided installer writes the language chosen in its dialog here. The assistant's chat replies automatically follow the user's language |
 | `SAP_PUBLIC_URL` | public HTTPS URL of the instance (web-login fallback; **required with `bearer`** — redirect target `…/callback`) |
 
 ### Only with `SAP_AUTH_MODE=bearer`
