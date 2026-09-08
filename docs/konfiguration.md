@@ -75,6 +75,9 @@ overwritten. If needed, trigger the deployment in the chat
 | `SAP_BIND_HOSTS` | bind addresses, comma-separated (default: all interfaces/`0.0.0.0`; `--host` on the command line wins) |
 | `SAP_LANG` | language of all server-side texts (exe startup, `doctor`, web login incl. result/error messages, auth errors): `de` (default), `en`, `cs`. The guided installer writes the language chosen in its dialog here. The assistant's chat replies automatically follow the user's language |
 | `SAP_PUBLIC_URL` | public HTTPS URL of the instance (web-login fallback; **required with `bearer`** — redirect target `…/callback`) |
+| `SAP_UPLOAD_MAX_MB` | max. file size per attachment upload in MB (default `25`; browser upload, `source_url`, `file_path`) — see [anhaenge.md](anhaenge.md) |
+| `SAP_ATTACHMENT_URL_ALLOWLIST` | hosts `sap_attachment` may fetch a `source_url` from, comma-separated (`host` or `*.domain`; empty = off) |
+| `SAP_ATTACHMENT_DIR` | directory below which `sap_attachment` may read a `file_path` (empty = off) |
 
 ### Only with `SAP_AUTH_MODE=bearer`
 
@@ -103,6 +106,9 @@ The redirect URI `<SAP_PUBLIC_URL>/callback` must be registered on the client
 |---|---|
 | `SAP_LICENSE_FILE` | path to the `versino.key` — **not needed** when the file sits next to the binary (auto-discovery) |
 | `SAP_LICENSE` | license token inline (alternative to the file) |
+| `SAP_LICENSE_CACHE_FILE` | path for renewed tokens (silent renewal cache); default `versino.renewed` next to the license/binary |
+| `SAP_INSTALL_IDENTITY_PATH` | path of the installation identity (`install_identity.json`); default relative to the working directory — set a persistent path in containers (read-only rootfs) |
+| `SAP_TIME_ANCHOR_PATH` | monotonic time anchor against clock roll-back (hardening for air-gapped operation); disabled when unset |
 | `SAP_ENROLLMENT_TOKEN` | phone-home/auto-renewal — **normally not needed** (the token is baked into `versino.key`). Only as an override for test/staging |
 
 Phone-home / automatic subscription renewal (the normal case): see

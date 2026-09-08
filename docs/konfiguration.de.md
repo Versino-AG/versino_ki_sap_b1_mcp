@@ -1,4 +1,4 @@
-<!-- translation-of: konfiguration.md@be04f0ea06e3 -->
+<!-- translation-of: konfiguration.md@f7c3579b8b66 -->
 # Konfiguration (`.env`)
 
 > 🌐 [English](konfiguration.md) · **Deutsch** · [Česky](konfiguration.cs.md)
@@ -75,6 +75,9 @@ Bei Bedarf lässt sich die Ausbringung im Chat gezielt anstoßen
 | `SAP_BIND_HOSTS` | Bind-Adressen, kommagetrennt (Default: alle Interfaces/`0.0.0.0`; `--host` auf der Kommandozeile gewinnt) |
 | `SAP_LANG` | Sprache aller serverseitigen Texte (exe-Start, `doctor`, Web-Login inkl. Ergebnis-/Fehlermeldungen, Auth-Fehler): `de` (Default), `en`, `cs`. Der geführte Installer trägt hier die in seinem Dialog gewählte Sprache ein. Chat-Antworten des Assistenten folgen automatisch der Sprache des Nutzers |
 | `SAP_PUBLIC_URL` | öffentliche HTTPS-URL der Instanz (Web-Login-Fallback; **Pflicht bei `bearer`** — Redirect-Ziel `…/callback`) |
+| `SAP_UPLOAD_MAX_MB` | max. Dateigröße pro Anhang-Upload in MB (Default `25`; Browser-Upload, `source_url`, `file_path`) — siehe [anhaenge.de.md](anhaenge.de.md) |
+| `SAP_ATTACHMENT_URL_ALLOWLIST` | Hosts, von denen `sap_attachment` eine `source_url` laden darf, kommagetrennt (`host` oder `*.domain`; leer = aus) |
+| `SAP_ATTACHMENT_DIR` | Verzeichnis, unterhalb dessen `sap_attachment` einen `file_path` lesen darf (leer = aus) |
 
 ### Nur bei `SAP_AUTH_MODE=bearer`
 
@@ -103,6 +106,9 @@ SAP-seitigen Schritte: [sso-keycloak.de.md](sso-keycloak.de.md).
 |---|---|
 | `SAP_LICENSE_FILE` | Pfad zur `versino.key` — **nicht nötig**, wenn die Datei neben dem Binary liegt (Auto-Discovery) |
 | `SAP_LICENSE` | Lizenz-Token direkt (Alternative zur Datei) |
+| `SAP_LICENSE_CACHE_FILE` | Pfad für erneuerte Token (stiller Renewal-Cache); Default `versino.renewed` neben Lizenz/Binary |
+| `SAP_INSTALL_IDENTITY_PATH` | Pfad der Installations-Identität (`install_identity.json`); Default relativ zum Arbeitsverzeichnis — in Containern (read-only Rootfs) einen persistenten Pfad setzen |
+| `SAP_TIME_ANCHOR_PATH` | monotoner Zeit-Anker gegen Uhr-Rückstellung (Härtung für air-gapped Betrieb); ohne Pfad deaktiviert |
 | `SAP_ENROLLMENT_TOKEN` | Phone-Home/Auto-Renewal — **normalerweise nicht nötig** (Token ist in der `versino.key` eingebacken). Nur als Override für Test/Staging |
 
 Phone-Home / automatische Abo-Erneuerung (Normalfall): siehe [lizenz.de.md](lizenz.de.md).

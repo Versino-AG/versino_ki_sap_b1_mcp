@@ -1,4 +1,4 @@
-<!-- translation-of: konfiguration.md@be04f0ea06e3 -->
+<!-- translation-of: konfiguration.md@f7c3579b8b66 -->
 
 # Konfigurace (`.env`)
 
@@ -75,6 +75,9 @@ nasazení v chatu cíleně spustit (`sap_deploy_queries`) nebo vypnout přes
 | `SAP_BIND_HOSTS` | bind adresy, oddělené čárkou (výchozí: všechna rozhraní/`0.0.0.0`; `--host` na příkazové řádce má přednost) |
 | `SAP_LANG` | jazyk všech textů na straně serveru (start exe, `doctor`, web login včetně výsledkových/chybových hlášení, chyby ověření): `de` (výchozí), `en`, `cs`. Řízený instalátor sem zapíše jazyk zvolený v jeho dialogu. Odpovědi asistenta v chatu automaticky sledují jazyk uživatele |
 | `SAP_PUBLIC_URL` | veřejná HTTPS URL instance (fallback web-login; **povinné při `bearer`** — cíl přesměrování `…/callback`) |
+| `SAP_UPLOAD_MAX_MB` | max. velikost souboru pro nahrání přílohy v MB (výchozí `25`; nahrání v prohlížeči, `source_url`, `file_path`) — viz [anhaenge.cs.md](anhaenge.cs.md) |
+| `SAP_ATTACHMENT_URL_ALLOWLIST` | hostitelé, ze kterých smí `sap_attachment` stáhnout `source_url`, oddělené čárkou (`host` nebo `*.domain`; prázdné = vypnuto) |
+| `SAP_ATTACHMENT_DIR` | adresář, pod kterým smí `sap_attachment` číst `file_path` (prázdné = vypnuto) |
 
 ### Jen při `SAP_AUTH_MODE=bearer`
 
@@ -103,6 +106,9 @@ Single Sign-On Manager). Kompletní návod včetně kroků na straně SAP:
 |---|---|
 | `SAP_LICENSE_FILE` | cesta k `versino.key` — **není potřeba**, pokud soubor leží vedle binárky (auto-discovery) |
 | `SAP_LICENSE` | licenční token přímo (alternativa k souboru) |
+| `SAP_LICENSE_CACHE_FILE` | cesta pro obnovené tokeny (tichá cache obnovy); výchozí `versino.renewed` vedle licence/binárky |
+| `SAP_INSTALL_IDENTITY_PATH` | cesta identity instalace (`install_identity.json`); výchozí relativně k pracovnímu adresáři — v kontejnerech (read-only rootfs) nastavte trvalou cestu |
+| `SAP_TIME_ANCHOR_PATH` | monotonní časová kotva proti vrácení hodin (hardening pro air-gapped provoz); bez cesty vypnuto |
 | `SAP_ENROLLMENT_TOKEN` | phone-home/auto-renewal — **obvykle není potřeba** (token je zapečený ve `versino.key`). Jen jako override pro test/staging |
 
 Phone-Home / automatické obnovení předplatného (běžný případ): viz [lizenz.cs.md](lizenz.cs.md).

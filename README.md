@@ -67,6 +67,7 @@ Für eigene Verzeichnisse, eigenen Dienst-Wrapper, Reverse-Proxy oder Linux:
 - [Konfiguration (`.env`)](docs/konfiguration.de.md)
 - [SSO über Keycloak (OIDC) — Einrichtungsanleitung](docs/sso-keycloak.de.md)
 - [Lizenz (`versino.key`, Erneuerung, Seats)](docs/lizenz.de.md)
+- [Anhänge: Dateien nach SAP hochladen (Browser / URL / Pfad)](docs/anhaenge.de.md)
 - [Troubleshooting](docs/troubleshooting.de.md)
 
 ## Support

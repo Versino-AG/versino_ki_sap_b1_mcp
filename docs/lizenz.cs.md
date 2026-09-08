@@ -1,4 +1,4 @@
-<!-- translation-of: lizenz.md@57b1daffa357 -->
+<!-- translation-of: lizenz.md@68f0f48ea2e8 -->
 
 # Licence (`versino.key`)
 
@@ -27,8 +27,8 @@ nastavovat. Alternativně zadat explicitní cestu přes `SAP_LICENSE_FILE`.
 | ENTERPRISE | plný rozsah nástrojů včetně `sap_delete`, `sap_action` |
 
 ## Phone-Home (ochrana proti manipulaci, kontrola platnosti a obnova předplatného)
-Volitelné a ve výchozím stavu **vypnuté**. Když ho zapnete, instalace v pevném
-intervalu naváže podepsané spojení s licenčním serverem. To plní dva účely:
+**Ve výchozím nastavení aktivní:** instalace v pravidelných intervalech vytváří
+podepsané spojení s licenčním serverem. To slouží dvěma účelům:
 
 - **Kontrola platnosti/blokace (ochrana proti manipulaci):** Server potvrzuje, že
   licence je stále platná. Licence **zablokovaná** na straně serveru (např. při
@@ -53,9 +53,27 @@ SAP_LICENSE_CACHE_FILE=versino.renewed
 (Jen pro test/staging: `SAP_ENROLLMENT_TOKEN` přepíše vestavěný token,
 `SAP_LICENSE_VALIDATION_URL` vestavěný endpoint.)
 
+> **Minimální verze 2.3.5.** Zapečený token je další pole v podepsané licenci.
+> Starší verze programu toto pole neznají a takový klíč odmítnou — s ním
+> nenaběhnou. Pokud dostanete nový `versino.key` a stále používáte verzi před
+> 2.3.5, **nejprve aktualizujte software a teprve poté vyměňte klíč**. Váš starý
+> `versino.key` platí až do svého data vypršení, takže jej můžete vždy vrátit.
+
+**Provoz v kontejneru:** identita instalace se ve výchozím stavu zapisuje jako
+`install_identity.json` do pracovního adresáře. Pokud kontejner běží s
+`read_only: true` nebo v pomíjivém adresáři, nastavte `SAP_INSTALL_IDENTITY_PATH`
+na **trvalou** cestu (volume) — jinak se při každém startu vytvoří nový klíčový
+pár a s ním nová instalace:
+```ini
+SAP_INSTALL_IDENTITY_PATH=/data/install_identity.json
+SAP_LICENSE_CACHE_FILE=/data/versino.renewed
+```
+
+Zda registrace proběhla, oznámí `sapb1-mcp doctor` (kontrola `enrollment`).
+
 **Air-gapped / bez phone-home:** V prostředí bez internetu neprobíhá ani online
 kontrola platnosti, ani automatické obnovení — dodaný token platí beze změny
-až do svého data expirace a novou `versino.key` dostanete včas předem.
+až do svého data expirace a novou `versino.key` dostanete včas předem. Pokud phone-home nechcete vůbec, může jej Versino vypnout; pak dostáváte klíče bez registračního znaku (a tedy bez automatického prodloužení).
 
 ## Seaty
 `max_seats` omezuje počet **distinktních** SAP uživatelů. Je-li potřeba víc,

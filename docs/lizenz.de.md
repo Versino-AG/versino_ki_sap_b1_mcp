@@ -1,4 +1,4 @@
-<!-- translation-of: lizenz.md@57b1daffa357 -->
+<!-- translation-of: lizenz.md@68f0f48ea2e8 -->
 # Lizenz (`versino.key`)
 
 > 🌐 [English](lizenz.md) · **Deutsch** · [Česky](lizenz.cs.md)
@@ -27,8 +27,8 @@ gesetzt werden. Alternativ einen expliziten Pfad via `SAP_LICENSE_FILE` angeben.
 | ENTERPRISE | voller Tool-Umfang inkl. `sap_delete`, `sap_action` |
 
 ## Phone-Home (Manipulationsschutz, Gültigkeitsprüfung & Abo-Erneuerung)
-Optional und standardmäßig **aus**. Aktiviert ihr es, baut die Installation in einem
-festen Intervall eine signierte Verbindung zum Lizenzserver auf. Das erfüllt zwei Zwecke:
+**Standardmäßig aktiv:** die Installation baut in einem festen Intervall eine
+signierte Verbindung zum Lizenzserver auf. Das erfüllt zwei Zwecke:
 
 - **Gültigkeits-/Sperrprüfung (Manipulationsschutz):** Der Server bestätigt, dass die
   Lizenz weiterhin gültig ist. Eine serverseitig **gesperrte** Lizenz (z. B. bei Missbrauch
@@ -53,10 +53,32 @@ SAP_LICENSE_CACHE_FILE=versino.renewed
 (Nur für Test/Staging: `SAP_ENROLLMENT_TOKEN` überschreibt den eingebauten Token,
 `SAP_LICENSE_VALIDATION_URL` den eingebauten Endpoint.)
 
+> **Mindestversion 2.3.5.** Der eingebackene Token ist ein zusätzliches Feld in
+> der signierten Lizenz. Ältere Programmversionen kennen dieses Feld nicht und
+> lehnen so einen Schlüssel ab — sie starten damit nicht. Bekommt ihr eine neue
+> `versino.key` und fahrt noch eine Version vor 2.3.5, **erst die Software
+> aktualisieren, dann den Schlüssel tauschen**. Die alte `versino.key` bleibt bis
+> zu ihrem Ablaufdatum gültig, ihr könnt sie also jederzeit wieder einlegen.
+
+**Container-Betrieb:** Die Installations-Identität landet standardmäßig als
+`install_identity.json` im Arbeitsverzeichnis. Läuft der Container mit
+`read_only: true` oder auf einem flüchtigen Verzeichnis, zeigt
+`SAP_INSTALL_IDENTITY_PATH` auf einen **persistenten** Pfad (Volume) — sonst
+entsteht bei jedem Start ein neues Schlüsselpaar und damit eine neue Installation:
+```ini
+SAP_INSTALL_IDENTITY_PATH=/data/install_identity.json
+SAP_LICENSE_CACHE_FILE=/data/versino.renewed
+```
+
+Ob die Registrierung geklappt hat, sagt euch `sapb1-mcp doctor` (Prüfpunkt
+`enrollment`).
+
 **Air-gapped / ohne Phone-Home:** In einer Umgebung ohne Internet gibt es weder
-Online-Gültigkeitsprüfung noch automatische Erneuerung — der ausgelieferte Token gilt
-unverändert bis zu seinem Ablaufdatum, und ihr erhaltet rechtzeitig vorher eine neue
-`versino.key`.
+Online-Gültigkeitsprüfung noch automatische Erneuerung — der ausgelieferte Token
+gilt unverändert bis zu seinem Ablaufdatum, und ihr erhaltet rechtzeitig vorher
+eine neue `versino.key`. Wer das Phone-Home gar nicht möchte, kann es über Versino
+abschalten lassen; ihr bekommt dann Schlüssel ohne Registrierungsmerkmal (und
+damit ohne automatische Erneuerung).
 
 ## Seats
 `max_seats` begrenzt die Anzahl **distinkter** SAP-Nutzer. Werden mehr benötigt, über
