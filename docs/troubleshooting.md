@@ -9,6 +9,19 @@ No valid license found. Check:
 
 Details: [lizenz.md](lizenz.md).
 
+## Attachment upload fails with SAP error `-43`
+`-43` is SAP's internal *path / folder* error. On an attachment upload it means the
+**Service Layer** could not write into the attachment folder — it is not a problem
+with the file itself (the same file fails again and again). Check in SAP Business
+One: *Administration → System Initialization → General Settings → Path →
+Attachments Folder*:
+- the path must exist **as seen from the Service Layer host** (a UNC path such as
+  `\\fileserver\B1_Attachments`, not a drive letter of a user's PC),
+- the Service Layer service account needs **write** permission there,
+- a file with the **same file name** must not already exist in the folder — retry
+  with a different `file_name` if it does.
+After the SAP-side fix, simply upload again. Background: [anhaenge.md](anhaenge.md).
+
 ## Windows Defender / SmartScreen warning
 If the binary is not signed yet, Windows may show a false positive.
 - "More info" → "Run anyway", or allow the file in Defender.
@@ -29,7 +42,12 @@ If the binary is not signed yet, Windows may show a false positive.
 - is the chosen CompanyDB listed in `SAP_DATABASES`?
 
 ## Write tools missing / refused
-- Set `SAP_OPERATION_MODE=READ_WRITE` (default is `READ_ONLY`).
+- Set `SAP_OPERATION_MODE=READ_WRITE` (default is `READ_ONLY`). In read-only
+  mode the write tools are not registered at all, so the assistant does not
+  see them. After changing the mode **restart the server** and reconnect the
+  LLM client — it caches the tool list.
+- Attachment upload refused with "READ_ONLY: uploading attachments writes to
+  SAP" → same switch; `info`/`download` keep working in read-only mode.
 - Write/delete tools are additionally bound to the **edition** (PRO/ENTERPRISE),
   see [lizenz.md](lizenz.md).
 
@@ -58,6 +76,32 @@ Nothing happens on "Sign in" and no success page appears — almost always the
 - `SAP_BASE_URL` correct (`https://<host>:50000/b1s/v2/`)?
 - Tickets are short-lived: do not wait too long between opening the link and
   signing in.
+
+## "Too many failed sign-in attempts" / HTTP 429
+The server pauses an address after `SAP_LOGIN_MAX_FAILURES` failed sign-ins
+(default 10 in 15 min): first 30 s, doubling up to 15 min; a successful sign-in
+clears it. The message names the wait.
+- Behind a reverse proxy without `SAP_TRUSTED_PROXIES` the **proxy** is the
+  address — one colleague's typos pause the whole office. Set
+  `SAP_TRUSTED_PROXIES=<proxy address>` (see
+  [installation-zentral.md](installation-zentral.md)).
+- "Unusually many sign-in requests … paused new browser logins": the global cap
+  `SAP_TICKET_ISSUE_PER_MINUTE` (default 60) was hit — wait a minute; raise it
+  only for very large installations.
+- Every attempt is in the log file (`audit.auth.login` with user, CompanyDB,
+  source address, outcome — never the password), so support can match a report
+  to a line.
+
+## "Your SAP session reached its maximum lifetime"
+Sessions end after `SAP_SESSION_MAX_SECONDS` (default 8 h) regardless of
+activity; the assistant is told to run `connect` again — that is all it takes.
+`0` disables the limit.
+
+## Sign-in page says the link has no ticket
+The link carries the ticket after `#` (`…/login#t=…`). Some chat surfaces cut
+the fragment when rendering a link: open the link exactly as written, or ask the
+assistant for a new one with `connect`. Reloading the page after a sign-in also
+loses the fragment (by design) — request a new link.
 
 ## `npx` / Node.js not found (bridge)
 The `mcp-remote` bridge requires **Node.js**. Install Node LTS from

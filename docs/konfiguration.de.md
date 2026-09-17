@@ -1,4 +1,4 @@
-<!-- translation-of: konfiguration.md@f7c3579b8b66 -->
+<!-- translation-of: konfiguration.md@07bf91c8df20 -->
 # Konfiguration (`.env`)
 
 > 🌐 [English](konfiguration.md) · **Deutsch** · [Česky](konfiguration.cs.md)
@@ -41,12 +41,13 @@ SAP_PUBLIC_URL=http://127.0.0.1:8000
 |---|---|---|
 | `SAP_BASE_URL` | – | Service-Layer-URL, z. B. `https://host:50000/b1s/v2/` |
 | `SAP_DATABASES` | – | Wählbare CompanyDBs (Komma-Liste) |
-| `SAP_OPERATION_MODE` | `READ_ONLY` | `READ_ONLY` oder `READ_WRITE` (Schreib-Tools) |
+| `SAP_OPERATION_MODE` | `READ_ONLY` | `READ_ONLY` oder `READ_WRITE`. Im `READ_ONLY` werden die Schreib-Tools (`sap_create`, `sap_update`, `sap_delete`, `sap_action`, `sap_deploy_queries`) **gar nicht angeboten**; `sap_attachment` bleibt für `info`/`download` und lehnt Uploads ab. Nach einem Moduswechsel den Server neu starten (der LLM-Client liest die Tool-Liste beim Neuverbinden neu) |
 | `SAP_ALLOW_SELF_SIGNED_CERT` | `false` | selbstsigniertes SL-Zertifikat zulassen |
 | `SAP_MAX_PAGE_SIZE` | `200` | max. Zeilen pro Seite |
 | `SAP_MAX_CONCURRENT_REQUESTS` | `10` | parallele SL-Requests |
 | `SAP_TIMEOUT_SECONDS` | `60` | HTTP-Timeout für Service-Layer-Requests |
 | `SAP_IDLE_LOGOUT_SECONDS` | `1500` | Leerlauf, nach dem eine Nutzer-Session automatisch abgemeldet wird |
+| `SAP_SESSION_MAX_SECONDS` | `28800` | absolute Lebensdauer einer Nutzer-Session (8 h) zusätzlich zum Leerlauf-Logout; danach wird der Assistent aufgefordert, `connect` erneut aufzurufen. `0` = unbegrenzt |
 | `SAP_PHONE_HOME_INTERVAL_SECONDS` | `3600` | Intervall der Lizenz-Phone-Home-Prüfung |
 | `SAP_DB_SERVER_TYPE` | _auto_ | Datenbanktyp übersteuern (`HANA` / `MSSQL`); normalerweise automatisch erkannt — nur bei fehlerhafter Erkennung setzen |
 | `SAP_AUTO_DEPLOY_QUERIES` | `true` | mitgelieferte Auswertungen beim ersten Verbinden je CompanyDB ausbringen |
@@ -65,7 +66,11 @@ Bei Bedarf lässt sich die Ausbringung im Chat gezielt anstoßen
 | Variable | Bedeutung |
 |---|---|
 | `SAP_AUTH_MODE` | `basic` (User/Passwort direkt an SL) oder `bearer` (Browser-SSO mit PKCE, Token bei jedem Aufruf — ab FP 2208 mit Tokens des SAP-Authentication-Servers; stellt ein eigener Identity Provider die Tokens selbst aus, siehe Hinweis in sso-keycloak.de.md) |
-| `SAP_DISABLE_INLINE_LOGIN` | `true` empfohlen: Login nur via Dialog/Web-UI, nie als Chat-Argument |
+| `SAP_DISABLE_INLINE_LOGIN` | Login nur via Dialog/Web-UI, nie als Chat-Argument. **Standard `true`, sobald `SAP_PUBLIC_URL` gesetzt ist** (Netzwerk-Installation); `false` nur lokal oder als bewusstes Opt-in (`doctor` warnt) |
+| `SAP_TRUSTED_PROXIES` | Reverse-Proxy-Adressen (IPs/CIDRs, kommagetrennt), deren `X-Forwarded-For` der Server für die Login-Drossel und das Audit-Log vertraut — z. B. `127.0.0.1`, wenn nginx auf derselben Maschine läuft. Leer = der Socket-Peer gilt als Client (hinter einem Proxy wäre das der Proxy selbst, das ganze Büro teilt sich dann einen Zähler) |
+| `SAP_LOGIN_MAX_FAILURES` | Fehlversuche pro Client-Adresse innerhalb von `SAP_LOGIN_WINDOW_SECONDS`, bevor die Adresse pausiert wird (Standard `10`); die Pause beginnt bei 30 s und verdoppelt sich bis 15 Min., eine erfolgreiche Anmeldung setzt zurück |
+| `SAP_LOGIN_WINDOW_SECONDS` | Zeitfenster für `SAP_LOGIN_MAX_FAILURES` (Standard `900`) |
+| `SAP_TICKET_ISSUE_PER_MINUTE` | globale Obergrenze für Browser-Login-Links pro Minute (Standard `60`) — schützt den unauthentifizierten Pfad vor Fluten |
 | `SAP_TLS_CERT_FILE` | Server-Zertifikat (PEM) für eingehendes HTTPS — zusammen mit `SAP_TLS_KEY_FILE`; sonst HTTP |
 | `SAP_TLS_KEY_FILE` | Privater Schlüssel (PEM) für eingehendes HTTPS |
 | `SAP_TLS_KEY_PASSWORD` | Passwort für einen verschlüsselten TLS-Schlüssel (optional) |
@@ -115,9 +120,20 @@ Phone-Home / automatische Abo-Erneuerung (Normalfall): siehe [lizenz.de.md](lize
 
 ## Sicherheitshinweise
 - `SAP_OPERATION_MODE=READ_ONLY` als Standard; `READ_WRITE` nur, wenn Schreibzugriff
-  wirklich gewünscht ist.
+  wirklich gewünscht ist. Eine Nur-Lese-Instanz zeigt dem LLM-Client die
+  Schreib-Tools gar nicht, der Assistent kann sie also nicht einmal versuchen.
 - `SAP_DISABLE_INLINE_LOGIN=true` stellt sicher, dass SAP-Credentials nie in den
-  LLM-Kontext geraten (Anmeldung nur über Dialog/Web-UI).
+  LLM-Kontext geraten (Anmeldung nur über Dialog/Web-UI). Bei Netzwerk-Installationen
+  (`SAP_PUBLIC_URL` gesetzt) ist das der Standard.
+- Der Browser-Login ist ab Werk gehärtet: Der Anmelde-Link trägt das Ticket im
+  URL-**Fragment** (`…/login#t=…`, nie in Server- oder Proxy-Logs); nach
+  `connect(ticket=…)` wird das Ticket ausgemustert und ein frischer Sitzungswert
+  zurückgegeben; Fehlversuche werden pro Adresse gedrosselt, und jeder Versuch
+  landet im Audit-Log (Nutzer, CompanyDB, Quelladresse, Ergebnis — nie das
+  Passwort); Sitzungen enden nach `SAP_SESSION_MAX_SECONDS`.
+- Hinter einem Reverse-Proxy `SAP_TRUSTED_PROXIES` setzen, damit die Drossel echte
+  Client-Adressen sieht, und die Proxy-Limits aus
+  [installation-zentral.de.md](installation-zentral.de.md) ergänzen.
 - Für Netzwerkbetrieb TLS (Reverse-Proxy) vorschalten.
 
 ## Logging

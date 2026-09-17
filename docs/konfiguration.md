@@ -42,12 +42,13 @@ SAP_PUBLIC_URL=http://127.0.0.1:8000
 |---|---|---|
 | `SAP_BASE_URL` | – | Service Layer URL, e.g. `https://host:50000/b1s/v2/` |
 | `SAP_DATABASES` | – | selectable CompanyDBs (comma list) |
-| `SAP_OPERATION_MODE` | `READ_ONLY` | `READ_ONLY` or `READ_WRITE` (write tools) |
+| `SAP_OPERATION_MODE` | `READ_ONLY` | `READ_ONLY` or `READ_WRITE`. In `READ_ONLY` the write tools (`sap_create`, `sap_update`, `sap_delete`, `sap_action`, `sap_deploy_queries`) are **not offered at all**; `sap_attachment` stays for `info`/`download` and refuses uploads. Restart the server after changing the mode (the LLM client re-reads the tool list on reconnect) |
 | `SAP_ALLOW_SELF_SIGNED_CERT` | `false` | allow a self-signed SL certificate |
 | `SAP_MAX_PAGE_SIZE` | `200` | max. rows per page |
 | `SAP_MAX_CONCURRENT_REQUESTS` | `10` | parallel SL requests |
 | `SAP_TIMEOUT_SECONDS` | `60` | HTTP timeout for Service Layer requests |
 | `SAP_IDLE_LOGOUT_SECONDS` | `1500` | idle time after which a user session is signed out automatically |
+| `SAP_SESSION_MAX_SECONDS` | `28800` | absolute lifetime of a user session (8 h) on top of the idle logout; afterwards the assistant is told to run `connect` again. `0` = unlimited |
 | `SAP_PHONE_HOME_INTERVAL_SECONDS` | `3600` | interval of the license phone-home check |
 | `SAP_DB_SERVER_TYPE` | _auto_ | override the database type (`HANA` / `MSSQL`); normally detected automatically — set only if detection is wrong |
 | `SAP_AUTO_DEPLOY_QUERIES` | `true` | deploy the bundled reports on first connect per CompanyDB |
@@ -65,7 +66,11 @@ overwritten. If needed, trigger the deployment in the chat
 | Variable | Meaning |
 |---|---|
 | `SAP_AUTH_MODE` | `basic` (user/password straight to the SL) or `bearer` (browser SSO with PKCE, token on every call — from FP 2208 with tokens of the SAP Authentication Server; if your own identity provider issues the tokens itself, see the note in sso-keycloak.md) |
-| `SAP_DISABLE_INLINE_LOGIN` | `true` recommended: login only via dialog/web UI, never as a chat argument |
+| `SAP_DISABLE_INLINE_LOGIN` | login only via dialog/web UI, never as a chat argument. **Default `true` as soon as `SAP_PUBLIC_URL` is set** (network install); `false` only locally or as an explicit opt-in (`doctor` warns) |
+| `SAP_TRUSTED_PROXIES` | reverse-proxy addresses (IPs/CIDRs, comma-separated) whose `X-Forwarded-For` the server trusts for the login throttle and the audit log — e.g. `127.0.0.1` when nginx runs on the same machine. Empty = the socket peer counts as the client (behind a proxy that would be the proxy itself, so the whole office shares one counter) |
+| `SAP_LOGIN_MAX_FAILURES` | failed sign-ins per client address within `SAP_LOGIN_WINDOW_SECONDS` before the address is paused (default `10`); the pause starts at 30 s and doubles up to 15 min, a successful sign-in resets it |
+| `SAP_LOGIN_WINDOW_SECONDS` | window for `SAP_LOGIN_MAX_FAILURES` (default `900`) |
+| `SAP_TICKET_ISSUE_PER_MINUTE` | global cap on browser-login links minted per minute (default `60`) — protects the unauthenticated path against floods |
 | `SAP_TLS_CERT_FILE` | server certificate (PEM) for inbound HTTPS — together with `SAP_TLS_KEY_FILE`; otherwise HTTP |
 | `SAP_TLS_KEY_FILE` | private key (PEM) for inbound HTTPS |
 | `SAP_TLS_KEY_PASSWORD` | password for an encrypted TLS key (optional) |
@@ -116,9 +121,20 @@ Phone-home / automatic subscription renewal (the normal case): see
 
 ## Security notes
 - `SAP_OPERATION_MODE=READ_ONLY` as the default; `READ_WRITE` only when write
-  access is really wanted.
+  access is really wanted. A read-only instance does not even show the write
+  tools to the LLM client, so the assistant cannot try them.
 - `SAP_DISABLE_INLINE_LOGIN=true` makes sure SAP credentials never enter the
-  LLM context (sign-in only via dialog/web UI).
+  LLM context (sign-in only via dialog/web UI). It is the default on network
+  installs (`SAP_PUBLIC_URL` set).
+- The browser login is hardened out of the box: the sign-in link carries the
+  ticket in the URL **fragment** (`…/login#t=…`, never in server or proxy logs);
+  after `connect(ticket=…)` the ticket is retired and a fresh session value is
+  returned; failed sign-ins are throttled per address and every attempt is
+  written to the audit log (user, CompanyDB, source address, outcome — never
+  the password); sessions end after `SAP_SESSION_MAX_SECONDS`.
+- Behind a reverse proxy set `SAP_TRUSTED_PROXIES` so the throttle sees real
+  client addresses, and add the proxy-side limits from
+  [installation-zentral.md](installation-zentral.md).
 - For network operation put TLS in front (native or reverse proxy).
 
 ## Logging

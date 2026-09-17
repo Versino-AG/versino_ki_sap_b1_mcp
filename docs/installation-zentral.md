@@ -65,7 +65,7 @@ SAP_PUBLIC_URL=https://mcp.customer.internal
 - **`SAP_PUBLIC_URL`** is the URL under which users reach the server (the TLS
   proxy's). It **must be `https://`** — `http://` is allowed for `127.0.0.1`
   only. The server builds the browser-login URL
-  (`<SAP_PUBLIC_URL>/login?t=…`) from it.
+  (`<SAP_PUBLIC_URL>/login#t=…`) from it.
 - **`SAP_DISABLE_INLINE_LOGIN=true`** enforces that SAP credentials are captured
   exclusively via the web login and never enter the LLM context — strongly
   recommended in multi-user operation.
@@ -171,6 +171,44 @@ server {
 - Result: endpoint `https://mcp.customer.internal/mcp`, web login
   `https://mcp.customer.internal/login`.
 
+### Hardening the proxy (recommended)
+The server throttles failed sign-ins per client address and logs every attempt.
+Behind a proxy it only sees the proxy's address unless you tell it whom to trust:
+
+- In the `.env`: `SAP_TRUSTED_PROXIES=127.0.0.1` (the proxy's address as the
+  server sees it). Then `X-Forwarded-For` is honoured — one counter per real
+  client instead of one for the whole office.
+- nginx: forward the client address and add a request limit on the sign-in
+  paths — it stops floods before they reach the server:
+  ```nginx
+  limit_req_zone $binary_remote_addr zone=sapb1_login:10m rate=10r/m;
+  server {
+      # … TLS as above …
+      add_header Strict-Transport-Security "max-age=31536000" always;
+      location / {
+          proxy_pass http://127.0.0.1:8000;
+          proxy_http_version 1.1;
+          proxy_set_header Host $host;
+          proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+          proxy_buffering off;
+          proxy_read_timeout 3600s;
+      }
+      location ~ ^/(api/login|login)$ {
+          limit_req zone=sapb1_login burst=20 nodelay;
+          proxy_pass http://127.0.0.1:8000;
+          proxy_set_header Host $host;
+          proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+      }
+  }
+  ```
+- Restrict who can reach the proxy at all: an IP allow-list (`allow`/`deny`) or
+  VPN-only exposure. The server's own gate is the SAP login; the network
+  boundary is yours.
+- What the server adds on top: after `SAP_LOGIN_MAX_FAILURES` failed attempts an
+  address is paused (30 s, doubling to 15 min), browser-login links are capped
+  per minute, every attempt lands in the audit log, and sessions end after
+  `SAP_SESSION_MAX_SECONDS` (8 h) — see [konfiguration.md](konfiguration.md).
+
 ## 6. Firewall
 - To the outside (towards the workstations) open only **443/TLS** of the proxy.
 - Do **not** expose the MCP port `8000` to the network (only `127.0.0.1`).
@@ -207,9 +245,11 @@ via the `mcp-remote` bridge.
 
 ## 8. Per-user login & seats
 - Call **`connect`** in the client → the server returns a browser-login URL
-  (`https://mcp.customer.internal/login?t=…`) → the user signs in there with
+  (`https://mcp.customer.internal/login#t=…`) → the user signs in there with
   their **own** SAP credentials and picks the CompanyDB. The credentials never
-  enter the chat. Then `connect(ticket="…")` and the SAP tools are ready.
+  enter the chat. Then `connect(ticket="…")` — its result returns a **new**
+  `ticket` value (the browser ticket is retired); that value accompanies every
+  further SAP tool call and the SAP tools are ready.
 - **Seats:** the central instance counts distinct SAP users across all
   workstations. The number is limited by the license's `max_seats` → see
   [lizenz.md](lizenz.md).

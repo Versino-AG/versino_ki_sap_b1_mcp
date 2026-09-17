@@ -1,4 +1,4 @@
-<!-- translation-of: installation-zentral.md@1c04e7ae8fa3 -->
+<!-- translation-of: installation-zentral.md@7c9ff09b2549 -->
 # SAP-B1-MCP zentral betreiben (eine Instanz für alle Arbeitsplätze)
 
 > 🌐 [English](installation-zentral.md) · **Deutsch** · [Česky](installation-zentral.cs.md)
@@ -65,7 +65,7 @@ SAP_PUBLIC_URL=https://mcp.kunde.intern
 ```
 - **`SAP_PUBLIC_URL`** ist die URL, unter der die Nutzer den Server erreichen (die des
   TLS-Proxys). Sie **muss `https://`** sein — `http://` ist nur für `127.0.0.1` erlaubt.
-  Über sie baut der Server die Browser-Login-URL (`<SAP_PUBLIC_URL>/login?t=…`).
+  Über sie baut der Server die Browser-Login-URL (`<SAP_PUBLIC_URL>/login#t=…`).
 - **`SAP_DISABLE_INLINE_LOGIN=true`** erzwingt, dass SAP-Zugangsdaten ausschließlich über
   den Web-Login erfasst werden und nie in den LLM-Kontext geraten — im Mehrbenutzerbetrieb
   dringend empfohlen.
@@ -167,6 +167,45 @@ server {
 - **Windows:** als Reverse-Proxy eignet sich **IIS mit ARR/URL Rewrite** oder ebenfalls Caddy.
 - Ergebnis: Endpunkt `https://mcp.kunde.intern/mcp`, Web-Login `https://mcp.kunde.intern/login`.
 
+### Proxy härten (empfohlen)
+Der Server drosselt Fehlversuche pro Client-Adresse und protokolliert jeden
+Anmeldeversuch. Hinter einem Proxy sieht er nur dessen Adresse, solange er nicht
+weiß, wem er vertrauen darf:
+
+- In der `.env`: `SAP_TRUSTED_PROXIES=127.0.0.1` (die Adresse des Proxys, wie der
+  Server sie sieht). Dann gilt `X-Forwarded-For` — ein Zähler pro echtem Client
+  statt einem für das ganze Büro.
+- nginx: Client-Adresse weiterreichen und ein Request-Limit auf die Login-Pfade
+  legen — das stoppt Fluten, bevor sie den Server erreichen:
+  ```nginx
+  limit_req_zone $binary_remote_addr zone=sapb1_login:10m rate=10r/m;
+  server {
+      # … TLS wie oben …
+      add_header Strict-Transport-Security "max-age=31536000" always;
+      location / {
+          proxy_pass http://127.0.0.1:8000;
+          proxy_http_version 1.1;
+          proxy_set_header Host $host;
+          proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+          proxy_buffering off;
+          proxy_read_timeout 3600s;
+      }
+      location ~ ^/(api/login|login)$ {
+          limit_req zone=sapb1_login burst=20 nodelay;
+          proxy_pass http://127.0.0.1:8000;
+          proxy_set_header Host $host;
+          proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+      }
+  }
+  ```
+- Einschränken, wer den Proxy überhaupt erreicht: IP-Allowlist (`allow`/`deny`)
+  oder nur per VPN. Die eigene Schranke des Servers ist der SAP-Login; die
+  Netzgrenze liegt bei euch.
+- Was der Server zusätzlich tut: Nach `SAP_LOGIN_MAX_FAILURES` Fehlversuchen wird
+  eine Adresse pausiert (30 s, verdoppelnd bis 15 Min.), Browser-Login-Links sind
+  pro Minute begrenzt, jeder Versuch landet im Audit-Log, und Sitzungen enden nach
+  `SAP_SESSION_MAX_SECONDS` (8 h) — siehe [konfiguration.de.md](konfiguration.de.md).
+
 ## 6. Firewall
 - Nach außen (an die Arbeitsplätze) nur **443/TLS** des Proxys öffnen.
 - Den MCP-Port `8000` **nicht** ins Netz exponieren (nur `127.0.0.1`).
@@ -201,9 +240,11 @@ auf `https://mcp.kunde.intern/mcp`; nur-stdio-Clients über die `mcp-remote`-Bri
 
 ## 8. Login pro Nutzer & Seats
 - Im Client **`connect`** aufrufen → der Server liefert eine Browser-Login-URL
-  (`https://mcp.kunde.intern/login?t=…`) → der Nutzer meldet sich dort mit seinen
+  (`https://mcp.kunde.intern/login#t=…`) → der Nutzer meldet sich dort mit seinen
   **eigenen** SAP-Zugangsdaten an und wählt die CompanyDB. Die Zugangsdaten gelangen nie
-  in den Chat. Danach `connect(ticket="…")` und die SAP-Tools stehen bereit.
+  in den Chat. Danach `connect(ticket="…")` — das Ergebnis liefert einen **neuen**
+  `ticket`-Wert (das Browser-Ticket wird ausgemustert); dieser Wert begleitet jeden
+  weiteren SAP-Tool-Aufruf, und die SAP-Tools stehen bereit.
 - **Seats:** Die zentrale Instanz zählt distinkte SAP-Nutzer über alle Arbeitsplätze.
   Die Anzahl ist durch `max_seats` der Lizenz begrenzt → siehe [lizenz.de.md](lizenz.de.md).
 

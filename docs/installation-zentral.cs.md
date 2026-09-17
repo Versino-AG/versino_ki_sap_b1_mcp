@@ -1,4 +1,4 @@
-<!-- translation-of: installation-zentral.md@1c04e7ae8fa3 -->
+<!-- translation-of: installation-zentral.md@7c9ff09b2549 -->
 
 # SAP-B1-MCP centrální provoz (jedna instance pro všechna pracoviště)
 
@@ -63,7 +63,7 @@ SAP_PUBLIC_URL=https://mcp.zakaznik.intern
 ```
 - **`SAP_PUBLIC_URL`** je URL, na které uživatelé server dosáhnou (ta od TLS proxy).
   **Musí být `https://`** — `http://` je povoleno jen pro `127.0.0.1`.
-  Přes ni server sestavuje login URL prohlížeče (`<SAP_PUBLIC_URL>/login?t=…`).
+  Přes ni server sestavuje login URL prohlížeče (`<SAP_PUBLIC_URL>/login#t=…`).
 - **`SAP_DISABLE_INLINE_LOGIN=true`** vynucuje, že SAP přihlašovací údaje se zadávají
   výhradně přes web-login a nikdy se nedostanou do kontextu LLM — u vícenávštěvnického
   provozu důrazně doporučeno.
@@ -165,6 +165,43 @@ server {
 - **Windows:** jako reverse-proxy se hodí **IIS s ARR/URL Rewrite**, případně také Caddy.
 - Výsledek: endpoint `https://mcp.zakaznik.intern/mcp`, web-login `https://mcp.zakaznik.intern/login`.
 
+### Zabezpečení proxy (doporučeno)
+Server omezuje neúspěšná přihlášení podle adresy klienta a každý pokus loguje. Za
+proxy vidí jen adresu proxy, dokud mu neřeknete, komu smí důvěřovat:
+
+- V `.env`: `SAP_TRUSTED_PROXIES=127.0.0.1` (adresa proxy, jak ji vidí server).
+  Pak platí `X-Forwarded-For` — jedno počítadlo na skutečného klienta místo
+  jednoho pro celou kancelář.
+- nginx: předávat adresu klienta a přidat limit požadavků na přihlašovací cesty
+  — zastaví záplavu dřív, než dorazí k serveru:
+  ```nginx
+  limit_req_zone $binary_remote_addr zone=sapb1_login:10m rate=10r/m;
+  server {
+      # … TLS jako výše …
+      add_header Strict-Transport-Security "max-age=31536000" always;
+      location / {
+          proxy_pass http://127.0.0.1:8000;
+          proxy_http_version 1.1;
+          proxy_set_header Host $host;
+          proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+          proxy_buffering off;
+          proxy_read_timeout 3600s;
+      }
+      location ~ ^/(api/login|login)$ {
+          limit_req zone=sapb1_login burst=20 nodelay;
+          proxy_pass http://127.0.0.1:8000;
+          proxy_set_header Host $host;
+          proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+      }
+  }
+  ```
+- Omezte, kdo se k proxy vůbec dostane: IP allow-list (`allow`/`deny`) nebo jen
+  přes VPN. Vlastní bránou serveru je přihlášení do SAP; hranice sítě je na vás.
+- Co server dělá navíc: po `SAP_LOGIN_MAX_FAILURES` neúspěšných pokusech je adresa
+  pozastavena (30 s, zdvojnásobuje se až do 15 min), přihlašovací odkazy jsou
+  omezeny za minutu, každý pokus se zapisuje do audit logu a relace končí po
+  `SAP_SESSION_MAX_SECONDS` (8 h) — viz [konfiguration.cs.md](konfiguration.cs.md).
+
 ## 6. Firewall
 - Navenek (na pracoviště) otevřít jen **443/TLS** proxy.
 - MCP port `8000` **neexponovat** do sítě (jen `127.0.0.1`).
@@ -199,9 +236,11 @@ streamable HTTP míří přímo na `https://mcp.zakaznik.intern/mcp`; jen-stdio 
 
 ## 8. Přihlášení uživatele a seaty
 - V klientovi zavolat **`connect`** → server vrátí URL pro přihlášení v prohlížeči
-  (`https://mcp.zakaznik.intern/login?t=…`) → uživatel se tam přihlásí svými
+  (`https://mcp.zakaznik.intern/login#t=…`) → uživatel se tam přihlásí svými
   **vlastními** SAP přihlašovacími údaji a vybere CompanyDB. Přihlašovací údaje se
-  nikdy nedostanou do chatu. Poté `connect(ticket="…")` a SAP nástroje jsou připravené.
+  nikdy nedostanou do chatu. Poté `connect(ticket="…")` — jeho výsledek vrátí **novou**
+  hodnotu `ticket` (ticket z prohlížeče je vyřazen); tato hodnota doprovází každé další
+  volání SAP nástroje a SAP nástroje jsou připravené.
 - **Seaty:** centrální instance počítá distinktní SAP uživatele napříč všemi pracovišti.
   Počet je omezen `max_seats` licence → viz [lizenz.cs.md](lizenz.cs.md).
 

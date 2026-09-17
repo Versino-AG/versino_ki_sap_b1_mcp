@@ -1,4 +1,4 @@
-<!-- translation-of: troubleshooting.md@87c72bdf8599 -->
+<!-- translation-of: troubleshooting.md@5dfefad6971e -->
 # Troubleshooting
 
 > 🌐 [English](troubleshooting.md) · **Deutsch** · [Česky](troubleshooting.cs.md)
@@ -9,6 +9,20 @@ Keine gültige Lizenz gefunden. Prüfen:
 - ist der Schlüssel nicht abgelaufen? (neue über das [Lizenzportal](https://aishop.versino.de))
 
 Details: [lizenz.de.md](lizenz.de.md).
+
+## Anhang-Upload scheitert mit SAP-Fehler `-43`
+`-43` ist SAPs interner *Pfad-/Ordner*-Fehler. Beim Anhang-Upload heißt das: Der
+**Service Layer** konnte nicht in den Anlagenordner schreiben — es liegt nicht an
+der Datei (dieselbe Datei scheitert immer wieder). In SAP Business One prüfen:
+*Administration → Systeminitialisierung → Allgemeine Einstellungen → Pfad →
+Anlagenordner*:
+- der Pfad muss **aus Sicht des Service-Layer-Hosts** existieren (UNC-Pfad wie
+  `\\fileserver\B1_Anlagen`, kein Laufwerksbuchstabe eines Anwender-PCs),
+- das Dienstkonto des Service Layers braucht dort **Schreibrechte**,
+- im Ordner darf noch keine Datei mit **demselben Dateinamen** liegen — sonst mit
+  anderem `file_name` erneut versuchen.
+Nach der Korrektur auf SAP-Seite einfach erneut hochladen. Hintergrund:
+[anhaenge.de.md](anhaenge.de.md).
 
 ## Windows-Defender / SmartScreen-Warnung
 Ist das Binary noch nicht signiert, kann Windows einen Fehlalarm zeigen.
@@ -30,7 +44,12 @@ Ist das Binary noch nicht signiert, kann Windows einen Fehlalarm zeigen.
 - gewählte CompanyDB in `SAP_DATABASES` enthalten?
 
 ## Schreib-Tools fehlen / werden abgelehnt
-- `SAP_OPERATION_MODE=READ_WRITE` setzen (Default ist `READ_ONLY`).
+- `SAP_OPERATION_MODE=READ_WRITE` setzen (Default ist `READ_ONLY`). Im Lesebetrieb
+  werden die Schreib-Tools gar nicht registriert, der Assistent sieht sie also
+  nicht. Nach dem Moduswechsel den **Server neu starten** und den LLM-Client neu
+  verbinden — er cacht die Tool-Liste.
+- Anhang-Upload abgelehnt mit „READ_ONLY: uploading attachments writes to SAP" →
+  derselbe Schalter; `info`/`download` funktionieren auch im Lesebetrieb.
 - Schreib-/Lösch-Tools sind zusätzlich an die **Edition** gebunden (PRO/ENTERPRISE),
   siehe [lizenz.de.md](lizenz.de.md).
 
@@ -56,6 +75,33 @@ der **SAP Service Layer nicht erreichbar** (die Anmeldung läuft ins Leere/Timeo
   Test: `Test-NetConnection <sap-host> -Port 50000` (Windows) bzw. `nc -vz <sap-host> 50000`.
 - `SAP_BASE_URL` korrekt (`https://<host>:50000/b1s/v2/`)?
 - Tickets sind kurzlebig: zwischen Linköffnen und Login nicht zu lange warten.
+
+## „Zu viele fehlgeschlagene Anmeldeversuche" / HTTP 429
+Der Server pausiert eine Adresse nach `SAP_LOGIN_MAX_FAILURES` Fehlversuchen
+(Standard 10 in 15 Min.): zuerst 30 s, verdoppelnd bis 15 Min.; eine erfolgreiche
+Anmeldung hebt die Pause auf. Die Meldung nennt die Wartezeit.
+- Hinter einem Reverse-Proxy ohne `SAP_TRUSTED_PROXIES` ist der **Proxy** die
+  Adresse — die Tippfehler eines Kollegen pausieren das ganze Büro. Dann
+  `SAP_TRUSTED_PROXIES=<Proxy-Adresse>` setzen (siehe
+  [installation-zentral.de.md](installation-zentral.de.md)).
+- „Ungewöhnlich viele Anmeldeanfragen … Browser-Anmeldungen pausiert": die
+  globale Obergrenze `SAP_TICKET_ISSUE_PER_MINUTE` (Standard 60) wurde erreicht —
+  eine Minute warten; nur bei sehr großen Installationen erhöhen.
+- Jeder Versuch steht in der Log-Datei (`audit.auth.login` mit Nutzer, CompanyDB,
+  Quelladresse, Ergebnis — nie das Passwort), damit der Support eine Meldung
+  einer Zeile zuordnen kann.
+
+## „Deine SAP-Sitzung hat ihre Höchstdauer erreicht"
+Sitzungen enden nach `SAP_SESSION_MAX_SECONDS` (Standard 8 h) unabhängig von der
+Aktivität; der Assistent wird aufgefordert, `connect` erneut aufzurufen — mehr ist
+nicht nötig. `0` schaltet die Grenze ab.
+
+## Login-Seite meldet, der Link enthalte kein Ticket
+Der Link trägt das Ticket hinter dem `#` (`…/login#t=…`). Manche Chat-Oberflächen
+schneiden diesen Teil beim Darstellen ab: den Link genau so öffnen, wie er
+ausgegeben wurde, oder den Assistenten mit `connect` um einen neuen bitten. Auch
+ein Neuladen der Seite nach der Anmeldung verliert das Fragment (absichtlich) —
+neuen Link anfordern.
 
 ## `npx` / Node.js nicht gefunden (Bridge)
 Die `mcp-remote`-Bridge benötigt **Node.js**. Node LTS von
