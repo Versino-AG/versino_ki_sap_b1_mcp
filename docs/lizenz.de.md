@@ -1,4 +1,4 @@
-<!-- translation-of: lizenz.md@68f0f48ea2e8 -->
+<!-- translation-of: lizenz.md@d11b4e7994d7 -->
 # Lizenz (`versino.key`)
 
 > 🌐 [English](lizenz.md) · **Deutsch** · [Česky](lizenz.cs.md)
@@ -20,11 +20,22 @@ bzw. `sapb1-mcp`). Sie wird automatisch gefunden — `SAP_LICENSE_FILE` muss **n
 gesetzt werden. Alternativ einen expliziten Pfad via `SAP_LICENSE_FILE` angeben.
 
 ## Editionen (Kurzüberblick)
-| Edition | Umfang |
-|---|---|
-| BASIC | Lesen von Stammdaten, begrenzte Query-Rate |
-| PRO | Lesen + Schreiben (`sap_create`, `sap_update`) |
-| ENTERPRISE | voller Tool-Umfang inkl. `sap_delete`, `sap_action` |
+| Edition | Liest | Tools zusätzlich zur Anmeldung und `sap_help` |
+|---|---|---|
+| BASIC | nur Stammdaten (Geschäftspartner, Artikel, …), begrenzte Query-Rate | `sap_query_odata`, `sap_fuzzy_search` |
+| PRO | alle Daten inkl. Belege, höhere Rate | zusätzlich `sap_curated_query` (die mitgelieferten `AI_*`-Auswertungen), `sap_semantic_query`, `sap_attachment`, `sap_deploy_queries`, `sap_create`, `sap_update` |
+| ENTERPRISE | alle Daten, ohne Ratenbegrenzung | zusätzlich `sap_delete`, `sap_action` |
+
+Ein Tool, das eine Edition nie ausführen könnte, wird **gar nicht angeboten** —
+der Assistent sieht es nicht und kann deshalb nichts vorschlagen, was die Lizenz
+nicht abdeckt. Tools, die beliebige Tabellen lesen (die kuratierten
+`AI_*`-Auswertungen, Semantic-Layer-Views, Anhänge), brauchen daher eine Edition
+mit vollem Lesezugriff; mit BASIC werden die mitgelieferten Auswertungen auch
+nicht ausgebracht, weil sie dort nicht laufen könnten. `sap_help` nennt je
+fehlendem Tool den Grund (`edition`, `read_scope`, `operation_mode`), damit der
+Support die Frage „warum kann es X nicht" an einer Stelle beantworten kann.
+Unabhängig von der Edition entfernt `SAP_OPERATION_MODE=READ_ONLY` die
+Schreib-Tools → [konfiguration.de.md](konfiguration.de.md).
 
 ## Phone-Home (Manipulationsschutz, Gültigkeitsprüfung & Abo-Erneuerung)
 **Standardmäßig aktiv:** die Installation baut in einem festen Intervall eine
@@ -52,6 +63,15 @@ SAP_LICENSE_CACHE_FILE=versino.renewed
 ```
 (Nur für Test/Staging: `SAP_ENROLLMENT_TOKEN` überschreibt den eingebauten Token,
 `SAP_LICENSE_VALIDATION_URL` den eingebauten Endpoint.)
+
+> **Der Endpoint muss `https` sein.** Die Phone-Home-Anfrage trägt Kundennummer und
+> Seat-Zahl, deshalb wird einfaches `http` gegen einen entfernten Host abgewiesen —
+> unverschlüsselt erlaubt sind nur `127.0.0.1`, `::1` und `localhost`, für die
+> Entwicklung. Ein selbst betriebener Lizenzserver braucht also TLS; zeigt
+> `SAP_LICENSE_VALIDATION_URL` auf eine `http://`-Adresse auf einer anderen Maschine,
+> scheitert das, statt Kundendaten still im Klartext zu senden. Die
+> Enrollment-Adresse wird aus dem Verzeichnis dieser URL abgeleitet — den Pfad
+> (`…/validate`) daher unverändert lassen.
 
 > **Mindestversion 2.3.5.** Der eingebackene Token ist ein zusätzliches Feld in
 > der signierten Lizenz. Ältere Programmversionen kennen dieses Feld nicht und

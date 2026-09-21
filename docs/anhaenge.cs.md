@@ -1,4 +1,4 @@
-<!-- translation-of: anhaenge.md@4ffbe64aff73 -->
+<!-- translation-of: anhaenge.md@e0898831ba2e -->
 # Přílohy: jak se soubory dostanou do SAP
 
 > 🌐 [English](anhaenge.md) · [Deutsch](anhaenge.de.md) · **Česky**
@@ -11,7 +11,7 @@ jen *odkaz*. K dispozici jsou tři cesty.
 ## 1. Nahrání v prohlížeči (výchozí — funguje s Claude Desktop)
 
 1. Požádejte asistenta o připojení souboru. Zavolá `sap_attachment(op="upload_request")`
-   a dá vám odkaz jako `https://mcp.example.com/upload?u=…`.
+   a dá vám odkaz jako `https://mcp.example.com/upload#u=…`.
 2. Otevřete odkaz a přetáhněte soubor (nebo ho vyberte). Stránka potvrdí přijetí a
    zobrazí identifikátor.
 3. Zpět v chatu asistent dokončí `sap_attachment(op="upload", upload_id=…)` a na

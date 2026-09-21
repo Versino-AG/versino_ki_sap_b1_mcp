@@ -213,6 +213,18 @@ Behind a proxy it only sees the proxy's address unless you tell it whom to trust
 - To the outside (towards the workstations) open only **443/TLS** of the proxy.
 - Do **not** expose the MCP port `8000` to the network (only `127.0.0.1`).
 - From the server, **50000** (Service Layer) must be reachable on the SAP host.
+- Set `SAP_ALLOWED_CLIENTS` to the networks that may reach the server, e.g.
+  `SAP_ALLOWED_CLIENTS=10.0.0.0/8` (behind a proxy: the proxy's address). Every
+  other address is refused with 403 before any route runs.
+
+> **The network boundary is yours.** Sign-in is user, password and CompanyDB —
+> the MCP endpoint itself carries no transport authentication, which is a
+> deliberate decision (whoever wants token-based access uses `SAP_AUTH_MODE=bearer`).
+> That means: anyone who reaches the port can attempt a sign-in with SAP
+> credentials, protected only by the login throttle. Behind a firewall,
+> `SAP_ALLOWED_CLIENTS` and TLS this is a controlled risk; on an interface open
+> to the internet it is not. The server warns loudly at start-up when it binds
+> to all interfaces with neither TLS nor an allowlist.
 
 ## 7. Connecting workstations (no local installation)
 Each user enters only the **central URL** in the LLM client — nothing else.

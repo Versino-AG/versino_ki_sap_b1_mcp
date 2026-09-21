@@ -1,4 +1,4 @@
-<!-- translation-of: anhaenge.md@4ffbe64aff73 -->
+<!-- translation-of: anhaenge.md@e0898831ba2e -->
 # Anhänge: Wie Dateien nach SAP kommen
 
 > 🌐 [English](anhaenge.md) · **Deutsch** · [Česky](anhaenge.cs.md)
@@ -11,7 +11,7 @@ wiedergeben, deshalb übergibt es nur eine *Referenz*. Drei Wege stehen zur Wahl
 ## 1. Upload im Browser (Standard — funktioniert mit Claude Desktop)
 
 1. Bitte den Assistenten, eine Datei anzuhängen. Er ruft `sap_attachment(op="upload_request")`
-   auf und gibt dir einen Link wie `https://mcp.example.com/upload?u=…`.
+   auf und gibt dir einen Link wie `https://mcp.example.com/upload#u=…`.
 2. Öffne den Link, ziehe die Datei hinein (oder wähle sie aus). Die Seite bestätigt
    und zeigt die Kennung.
 3. Zurück im Chat schließt der Assistent mit `sap_attachment(op="upload", upload_id=…)`

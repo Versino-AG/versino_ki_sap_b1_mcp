@@ -19,11 +19,21 @@ or `sapb1-mcp`). It is found automatically — `SAP_LICENSE_FILE` does **not**
 need to be set. Alternatively, point `SAP_LICENSE_FILE` at an explicit path.
 
 ## Editions (short overview)
-| Edition | Scope |
-|---|---|
-| BASIC | reading master data, limited query rate |
-| PRO | read + write (`sap_create`, `sap_update`) |
-| ENTERPRISE | full tool set incl. `sap_delete`, `sap_action` |
+| Edition | Reads | Tools offered on top of sign-in and `sap_help` |
+|---|---|---|
+| BASIC | master data only (business partners, items, …), limited query rate | `sap_query_odata`, `sap_fuzzy_search` |
+| PRO | all data incl. documents, higher rate | plus `sap_curated_query` (the bundled `AI_*` reports), `sap_semantic_query`, `sap_attachment`, `sap_deploy_queries`, `sap_create`, `sap_update` |
+| ENTERPRISE | all data, no rate limit | plus `sap_delete`, `sap_action` |
+
+A tool an edition could never execute is **not offered at all** — the assistant
+never sees it, so it cannot propose something your license does not cover. Tools
+that read arbitrary tables (the curated `AI_*` reports, semantic-layer views,
+attachments) therefore need an edition with full read access; with BASIC the
+bundled reports are not deployed either, because they could not be run.
+`sap_help` lists the reason per missing tool (`edition`, `read_scope`,
+`operation_mode`), so support can answer "why can't it do X" from one place.
+Independently of the edition, `SAP_OPERATION_MODE=READ_ONLY` removes the write
+tools → [konfiguration.md](konfiguration.md).
 
 ## Phone-home (tamper protection, validity check & subscription renewal)
 **Active by default:** the installation contacts the license server at a fixed
@@ -51,6 +61,14 @@ SAP_LICENSE_CACHE_FILE=versino.renewed
 ```
 (Test/staging only: `SAP_ENROLLMENT_TOKEN` overrides the built-in token,
 `SAP_LICENSE_VALIDATION_URL` the built-in endpoint.)
+
+> **The endpoint must be `https`.** The phone-home request carries the customer id
+> and the seat count, so plain `http` to a remote host is refused — only
+> `127.0.0.1`, `::1` and `localhost` may be plain, for development. A self-hosted
+> licence server therefore needs TLS; pointing `SAP_LICENSE_VALIDATION_URL` at an
+> `http://` address on another machine fails instead of silently sending customer
+> data in the clear. The enrolment address is derived from the directory of this
+> URL, so keep the path (`…/validate`) intact.
 
 > **Minimum version 2.3.5.** The baked-in token is an additional field in the
 > signed license. Older program versions do not know that field and reject such a

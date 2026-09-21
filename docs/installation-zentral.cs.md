@@ -1,4 +1,4 @@
-<!-- translation-of: installation-zentral.md@7c9ff09b2549 -->
+<!-- translation-of: installation-zentral.md@a7edd0be3160 -->
 
 # SAP-B1-MCP centrální provoz (jedna instance pro všechna pracoviště)
 
@@ -206,6 +206,17 @@ proxy vidí jen adresu proxy, dokud mu neřeknete, komu smí důvěřovat:
 - Navenek (na pracoviště) otevřít jen **443/TLS** proxy.
 - MCP port `8000` **neexponovat** do sítě (jen `127.0.0.1`).
 - Ze serveru na SAP host musí být dostupný **50000** (Service Layer).
+- Nastavte `SAP_ALLOWED_CLIENTS` na sítě, které smějí server oslovit, např.
+  `SAP_ALLOWED_CLIENTS=10.0.0.0/8` (za proxy: adresu proxy). Každá jiná adresa
+  je odmítnuta s 403 ještě před spuštěním jakékoli trasy.
+
+> **Síťová hranice je na vás.** Přihlášení probíhá uživatelem, heslem a
+> databází — samotný MCP endpoint záměrně nenese transportní autentizaci (kdo
+> chce přístup přes token, použije `SAP_AUTH_MODE=bearer`). Znamená to: kdo
+> dosáhne na port, může zkusit přihlášení se SAP údaji, chráněné jen omezovačem
+> přihlášení. Za firewallem, s `SAP_ALLOWED_CLIENTS` a TLS jde o zvládnuté
+> riziko, na rozhraní otevřeném do internetu nikoli. Server při startu hlasitě
+> varuje, když naslouchá na všech rozhraních bez TLS a bez allowlistu.
 
 ## 7. Připojení pracovišť (bez lokální instalace)
 Každý uživatel do LLM klienta zadá jen **centrální URL** — nic jiného.

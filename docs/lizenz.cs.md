@@ -1,4 +1,4 @@
-<!-- translation-of: lizenz.md@68f0f48ea2e8 -->
+<!-- translation-of: lizenz.md@d11b4e7994d7 -->
 
 # Licence (`versino.key`)
 
@@ -20,11 +20,21 @@ resp. `sapb1-mcp`). Najde se automaticky — `SAP_LICENSE_FILE` **není** potře
 nastavovat. Alternativně zadat explicitní cestu přes `SAP_LICENSE_FILE`.
 
 ## Edice (stručný přehled)
-| Edice | Rozsah |
-|---|---|
-| BASIC | čtení kmenových dat, omezená rychlost dotazů |
-| PRO | čtení + zápis (`sap_create`, `sap_update`) |
-| ENTERPRISE | plný rozsah nástrojů včetně `sap_delete`, `sap_action` |
+| Edice | Čte | Nástroje nad rámec přihlášení a `sap_help` |
+|---|---|---|
+| BASIC | jen kmenová data (obchodní partneři, položky, …), omezená rychlost dotazů | `sap_query_odata`, `sap_fuzzy_search` |
+| PRO | všechna data včetně dokladů, vyšší rychlost | navíc `sap_curated_query` (dodávané reporty `AI_*`), `sap_semantic_query`, `sap_attachment`, `sap_deploy_queries`, `sap_create`, `sap_update` |
+| ENTERPRISE | všechna data, bez omezení rychlosti | navíc `sap_delete`, `sap_action` |
+
+Nástroj, který by edice nikdy nemohla spustit, se **vůbec nenabízí** — asistent
+ho nevidí, a nemůže tedy navrhnout něco, co licence nepokrývá. Nástroje čtoucí
+libovolné tabulky (kurátorované reporty `AI_*`, pohledy semantické vrstvy,
+přílohy) proto vyžadují edici s plným přístupem ke čtení; u BASIC se dodávané
+reporty ani nenasazují, protože by tam nešly spustit. `sap_help` u každého
+chybějícího nástroje uvádí důvod (`edition`, `read_scope`, `operation_mode`),
+takže podpora zodpoví otázku „proč to neumí X" z jednoho místa. Nezávisle na
+edici odebere `SAP_OPERATION_MODE=READ_ONLY` zápisové nástroje →
+[konfiguration.cs.md](konfiguration.cs.md).
 
 ## Phone-Home (ochrana proti manipulaci, kontrola platnosti a obnova předplatného)
 **Ve výchozím nastavení aktivní:** instalace v pravidelných intervalech vytváří
@@ -52,6 +62,14 @@ SAP_LICENSE_CACHE_FILE=versino.renewed
 ```
 (Jen pro test/staging: `SAP_ENROLLMENT_TOKEN` přepíše vestavěný token,
 `SAP_LICENSE_VALIDATION_URL` vestavěný endpoint.)
+
+> **Endpoint musí být `https`.** Požadavek phone-home nese číslo zákazníka a počet
+> seatů, proto je prosté `http` na vzdálený host odmítnuto — nešifrovaně jsou
+> povoleny jen `127.0.0.1`, `::1` a `localhost`, pro vývoj. Vlastní licenční server
+> tedy potřebuje TLS; pokud `SAP_LICENSE_VALIDATION_URL` míří na adresu `http://` na
+> jiném stroji, selže to, místo aby zákaznická data tiše odešla v otevřené podobě.
+> Adresa pro enrollment se odvozuje z adresáře této URL — cestu (`…/validate`) proto
+> ponechte beze změny.
 
 > **Minimální verze 2.3.5.** Zapečený token je další pole v podepsané licenci.
 > Starší verze programu toto pole neznají a takový klíč odmítnou — s ním

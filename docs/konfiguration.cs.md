@@ -1,4 +1,4 @@
-<!-- translation-of: konfiguration.md@07bf91c8df20 -->
+<!-- translation-of: konfiguration.md@79126fc98aea -->
 
 # Konfigurace (`.env`)
 
@@ -42,7 +42,7 @@ SAP_PUBLIC_URL=http://127.0.0.1:8000
 |---|---|---|
 | `SAP_BASE_URL` | – | URL Service Layeru, např. `https://host:50000/b1s/v2/` |
 | `SAP_DATABASES` | – | Vybíratelné CompanyDB (seznam oddělený čárkou) |
-| `SAP_OPERATION_MODE` | `READ_ONLY` | `READ_ONLY` nebo `READ_WRITE`. V režimu `READ_ONLY` se zápisové nástroje (`sap_create`, `sap_update`, `sap_delete`, `sap_action`, `sap_deploy_queries`) **vůbec nenabízejí**; `sap_attachment` zůstává pro `info`/`download` a nahrávání odmítá. Po změně režimu server restartujte (LLM klient načte seznam nástrojů znovu při dalším připojení) |
+| `SAP_OPERATION_MODE` | `READ_ONLY` | `READ_ONLY` nebo `READ_WRITE`. V režimu `READ_ONLY` se zápisové nástroje (`sap_create`, `sap_update`, `sap_delete`, `sap_action`) **vůbec nenabízejí**; `sap_attachment` zůstává pro `info`/`download` a nahrávání odmítá a `sap_deploy_queries` si ponechá zkušební běh (odmítne se jen skutečné nasazení). Po změně režimu server restartujte (LLM klient načte seznam nástrojů znovu při dalším připojení). Které nástroje existují, závisí navíc na edici licence → [lizenz.cs.md](lizenz.cs.md) |
 | `SAP_ALLOW_SELF_SIGNED_CERT` | `false` | povolit self-signed SL certifikát |
 | `SAP_MAX_PAGE_SIZE` | `200` | max. řádků na stránku |
 | `SAP_MAX_CONCURRENT_REQUESTS` | `10` | paralelní SL požadavky |
@@ -56,8 +56,10 @@ SAP_PUBLIC_URL=http://127.0.0.1:8000
 ### Dodávané reporty
 Server při **prvním připojení** dané CompanyDB sám nasadí své hotové reporty
 (dotazy `AI_*` v `SQLQueries`) — jednou za běh serveru. Předpoklady:
-`SAP_OPERATION_MODE=READ_WRITE` a B1 uživatel, který smí vytvářet dotazy. V režimu
-čtení (`READ_ONLY`) se to přeskočí; reporty pak chybí, vše ostatní funguje beze
+`SAP_OPERATION_MODE=READ_WRITE`, B1 uživatel, který smí vytvářet dotazy, a edice,
+která reporty umí spustit. V režimu čtení (`READ_ONLY`) se to přeskočí a u edice
+pro kmenová data (BASIC) také — `sap_curated_query` tam není k dispozici, reporty
+by tedy ležely nepoužitelné ve vašich `SQLQueries`. Vše ostatní funguje beze
 změny. Vlastní napsané dotazy `AI_*` se nikdy nepřepíší. V případě potřeby lze
 nasazení v chatu cíleně spustit (`sap_deploy_queries`) nebo vypnout přes
 `SAP_AUTO_DEPLOY_QUERIES=false`.
@@ -67,7 +69,9 @@ nasazení v chatu cíleně spustit (`sap_deploy_queries`) nebo vypnout přes
 |---|---|
 | `SAP_AUTH_MODE` | `basic` (uživatel/heslo přímo na SL) nebo `bearer` (browser SSO s PKCE, token při každém volání — od FP 2208 s tokeny SAP Authentication Serveru; pokud tokeny vydává vlastní Identity Provider, viz poznámka v sso-keycloak.cs.md) |
 | `SAP_DISABLE_INLINE_LOGIN` | přihlášení jen přes dialog/web UI, nikdy jako argument v chatu. **Výchozí `true`, jakmile je nastaveno `SAP_PUBLIC_URL`** (síťová instalace); `false` jen lokálně nebo jako vědomé opt-in (`doctor` varuje) |
-| `SAP_TRUSTED_PROXIES` | adresy reverse proxy (IP/CIDR, oddělené čárkou), jejichž `X-Forwarded-For` server důvěřuje pro omezení přihlášení a audit log — např. `127.0.0.1`, když nginx běží na stejném stroji. Prázdné = za klienta se bere socket peer (za proxy by to byla proxy sama, celá kancelář by pak sdílela jedno počítadlo) |
+| `SAP_ALLOWED_CLIENTS` | adresy/sítě (IP/CIDR, oddělené čárkou), které smějí server vůbec oslovit. Prázdné (výchozí) = každý, kdo dosáhne na port. **Není to autentizace** — přihlášení zůstává uživatel/heslo/databáze; jen to odstraní otevřený internet. Překlep ukončí start a pojmenuje záznam |
+| `SAP_TICKET_SESSION_MAX_SECONDS` | absolutní životnost relace oslovené klíčem z přihlášení v prohlížeči, v sekundách (výchozí `3600`, `0` = vypnuto). Tento klíč putoval chatem a předává se při každém volání, je proto omezen přísněji než `SAP_SESSION_MAX_SECONDS`; platí kratší z obou. Uživatelé se poté znovu přihlásí přes `connect` |
+| `SAP_TRUSTED_PROXIES` | adresy reverse proxy (IP/CIDR, oddělené čárkou), jejichž `X-Forwarded-For` server důvěřuje pro omezení přihlášení a audit log — např. `127.0.0.1`, když nginx běží na stejném stroji. Prázdné = za klienta se bere socket peer (za proxy by to byla proxy sama, celá kancelář by pak sdílela jedno počítadlo). Záznam pro vše (`0.0.0.0/0`, `::/0`) je při startu odmítnut: důvěřovat všem by znamenalo, že si každý klient může na každý požadavek nárokovat novou adresu — omezovač by byl vypnutý |
 | `SAP_LOGIN_MAX_FAILURES` | neúspěšná přihlášení z jedné adresy během `SAP_LOGIN_WINDOW_SECONDS`, než je adresa pozastavena (výchozí `10`); pauza začíná na 30 s a zdvojnásobuje se až do 15 min, úspěšné přihlášení ji vynuluje |
 | `SAP_LOGIN_WINDOW_SECONDS` | okno pro `SAP_LOGIN_MAX_FAILURES` (výchozí `900`) |
 | `SAP_TICKET_ISSUE_PER_MINUTE` | globální strop přihlašovacích odkazů pro prohlížeč za minutu (výchozí `60`) — chrání neautentizovanou cestu před záplavou |
@@ -113,8 +117,9 @@ Single Sign-On Manager). Kompletní návod včetně kroků na straně SAP:
 | `SAP_LICENSE` | licenční token přímo (alternativa k souboru) |
 | `SAP_LICENSE_CACHE_FILE` | cesta pro obnovené tokeny (tichá cache obnovy); výchozí `versino.renewed` vedle licence/binárky |
 | `SAP_INSTALL_IDENTITY_PATH` | cesta identity instalace (`install_identity.json`); výchozí relativně k pracovnímu adresáři — v kontejnerech (read-only rootfs) nastavte trvalou cestu |
-| `SAP_TIME_ANCHOR_PATH` | monotonní časová kotva proti vrácení hodin (hardening pro air-gapped provoz); bez cesty vypnuto |
+| `SAP_TIME_ANCHOR_PATH` | monotónní časová značka proti vrácení hodin. **Od 3.8.1 zapnuto ve výchozím stavu**: soubor leží vedle `versino.key`. Cesta ji přesune, prázdná hodnota ji vypne (kontejnery jen pro čtení) |
 | `SAP_ENROLLMENT_TOKEN` | phone-home/auto-renewal — **obvykle není potřeba** (token je zapečený ve `versino.key`). Jen jako override pro test/staging |
+| `SAP_LICENSE_VALIDATION_URL` | override vestavěného validačního endpointu (test/staging). **Musí být `https`** — požadavek nese číslo zákazníka a počet seatů, prosté `http` na vzdálený host je odmítnuto; nešifrovaně jsou povoleny jen `127.0.0.1`, `::1` a `localhost`. Adresa pro enrollment se odvozuje z adresáře této URL — cestu proto ponechte beze změny |
 
 Phone-Home / automatické obnovení předplatného (běžný případ): viz [lizenz.cs.md](lizenz.cs.md).
 
@@ -130,10 +135,16 @@ Phone-Home / automatické obnovení předplatného (běžný případ): viz [liz
   proxy); po `connect(ticket=…)` je ticket vyřazen a vrácena nová hodnota relace;
   neúspěšné pokusy jsou omezovány podle adresy a každý pokus se zapisuje do audit
   logu (uživatel, CompanyDB, zdrojová adresa, výsledek — nikdy heslo); relace končí
-  po `SAP_SESSION_MAX_SECONDS`.
+  po `SAP_SESSION_MAX_SECONDS` (8 h) a relace oslovená klíčem z přihlášení v
+  prohlížeči po `SAP_TICKET_SESSION_MAX_SECONDS` (1 h) — platí kratší mez.
 - Za reverse proxy nastavte `SAP_TRUSTED_PROXIES`, aby omezení vidělo skutečné
   adresy klientů, a doplňte limity na straně proxy z
   [installation-zentral.cs.md](installation-zentral.cs.md).
+- `sapb1-mcp doctor` čte testovací heslo z **`SAP_DOCTOR_PASSWORD`**, nikoli z
+  `--password`: heslo na příkazové řádce je vidět v seznamu procesů a při zapnutém
+  auditu příkazové řádky i v protokolu událostí Windows, kde přežije instalaci.
+  Přepínač stále funguje, ale varuje. Proměnná platí pro jediné volání `doctor`
+  (instalátor ji nastavuje jen pro tento podproces) — do `.env` nepatří.
 - Pro síťový provoz zapnout TLS (nativně v MCP, nebo reverse proxy).
 
 ## Logování

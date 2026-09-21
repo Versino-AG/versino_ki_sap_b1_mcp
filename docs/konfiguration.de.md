@@ -1,4 +1,4 @@
-<!-- translation-of: konfiguration.md@07bf91c8df20 -->
+<!-- translation-of: konfiguration.md@79126fc98aea -->
 # Konfiguration (`.env`)
 
 > 🌐 [English](konfiguration.md) · **Deutsch** · [Česky](konfiguration.cs.md)
@@ -41,7 +41,7 @@ SAP_PUBLIC_URL=http://127.0.0.1:8000
 |---|---|---|
 | `SAP_BASE_URL` | – | Service-Layer-URL, z. B. `https://host:50000/b1s/v2/` |
 | `SAP_DATABASES` | – | Wählbare CompanyDBs (Komma-Liste) |
-| `SAP_OPERATION_MODE` | `READ_ONLY` | `READ_ONLY` oder `READ_WRITE`. Im `READ_ONLY` werden die Schreib-Tools (`sap_create`, `sap_update`, `sap_delete`, `sap_action`, `sap_deploy_queries`) **gar nicht angeboten**; `sap_attachment` bleibt für `info`/`download` und lehnt Uploads ab. Nach einem Moduswechsel den Server neu starten (der LLM-Client liest die Tool-Liste beim Neuverbinden neu) |
+| `SAP_OPERATION_MODE` | `READ_ONLY` | `READ_ONLY` oder `READ_WRITE`. Im `READ_ONLY` werden die Schreib-Tools (`sap_create`, `sap_update`, `sap_delete`, `sap_action`) **gar nicht angeboten**; `sap_attachment` bleibt für `info`/`download` und lehnt Uploads ab, und `sap_deploy_queries` behält seinen Probelauf (nur das echte Ausbringen wird abgelehnt). Nach einem Moduswechsel den Server neu starten (der LLM-Client liest die Tool-Liste beim Neuverbinden neu). Welche Tools es gibt, hängt zusätzlich von der Lizenz-Edition ab → [lizenz.de.md](lizenz.de.md) |
 | `SAP_ALLOW_SELF_SIGNED_CERT` | `false` | selbstsigniertes SL-Zertifikat zulassen |
 | `SAP_MAX_PAGE_SIZE` | `200` | max. Zeilen pro Seite |
 | `SAP_MAX_CONCURRENT_REQUESTS` | `10` | parallele SL-Requests |
@@ -55,10 +55,12 @@ SAP_PUBLIC_URL=http://127.0.0.1:8000
 ### Mitgelieferte Auswertungen
 Der Server bringt seine fertigen Auswertungen (`AI_*`-Abfragen in
 `SQLQueries`) beim **ersten Verbinden** je CompanyDB selbst aus — einmal pro
-Serverlauf. Voraussetzungen: `SAP_OPERATION_MODE=READ_WRITE` und ein
-B1-Benutzer, der Abfragen anlegen darf. Im Lesebetrieb (`READ_ONLY`) wird das
-übersprungen; die Auswertungen fehlen dann, alles andere funktioniert
-unverändert. Selbst geschriebene `AI_*`-Abfragen werden nie überschrieben.
+Serverlauf. Voraussetzungen: `SAP_OPERATION_MODE=READ_WRITE`, ein
+B1-Benutzer, der Abfragen anlegen darf, und eine Edition, welche die
+Auswertungen ausführen kann. Im Lesebetrieb (`READ_ONLY`) wird das übersprungen,
+und mit einer Stammdaten-Edition (BASIC) ebenfalls — dort gibt es
+`sap_curated_query` nicht, die Auswertungen lägen also unbenutzbar in euren
+`SQLQueries`. Alles andere funktioniert unverändert. Selbst geschriebene `AI_*`-Abfragen werden nie überschrieben.
 Bei Bedarf lässt sich die Ausbringung im Chat gezielt anstoßen
 (`sap_deploy_queries`) oder mit `SAP_AUTO_DEPLOY_QUERIES=false` abschalten.
 
@@ -67,7 +69,9 @@ Bei Bedarf lässt sich die Ausbringung im Chat gezielt anstoßen
 |---|---|
 | `SAP_AUTH_MODE` | `basic` (User/Passwort direkt an SL) oder `bearer` (Browser-SSO mit PKCE, Token bei jedem Aufruf — ab FP 2208 mit Tokens des SAP-Authentication-Servers; stellt ein eigener Identity Provider die Tokens selbst aus, siehe Hinweis in sso-keycloak.de.md) |
 | `SAP_DISABLE_INLINE_LOGIN` | Login nur via Dialog/Web-UI, nie als Chat-Argument. **Standard `true`, sobald `SAP_PUBLIC_URL` gesetzt ist** (Netzwerk-Installation); `false` nur lokal oder als bewusstes Opt-in (`doctor` warnt) |
-| `SAP_TRUSTED_PROXIES` | Reverse-Proxy-Adressen (IPs/CIDRs, kommagetrennt), deren `X-Forwarded-For` der Server für die Login-Drossel und das Audit-Log vertraut — z. B. `127.0.0.1`, wenn nginx auf derselben Maschine läuft. Leer = der Socket-Peer gilt als Client (hinter einem Proxy wäre das der Proxy selbst, das ganze Büro teilt sich dann einen Zähler) |
+| `SAP_ALLOWED_CLIENTS` | Adressen/Netze (IP/CIDR, kommagetrennt), die den Server überhaupt erreichen dürfen. Leer (Default) = jeder, der den Port erreicht. **Keine Anmeldung** — die bleibt Benutzer/Passwort/Datenbank; es entfernt nur das offene Internet. Ein Tippfehler bricht den Start ab und nennt den Eintrag |
+| `SAP_TICKET_SESSION_MAX_SECONDS` | absolute Lebensdauer einer Sitzung, die über einen Browser-Login-Schlüssel angesprochen wird, in Sekunden (Default `3600`, `0` = aus). Dieser Schlüssel reiste durch den Chatverlauf und wird bei jedem Aufruf mitgegeben, ist also enger begrenzt als `SAP_SESSION_MAX_SECONDS`; es gilt die kürzere der beiden Grenzen. Nutzer melden sich danach über `connect` neu an |
+| `SAP_TRUSTED_PROXIES` | Reverse-Proxy-Adressen (IPs/CIDRs, kommagetrennt), deren `X-Forwarded-For` der Server für die Login-Drossel und das Audit-Log vertraut — z. B. `127.0.0.1`, wenn nginx auf derselben Maschine läuft. Leer = der Socket-Peer gilt als Client (hinter einem Proxy wäre das der Proxy selbst, das ganze Büro teilt sich dann einen Zähler). Ein Alles-Eintrag (`0.0.0.0/0`, `::/0`) wird beim Start abgewiesen: Jedem zu vertrauen hieße, dass jeder Client pro Anfrage eine neue Adresse behaupten kann — die Drossel wäre aus |
 | `SAP_LOGIN_MAX_FAILURES` | Fehlversuche pro Client-Adresse innerhalb von `SAP_LOGIN_WINDOW_SECONDS`, bevor die Adresse pausiert wird (Standard `10`); die Pause beginnt bei 30 s und verdoppelt sich bis 15 Min., eine erfolgreiche Anmeldung setzt zurück |
 | `SAP_LOGIN_WINDOW_SECONDS` | Zeitfenster für `SAP_LOGIN_MAX_FAILURES` (Standard `900`) |
 | `SAP_TICKET_ISSUE_PER_MINUTE` | globale Obergrenze für Browser-Login-Links pro Minute (Standard `60`) — schützt den unauthentifizierten Pfad vor Fluten |
@@ -113,8 +117,9 @@ SAP-seitigen Schritte: [sso-keycloak.de.md](sso-keycloak.de.md).
 | `SAP_LICENSE` | Lizenz-Token direkt (Alternative zur Datei) |
 | `SAP_LICENSE_CACHE_FILE` | Pfad für erneuerte Token (stiller Renewal-Cache); Default `versino.renewed` neben Lizenz/Binary |
 | `SAP_INSTALL_IDENTITY_PATH` | Pfad der Installations-Identität (`install_identity.json`); Default relativ zum Arbeitsverzeichnis — in Containern (read-only Rootfs) einen persistenten Pfad setzen |
-| `SAP_TIME_ANCHOR_PATH` | monotoner Zeit-Anker gegen Uhr-Rückstellung (Härtung für air-gapped Betrieb); ohne Pfad deaktiviert |
+| `SAP_TIME_ANCHOR_PATH` | monotone Zeitmarke gegen Zurückstellen der Uhr. **Seit 3.8.1 standardmäßig aktiv**: Die Datei liegt neben `versino.key`. Ein Pfad verschiebt sie, ein leerer Wert schaltet sie ab (schreibgeschützte Container) |
 | `SAP_ENROLLMENT_TOKEN` | Phone-Home/Auto-Renewal — **normalerweise nicht nötig** (Token ist in der `versino.key` eingebacken). Nur als Override für Test/Staging |
+| `SAP_LICENSE_VALIDATION_URL` | Override für den eingebauten Validierungs-Endpoint (Test/Staging). **Muss `https` sein** — die Anfrage trägt Kundennummer und Seat-Zahl, einfaches `http` gegen einen entfernten Host wird abgewiesen; unverschlüsselt erlaubt sind nur `127.0.0.1`, `::1` und `localhost`. Die Enrollment-Adresse wird aus dem Verzeichnis dieser URL abgeleitet — den Pfad daher unverändert lassen |
 
 Phone-Home / automatische Abo-Erneuerung (Normalfall): siehe [lizenz.de.md](lizenz.de.md).
 
@@ -130,10 +135,18 @@ Phone-Home / automatische Abo-Erneuerung (Normalfall): siehe [lizenz.de.md](lize
   `connect(ticket=…)` wird das Ticket ausgemustert und ein frischer Sitzungswert
   zurückgegeben; Fehlversuche werden pro Adresse gedrosselt, und jeder Versuch
   landet im Audit-Log (Nutzer, CompanyDB, Quelladresse, Ergebnis — nie das
-  Passwort); Sitzungen enden nach `SAP_SESSION_MAX_SECONDS`.
+  Passwort); Sitzungen enden nach `SAP_SESSION_MAX_SECONDS` (8 h), eine über einen
+  Browser-Login-Schlüssel angesprochene Sitzung nach `SAP_TICKET_SESSION_MAX_SECONDS`
+  (1 h) — es gilt die kürzere Grenze.
 - Hinter einem Reverse-Proxy `SAP_TRUSTED_PROXIES` setzen, damit die Drossel echte
   Client-Adressen sieht, und die Proxy-Limits aus
   [installation-zentral.de.md](installation-zentral.de.md) ergänzen.
+- `sapb1-mcp doctor` liest das Testpasswort aus **`SAP_DOCTOR_PASSWORD`**, nicht aus
+  `--password`: Ein Passwort auf der Kommandozeile steht in der Prozessliste und, bei
+  aktivierter Kommandozeilen-Protokollierung, im Windows-Ereignisprotokoll, wo es die
+  Installation überdauert. Der Schalter funktioniert weiter, warnt aber. Die Variable
+  gilt dem einzelnen `doctor`-Aufruf (der Installer setzt sie nur für diesen
+  Kindprozess) — in die `.env` gehört sie nicht.
 - Für Netzwerkbetrieb TLS (Reverse-Proxy) vorschalten.
 
 ## Logging

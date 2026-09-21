@@ -10,7 +10,7 @@ so it only passes a *reference*. Three ways are available.
 ## 1. Upload in the browser (default — works with Claude Desktop)
 
 1. Ask the assistant to attach a file. It calls `sap_attachment(op="upload_request")`
-   and gives you a link like `https://mcp.example.com/upload?u=…`.
+   and gives you a link like `https://mcp.example.com/upload#u=…`.
 2. Open the link, drop the file (or choose it). The page confirms and shows the id.
 3. Back in the chat the assistant finishes with `sap_attachment(op="upload", upload_id=…)`
    and, if requested, sets the document's `AttachmentEntry` via `sap_update`.

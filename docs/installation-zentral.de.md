@@ -1,4 +1,4 @@
-<!-- translation-of: installation-zentral.md@7c9ff09b2549 -->
+<!-- translation-of: installation-zentral.md@a7edd0be3160 -->
 # SAP-B1-MCP zentral betreiben (eine Instanz für alle Arbeitsplätze)
 
 > 🌐 [English](installation-zentral.md) · **Deutsch** · [Česky](installation-zentral.cs.md)
@@ -210,6 +210,18 @@ weiß, wem er vertrauen darf:
 - Nach außen (an die Arbeitsplätze) nur **443/TLS** des Proxys öffnen.
 - Den MCP-Port `8000` **nicht** ins Netz exponieren (nur `127.0.0.1`).
 - Vom Server zum SAP-Host muss **50000** (Service Layer) erreichbar sein.
+- `SAP_ALLOWED_CLIENTS` auf die Netze setzen, die den Server erreichen dürfen,
+  z. B. `SAP_ALLOWED_CLIENTS=10.0.0.0/8` (hinter einem Proxy: dessen Adresse).
+  Jede andere Adresse wird mit 403 abgewiesen, bevor eine Route läuft.
+
+> **Die Netzgrenze liegt bei Ihnen.** Die Anmeldung erfolgt mit Benutzer,
+> Passwort und Datenbank — der MCP-Endpunkt selbst trägt bewusst keine
+> Transport-Authentifizierung (wer tokenbasierten Zugang will, nimmt
+> `SAP_AUTH_MODE=bearer`). Das heißt: Wer den Port erreicht, kann eine Anmeldung
+> mit SAP-Zugangsdaten versuchen, geschützt nur durch die Login-Drossel. Hinter
+> Firewall, `SAP_ALLOWED_CLIENTS` und TLS ist das ein beherrschtes Risiko, auf
+> einer zum Internet offenen Schnittstelle nicht. Der Server warnt beim Start
+> deutlich, wenn er auf allen Schnittstellen ohne TLS und ohne Allowlist lauscht.
 
 ## 7. Arbeitsplätze anbinden (ohne lokale Installation)
 Jeder Nutzer trägt nur die **zentrale URL** im LLM-Client ein — sonst nichts.

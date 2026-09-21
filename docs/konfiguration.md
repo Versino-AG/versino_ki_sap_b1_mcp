@@ -42,7 +42,7 @@ SAP_PUBLIC_URL=http://127.0.0.1:8000
 |---|---|---|
 | `SAP_BASE_URL` | – | Service Layer URL, e.g. `https://host:50000/b1s/v2/` |
 | `SAP_DATABASES` | – | selectable CompanyDBs (comma list) |
-| `SAP_OPERATION_MODE` | `READ_ONLY` | `READ_ONLY` or `READ_WRITE`. In `READ_ONLY` the write tools (`sap_create`, `sap_update`, `sap_delete`, `sap_action`, `sap_deploy_queries`) are **not offered at all**; `sap_attachment` stays for `info`/`download` and refuses uploads. Restart the server after changing the mode (the LLM client re-reads the tool list on reconnect) |
+| `SAP_OPERATION_MODE` | `READ_ONLY` | `READ_ONLY` or `READ_WRITE`. In `READ_ONLY` the write tools (`sap_create`, `sap_update`, `sap_delete`, `sap_action`) are **not offered at all**; `sap_attachment` stays for `info`/`download` and refuses uploads, and `sap_deploy_queries` keeps its dry run (only the real rollout is refused). Restart the server after changing the mode (the LLM client re-reads the tool list on reconnect). Which tools exist also depends on the license edition → [lizenz.md](lizenz.md) |
 | `SAP_ALLOW_SELF_SIGNED_CERT` | `false` | allow a self-signed SL certificate |
 | `SAP_MAX_PAGE_SIZE` | `200` | max. rows per page |
 | `SAP_MAX_CONCURRENT_REQUESTS` | `10` | parallel SL requests |
@@ -56,9 +56,11 @@ SAP_PUBLIC_URL=http://127.0.0.1:8000
 ### Bundled reports
 The server deploys its ready-made reports (`AI_*` queries in `SQLQueries`) on
 the **first connect** per CompanyDB by itself — once per server run.
-Prerequisites: `SAP_OPERATION_MODE=READ_WRITE` and a B1 user allowed to create
-queries. In read-only mode (`READ_ONLY`) this is skipped; the reports are then
-missing, everything else works unchanged. Self-written `AI_*` queries are never
+Prerequisites: `SAP_OPERATION_MODE=READ_WRITE`, a B1 user allowed to create
+queries, and an edition that can run the reports. In read-only mode
+(`READ_ONLY`) this is skipped, and with a master-data edition (BASIC) it is
+skipped as well — `sap_curated_query` is not offered there, so the reports would
+sit unusable in your `SQLQueries`. Everything else works unchanged. Self-written `AI_*` queries are never
 overwritten. If needed, trigger the deployment in the chat
 (`sap_deploy_queries`) or disable it with `SAP_AUTO_DEPLOY_QUERIES=false`.
 
@@ -67,7 +69,9 @@ overwritten. If needed, trigger the deployment in the chat
 |---|---|
 | `SAP_AUTH_MODE` | `basic` (user/password straight to the SL) or `bearer` (browser SSO with PKCE, token on every call — from FP 2208 with tokens of the SAP Authentication Server; if your own identity provider issues the tokens itself, see the note in sso-keycloak.md) |
 | `SAP_DISABLE_INLINE_LOGIN` | login only via dialog/web UI, never as a chat argument. **Default `true` as soon as `SAP_PUBLIC_URL` is set** (network install); `false` only locally or as an explicit opt-in (`doctor` warns) |
-| `SAP_TRUSTED_PROXIES` | reverse-proxy addresses (IPs/CIDRs, comma-separated) whose `X-Forwarded-For` the server trusts for the login throttle and the audit log — e.g. `127.0.0.1` when nginx runs on the same machine. Empty = the socket peer counts as the client (behind a proxy that would be the proxy itself, so the whole office shares one counter) |
+| `SAP_ALLOWED_CLIENTS` | addresses/networks (IPs/CIDRs, comma-separated) that may reach the server at all. Empty (default) = everyone who reaches the port. **Not authentication** — sign-in stays user/password/database; this only removes the open internet. A typo aborts start-up naming the entry |
+| `SAP_TICKET_SESSION_MAX_SECONDS` | absolute lifetime of a session addressed by a browser-login handle, in seconds (default `3600`, `0` = off). That handle travelled through the chat transcript and is passed on every call, so it is bounded more tightly than `SAP_SESSION_MAX_SECONDS`; the shorter of the two applies. Users then sign in again via `connect` |
+| `SAP_TRUSTED_PROXIES` | reverse-proxy addresses (IPs/CIDRs, comma-separated) whose `X-Forwarded-For` the server trusts for the login throttle and the audit log — e.g. `127.0.0.1` when nginx runs on the same machine. Empty = the socket peer counts as the client (behind a proxy that would be the proxy itself, so the whole office shares one counter). A catch-all entry (`0.0.0.0/0`, `::/0`) is refused at start-up: trusting everyone would let any client claim a fresh address per request and turn the throttle off |
 | `SAP_LOGIN_MAX_FAILURES` | failed sign-ins per client address within `SAP_LOGIN_WINDOW_SECONDS` before the address is paused (default `10`); the pause starts at 30 s and doubles up to 15 min, a successful sign-in resets it |
 | `SAP_LOGIN_WINDOW_SECONDS` | window for `SAP_LOGIN_MAX_FAILURES` (default `900`) |
 | `SAP_TICKET_ISSUE_PER_MINUTE` | global cap on browser-login links minted per minute (default `60`) — protects the unauthenticated path against floods |
@@ -113,8 +117,9 @@ The redirect URI `<SAP_PUBLIC_URL>/callback` must be registered on the client
 | `SAP_LICENSE` | license token inline (alternative to the file) |
 | `SAP_LICENSE_CACHE_FILE` | path for renewed tokens (silent renewal cache); default `versino.renewed` next to the license/binary |
 | `SAP_INSTALL_IDENTITY_PATH` | path of the installation identity (`install_identity.json`); default relative to the working directory — set a persistent path in containers (read-only rootfs) |
-| `SAP_TIME_ANCHOR_PATH` | monotonic time anchor against clock roll-back (hardening for air-gapped operation); disabled when unset |
+| `SAP_TIME_ANCHOR_PATH` | monotonic time anchor against clock roll-back. **On by default** since 3.8.1: the anchor file sits next to `versino.key`. Set a path to move it, or set it to an empty value to switch it off (read-only containers) |
 | `SAP_ENROLLMENT_TOKEN` | phone-home/auto-renewal — **normally not needed** (the token is baked into `versino.key`). Only as an override for test/staging |
+| `SAP_LICENSE_VALIDATION_URL` | override for the built-in validation endpoint (test/staging). **Must be `https`** — the request carries the customer id and the seat count, so plain `http` to a remote host is refused; only `127.0.0.1`, `::1` and `localhost` may be plain. The enrolment address is derived from this URL's directory, so keep the path intact |
 
 Phone-home / automatic subscription renewal (the normal case): see
 [lizenz.md](lizenz.md).
@@ -131,10 +136,18 @@ Phone-home / automatic subscription renewal (the normal case): see
   after `connect(ticket=…)` the ticket is retired and a fresh session value is
   returned; failed sign-ins are throttled per address and every attempt is
   written to the audit log (user, CompanyDB, source address, outcome — never
-  the password); sessions end after `SAP_SESSION_MAX_SECONDS`.
+  the password); sessions end after `SAP_SESSION_MAX_SECONDS` (8 h), and a session
+  addressed by a browser-login handle after `SAP_TICKET_SESSION_MAX_SECONDS` (1 h) —
+  the shorter limit wins.
 - Behind a reverse proxy set `SAP_TRUSTED_PROXIES` so the throttle sees real
   client addresses, and add the proxy-side limits from
   [installation-zentral.md](installation-zentral.md).
+- `sapb1-mcp doctor` reads the test password from **`SAP_DOCTOR_PASSWORD`**, not
+  from `--password`: a password on the command line is visible in the process list
+  and, with command-line auditing on, in the Windows event log, where it outlives the
+  installation. The flag still works but warns. The variable is meant for the single
+  `doctor` call (the installer sets it for that child process only) — it does not
+  belong in the `.env`.
 - For network operation put TLS in front (native or reverse proxy).
 
 ## Logging

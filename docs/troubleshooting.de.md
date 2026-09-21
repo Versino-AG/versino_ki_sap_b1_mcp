@@ -1,7 +1,39 @@
-<!-- translation-of: troubleshooting.md@5dfefad6971e -->
+<!-- translation-of: troubleshooting.md@9ae7271704d5 -->
 # Troubleshooting
 
 > 🌐 [English](troubleshooting.md) · **Deutsch** · [Česky](troubleshooting.cs.md)
+
+## Welche Version läuft?
+Vier Wege, alle mit derselben Nummer:
+
+```
+sapb1-mcp.exe --version                 # auf der Kommandozeile
+curl http://<host>:8000/version         # aus einem Monitoring oder Skript
+```
+
+Das Startprotokoll führt sie als Feld `version` in der Zeile
+`server.per_user_start`, und `sap_help` nennt sie im `instance`-Block — hilfreich,
+wenn Sie den Assistenten vor sich haben, aber nicht den Rechner.
+
+`/version` antwortet ohne Anmeldung und nennt nichts außer Name und Nummer. Ist
+`SAP_ALLOWED_CLIENTS` gesetzt, antwortet er nur den dort eingetragenen Adressen.
+Er ist **kein** Health-Check: Er sagt, welche Version installiert ist, nicht ob
+der Server gesund ist.
+
+## Wo die Logdateien liegen
+Zwei größenbegrenzte Dateien unter `%APPDATA%\Versino\sapb1-mcp\` (unter Linux
+`~/.config/Versino/sapb1-mcp/`):
+- `sapb1-mcp.log` — Warnungen und Fehler des laufenden Servers.
+- `sapb1-mcp-audit.log` — die Anmeldespur (wer, von wo, wann, erfolgreich oder
+  nicht). Getrennt und mit größerem Budget, damit eine Flut gewöhnlicher
+  Warnungen nicht die Belege verdrängt, die ein Supportfall oder eine
+  Vorfallsanalyse braucht — und umgekehrt.
+
+**Als Windows-Dienst** liegen die Dateien stattdessen unter der Installation:
+`<Installationsordner>\logs\Versino\sapb1-mcp\`. Der Dienst läuft als
+LocalSystem, dessen `%APPDATA%` ein Ordner innerhalb von `C:\Windows` ist, den
+niemand von sich aus öffnet — deshalb setzt der Installer ihn neben die
+Installation.
 
 ## `license.refused` beim Start
 Keine gültige Lizenz gefunden. Prüfen:
@@ -52,6 +84,29 @@ Ist das Binary noch nicht signiert, kann Windows einen Fehlalarm zeigen.
   derselbe Schalter; `info`/`download` funktionieren auch im Lesebetrieb.
 - Schreib-/Lösch-Tools sind zusätzlich an die **Edition** gebunden (PRO/ENTERPRISE),
   siehe [lizenz.de.md](lizenz.de.md).
+- **„… gehört zur Konfiguration dieser Instanz"** — die Schreib-Tools können die
+  Steuerflächen des Servers bewusst nicht anfassen: `SQLQueries`, `SQLViews`,
+  `Users`, `UserPermissionTree`, `UserObjectsMD`, `UserTablesMD`, `UserFieldsMD`
+  und `B1Sessions`. Das ist kein Berechtigungsproblem — Ihr SAP-Benutzer darf das
+  möglicherweise sehr wohl. Es ist eine Grenze der Chat-Schnittstelle: Ein
+  Assistent, der eine kuratierte Auswertung umschreiben kann, könnte manipulierte
+  Zahlen als geprüfte ausgeben. Dafür den SAP-Client nutzen, für kuratierte
+  Auswertungen `sap_deploy_queries`. Alles andere bleibt schreibbar.
+
+## Ein Tool fehlt ganz (nicht nur abgelehnt)
+Der Server bietet nur Tools an, die diese Installation wirklich ausführen kann —
+so schlägt der Assistent nichts vor, was Lizenz oder Einstellungen nicht
+abdecken. Drei Schranken entscheiden das, und `sap_help` nennt unter
+`instance.tools_hidden` je Tool die zutreffende:
+
+- `edition` — die Lizenz-Edition enthält es nicht → [lizenz.de.md](lizenz.de.md).
+- `read_scope` — die Edition liest nur Stammdaten, das Tool aber beliebige
+  Tabellen (`sap_curated_query`, `sap_semantic_query`, `sap_attachment` und damit
+  auch `sap_deploy_queries`).
+- `operation_mode` — `SAP_OPERATION_MODE=READ_ONLY` (siehe oben).
+
+Nach einem Lizenz- oder Moduswechsel den Server neu starten und den Client neu
+verbinden — er cacht die Tool-Liste.
 
 ## Windows: Fenster schließt sich sofort wieder
 Meist ist der **Port schon belegt** (ein anderer Dienst lauscht auf `8000`; im Log
@@ -96,12 +151,45 @@ Sitzungen enden nach `SAP_SESSION_MAX_SECONDS` (Standard 8 h) unabhängig von de
 Aktivität; der Assistent wird aufgefordert, `connect` erneut aufzurufen — mehr ist
 nicht nötig. `0` schaltet die Grenze ab.
 
+Eine Sitzung, die über einen **Browser-Login-Schlüssel** angesprochen wird, ist enger
+begrenzt: `SAP_TICKET_SESSION_MAX_SECONDS` (Standard 1 h). Dieser Schlüssel reiste
+durch den Chatverlauf und wird bei jedem Aufruf mitgegeben, läuft also früher ab als
+eine transportgebundene Sitzung — es gilt die kürzere der beiden Grenzen. Wenn Nutzer
+sich nach etwa einer Stunde neu anmelden müssen, ist das diese Variable, nicht
+`SAP_SESSION_MAX_SECONDS`.
+
 ## Login-Seite meldet, der Link enthalte kein Ticket
 Der Link trägt das Ticket hinter dem `#` (`…/login#t=…`). Manche Chat-Oberflächen
 schneiden diesen Teil beim Darstellen ab: den Link genau so öffnen, wie er
 ausgegeben wurde, oder den Assistenten mit `connect` um einen neuen bitten. Auch
 ein Neuladen der Seite nach der Anmeldung verliert das Fragment (absichtlich) —
 neuen Link anfordern.
+
+## HTTP 403 „This address is not in SAP_ALLOWED_CLIENTS"
+`SAP_ALLOWED_CLIENTS` begrenzt, welche Adressen den Server überhaupt erreichen
+(IP/CIDR, kommagetrennt; leer = aus, also jeder, der den Port erreicht). Die Prüfung
+läuft vor jeder Route und deckt damit auch den MCP-Endpunkt ab, nicht nur die
+Web-Seiten. Adresse oder Netz des Aufrufers eintragen und neu starten. Hinter einem
+Reverse Proxy sieht der Server die Adresse des **Proxy**, nicht die des Endnutzers —
+dort also den Proxy eintragen und für die Login-Drossel `SAP_TRUSTED_PROXIES`
+verwenden. Ein Tippfehler bricht den Start ab und nennt den Eintrag.
+
+## HTTP 403 „Cross-site request refused"
+Die Anmelde-Routen werden von einem MCP-Client oder von der Anmeldeseite angesprochen,
+die dieser Server selbst ausliefert — nie von einer fremden Website. Ein Browser, der
+von einer fremden Seite kommt (`Sec-Fetch-Site: cross-site`/`same-site`, oder ein
+`Origin`, das weder der eigene Host der Anfrage noch `SAP_PUBLIC_URL` ist), wird
+abgewiesen. MCP-Clients senden beide Header nicht und sind nicht betroffen. Trifft es
+eine legitime Installation, liegt es meist an einem Reverse Proxy, der `Host`
+umschreibt: Er muss den öffentlichen Namen durchreichen, oder `SAP_PUBLIC_URL` muss
+dem entsprechen, was der Browser tatsächlich aufruft.
+
+## „Dieses Anmelde-Ticket wurde bereits eingelöst"
+Ein Browser-Login-Ticket gibt den Sitzungswert **einmal** heraus. Eine Wiederholung
+wird noch bedient (damit eine verlorene Antwort nicht die Anmeldung kostet), jede
+weitere bekommt diese Meldung und keinen Wert mehr. Für alle weiteren Aufrufe den
+`ticket`-Wert aus dem erfolgreichen `connect` verwenden — das ist ein anderer Wert als
+der im Link. Ist er verloren, mit `connect` einen neuen Browser-Login starten.
 
 ## `npx` / Node.js nicht gefunden (Bridge)
 Die `mcp-remote`-Bridge benötigt **Node.js**. Node LTS von

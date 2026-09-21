@@ -2,6 +2,37 @@
 
 > 🌐 **English** · [Deutsch](troubleshooting.de.md) · [Česky](troubleshooting.cs.md)
 
+## Which version is running?
+Four ways, all reporting the same number:
+
+```
+sapb1-mcp.exe --version                 # on the command line
+curl http://<host>:8000/version         # from a monitor or a script
+```
+
+The start-up log carries it as the field `version` in the line
+`server.per_user_start`, and `sap_help` reports it in its `instance` block —
+useful when you have the assistant in front of you but not the machine.
+
+`/version` answers without a sign-in and says nothing beyond the name and the
+number. If `SAP_ALLOWED_CLIENTS` is set, it answers only the addresses listed
+there. It is **not** a health check: it says which version is installed, not
+whether the server is healthy.
+
+## Where the log files are
+Two size-capped files under `%APPDATA%\Versino\sapb1-mcp\` (on Linux
+`~/.config/Versino/sapb1-mcp/`):
+- `sapb1-mcp.log` — warnings and errors of the running server.
+- `sapb1-mcp-audit.log` — the sign-in trail (who, from where, when, success or
+  failure). Kept separately and with a larger budget so a flood of ordinary
+  warnings cannot prune away the evidence a support case or an incident review
+  needs — and the other way round.
+
+**Running as a Windows service** the files live under the installation instead:
+`<installation folder>\logs\Versino\sapb1-mcp\`. The service runs as
+LocalSystem, whose `%APPDATA%` is a folder inside `C:\Windows` that nobody would
+think to open, so the installer points it next to the installation.
+
 ## `license.refused` at startup
 No valid license found. Check:
 - is `versino.key` **next to** the binary? (or does `SAP_LICENSE_FILE` point to it?)
@@ -50,6 +81,29 @@ If the binary is not signed yet, Windows may show a false positive.
   SAP" → same switch; `info`/`download` keep working in read-only mode.
 - Write/delete tools are additionally bound to the **edition** (PRO/ENTERPRISE),
   see [lizenz.md](lizenz.md).
+- **"… is part of this instance's own configuration"** — the write tools
+  deliberately cannot touch the server's own control surfaces: `SQLQueries`,
+  `SQLViews`, `Users`, `UserPermissionTree`, `UserObjectsMD`, `UserTablesMD`,
+  `UserFieldsMD` and `B1Sessions`. That is not a permission problem — your SAP
+  user may well be allowed to. It is a boundary of the chat interface: an
+  assistant that can rewrite a curated report could present manipulated figures
+  as a vetted one. Use the SAP client for those, and `sap_deploy_queries` to roll
+  out curated reports. Everything else stays writable.
+
+## A tool is missing entirely (not just refused)
+The server only offers tools this installation can actually run, so the
+assistant never proposes something your license or settings do not cover. Three
+gates decide it, and `sap_help` names the one that applies per tool under
+`instance.tools_hidden`:
+
+- `edition` — the license edition does not include it → [lizenz.md](lizenz.md).
+- `read_scope` — the edition reads master data only, while the tool reads
+  arbitrary tables (`sap_curated_query`, `sap_semantic_query`, `sap_attachment`,
+  and therefore `sap_deploy_queries`).
+- `operation_mode` — `SAP_OPERATION_MODE=READ_ONLY` (see above).
+
+After a license or mode change, restart the server and reconnect the client — it
+caches the tool list.
 
 ## Windows: window closes again immediately
 Usually the **port is already taken** (another service listens on `8000`; the log
@@ -97,11 +151,42 @@ Sessions end after `SAP_SESSION_MAX_SECONDS` (default 8 h) regardless of
 activity; the assistant is told to run `connect` again — that is all it takes.
 `0` disables the limit.
 
+A session addressed by a **browser-login key** is capped more tightly:
+`SAP_TICKET_SESSION_MAX_SECONDS` (default 1 h). That key travelled through the chat
+transcript and is sent with every call, so it expires sooner than a transport-bound
+session — the shorter of the two limits wins. If users have to sign in again after
+about an hour, this is the variable to look at, not `SAP_SESSION_MAX_SECONDS`.
+
 ## Sign-in page says the link has no ticket
 The link carries the ticket after `#` (`…/login#t=…`). Some chat surfaces cut
 the fragment when rendering a link: open the link exactly as written, or ask the
 assistant for a new one with `connect`. Reloading the page after a sign-in also
 loses the fragment (by design) — request a new link.
+
+## HTTP 403 "This address is not in SAP_ALLOWED_CLIENTS"
+`SAP_ALLOWED_CLIENTS` limits which addresses may reach the server at all (IP/CIDR,
+comma-separated; empty = off, anyone who reaches the port). The check runs before
+every route, so it covers the MCP endpoint too, not just the web pages. Add the
+caller's address or network to the variable and restart. Behind a reverse proxy the
+address the server sees is the **proxy**, not the end user — list the proxy there,
+and use `SAP_TRUSTED_PROXIES` for the per-user login throttle. A typo aborts the
+start and names the entry.
+
+## HTTP 403 "Cross-site request refused"
+The sign-in routes are reached by an MCP client or by the sign-in page this server
+serves itself — never by another website. A browser that arrives from a foreign page
+(`Sec-Fetch-Site: cross-site`/`same-site`, or an `Origin` that is neither the
+request's own host nor `SAP_PUBLIC_URL`) is refused. MCP clients send neither header
+and are unaffected. If this hits a legitimate setup, the usual cause is a reverse
+proxy that rewrites `Host`: it must pass the public name through, or `SAP_PUBLIC_URL`
+must match what the browser actually calls.
+
+## "This sign-in ticket was already redeemed"
+A browser-login ticket hands over the session value **once**. One repeat is still
+answered (so a lost reply does not cost the sign-in); every further repeat gets this
+message and no value. Use the `ticket` value the successful `connect` returned for
+all further calls — it is a different value than the one in the link. If it is lost,
+start a new browser login with `connect`.
 
 ## `npx` / Node.js not found (bridge)
 The `mcp-remote` bridge requires **Node.js**. Install Node LTS from
