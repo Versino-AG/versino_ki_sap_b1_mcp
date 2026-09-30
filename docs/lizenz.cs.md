@@ -1,4 +1,4 @@
-<!-- translation-of: lizenz.md@d11b4e7994d7 -->
+<!-- translation-of: lizenz.md@314d7dfc32b5 -->
 
 # Licence (`versino.key`)
 
@@ -46,6 +46,11 @@ podepsané spojení s licenčním serverem. To slouží dvěma účelům:
 - **Automatické obnovení předplatného:** Při měsíčním/ročním vyúčtování server
   znovu podepíše token s novým datem expirace a doručí ho **stejným** kanálem;
   instalace ho sama převezme — **žádná ruční výměna klíče** za každé zúčtovací období.
+  Platit začne při příštím startu.
+- **Vždy naposledy vydaná licence:** instalace používá naposledy vydanou licenci —
+  novější soubor s klíčem, který uložíte, nebo novější token ze serveru, i když má
+  méně míst nebo končí dříve (např. po výpovědi). Starší licence se nikdy znovu
+  nepřevezme, ať platí jakkoli dlouho.
 
 Přenášejí se přitom jen metadata (`customer_id`, `edition`, `version`, počet
 seatů) — žádná obchodní data.
@@ -94,7 +99,23 @@ kontrola platnosti, ani automatické obnovení — dodaný token platí beze zm�
 až do svého data expirace a novou `versino.key` dostanete včas předem. Pokud phone-home nechcete vůbec, může jej Versino vypnout; pak dostáváte klíče bez registračního znaku (a tedy bez automatického prodloužení).
 
 ## Seaty
-`max_seats` omezuje počet **distinktních** SAP uživatelů. Je-li potřeba víc,
-navýšit přes licenční portál — nová `versino.key` nahradí starou.
+`max_seats` omezuje, kolik **různých** uživatelů SAP pracuje **současně**. Na tom,
+kdo to je, nezáleží — 100 uživatelů SAP se může dělit o 13 míst; kdo přijde
+první, pracuje první.
+
+Místo je obsazeno, dokud se relace používá, a uvolní se, když
+
+* se uživatel odhlásí,
+* relace dosáhne maximální délky (`SAP_SESSION_MAX_SECONDS`, u přihlášení
+  v prohlížeči `SAP_TICKET_SESSION_MAX_SECONDS`), nebo
+* relace **30 minut nic nepožadovala** — například protože bylo zavřeno okno
+  chatu. Tato doba je pevná a nelze ji nastavit.
+
+Neaktivní relace se přitom neodhlašuje. Vrátí-li se její uživatel a je volné
+místo, jednoduše pokračuje; jsou-li mezitím obsazena všechna místa, dostane
+jasnou zprávu a může to za chvíli zkusit znovu bez nového přihlášení.
+
+Je-li potřeba víc míst, navýšit přes licenční portál — nová `versino.key`
+nahradí starou.
 
 Dotazy k licenci: **support@versino.de**

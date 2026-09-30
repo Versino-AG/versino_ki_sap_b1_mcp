@@ -1,4 +1,4 @@
-<!-- translation-of: troubleshooting.md@9ae7271704d5 -->
+<!-- translation-of: troubleshooting.md@2a62805634de -->
 
 # Řešení problémů
 
@@ -82,8 +82,9 @@ Pokud binárka ještě není podepsaná, může Windows zobrazit falešný popla
   viz [lizenz.cs.md](lizenz.cs.md).
 - **„… patří ke konfiguraci této instance"** — zápisové nástroje záměrně nemohou
   sáhnout na řídicí plochy serveru: `SQLQueries`, `SQLViews`, `Users`,
-  `UserPermissionTree`, `UserObjectsMD`, `UserTablesMD`, `UserFieldsMD` a
-  `B1Sessions`. Nejde o problém oprávnění — váš uživatel SAP to klidně smí. Je to
+  `UserPermissionTree`, `UserObjectsMD`, `UserTablesMD`, `UserFieldsMD`,
+  `B1Sessions` a správce dotazů (`UserQueries`, `QueryCategories`,
+  `FormattedSearches`). Nejde o problém oprávnění — váš uživatel SAP to klidně smí. Je to
   hranice chatovacího rozhraní: asistent, který umí přepsat kurátorovaný report,
   by mohl vydávat zmanipulovaná čísla za ověřená. Na to použijte klienta SAP, pro
   kurátorované reporty `sap_deploy_queries`. Vše ostatní zůstává zapisovatelné.

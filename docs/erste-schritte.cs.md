@@ -1,4 +1,4 @@
-<!-- translation-of: erste-schritte.md@e26e7d2321e1 -->
+<!-- translation-of: erste-schritte.md@6f06ccac82e6 -->
 
 # První kroky (pro uživatele)
 
@@ -53,6 +53,11 @@ SAP oprávněních. Pokud je to aktivované, jde třeba:
 
 - *„Založ nového obchodního partnera ‚Příklad a.s.' jako zákazníka."*
 - *„U zakázky 1234 nastav datum dodání na příští pátek."*
+- *„Odeber řádek 3 z nabídky 4711."* — funguje u otevřených nabídek, zakázek,
+  požadavků na nákup, nákupních nabídek a objednávek. Řádek už převzatý do
+  navazujícího dokladu zůstane a poslední řádek odebrat nelze (doklad pak
+  uzavřete nebo stornujte). Prodejní kusovník jde jen jako celek: s hlavním
+  řádkem odejdou i komponenty; jednotlivá komponenta je v SAP pevná.
 
 > ⚠️ Změny se projeví **přímo v reálném SAP**. Než potvrdíte, zkontrolujte, co
 > asistent navrhuje. Pokud nejsou k dispozici žádné zápisové nástroje, je instance

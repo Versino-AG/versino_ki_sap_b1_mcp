@@ -1,4 +1,4 @@
-<!-- translation-of: konfiguration.md@79126fc98aea -->
+<!-- translation-of: konfiguration.md@9372b17bed93 -->
 
 # Konfigurace (`.env`)
 
@@ -48,6 +48,7 @@ SAP_PUBLIC_URL=http://127.0.0.1:8000
 | `SAP_MAX_CONCURRENT_REQUESTS` | `10` | paralelní SL požadavky |
 | `SAP_TIMEOUT_SECONDS` | `60` | HTTP timeout požadavků na Service Layer |
 | `SAP_IDLE_LOGOUT_SECONDS` | `1500` | nečinnost, po které se uživatelská relace automaticky odhlásí |
+| `SAP_LOG_LEVEL` | `INFO` | úroveň logu konzole / protokolu služby (`DEBUG`, `INFO`, `WARNING`, `ERROR`). Soubor logu a auditní soubor přihlášení si nezávisle na tom ponechávají `WARNING` a výše. `DEBUG` platí jen pro server samotný; knihovny třetích stran zůstávají na `INFO` — jejich debug trace obsahuje cookie relace SAP. Neznámá hodnota se s varováním vrátí na `INFO` |
 | `SAP_SESSION_MAX_SECONDS` | `28800` | absolutní délka uživatelské relace (8 h) navíc k odhlášení při nečinnosti; poté je asistent vyzván znovu zavolat `connect`. `0` = bez omezení |
 | `SAP_PHONE_HOME_INTERVAL_SECONDS` | `3600` | interval licenční kontroly phone-home |
 | `SAP_DB_SERVER_TYPE` | _auto_ | přepsat typ databáze (`HANA` / `MSSQL`); běžně rozpoznán automaticky — nastavte jen při chybné detekci |
@@ -60,9 +61,48 @@ Server při **prvním připojení** dané CompanyDB sám nasadí své hotové re
 která reporty umí spustit. V režimu čtení (`READ_ONLY`) se to přeskočí a u edice
 pro kmenová data (BASIC) také — `sap_curated_query` tam není k dispozici, reporty
 by tedy ležely nepoužitelné ve vašich `SQLQueries`. Vše ostatní funguje beze
-změny. Vlastní napsané dotazy `AI_*` se nikdy nepřepíší. V případě potřeby lze
+změny. Vlastní napsané dotazy `AI_*` se nikdy nepřepíší —
+a ani dodaný dotaz, který jste v SAP změnili: server změnu pozná, dotaz nechá
+být a nahlásí ho jako *upravený*. Chcete-li dodanou verzi zpět, dotaz smažte;
+nejbližší připojení ho obnoví. (Dotaz změněný před touto verzí nelze poznat a
+při změně v novém vydání se naposledy aktualizuje.) V případě potřeby lze
 nasazení v chatu cíleně spustit (`sap_deploy_queries`) nebo vypnout přes
 `SAP_AUTO_DEPLOY_QUERIES=false`.
+
+### Vlastní reporty (SAP Query Manager)
+Reporty upravujete nebo přidáváte ve **Správci dotazů (Query Manager) SAP B1** —
+bez souborů, bez vývojáře. Kdo to smí, určuje oprávnění SAP pro Správce dotazů;
+nástroje chatu tam zapisovat nemohou.
+
+- **Úprava dodaného reportu:** ve Správci dotazů uložte kopii pod přesně stejným
+  názvem (např. `AI_Vertrieb_umsatz_kunde`) a upravte ji — třeba doplňte
+  potřebné UDF. Vaše verze pak nahradí dodanou. Pokud pozdější vydání dodaný
+  report změní, vaše verze zůstane a server ji nahlásí jako *zastaralou* —
+  můžete porovnat a převzít, co chcete.
+- **Nový report:** uložte ho ve Správci dotazů pod názvem začínajícím na `AI_`
+  (písmena, číslice, podtržítka). Kategorie nehraje roli; dotazy bez prefixu se
+  ignorují.
+- **Zpět k dodané verzi:** smažte svou kopii ve Správci dotazů. Nový report tam
+  smazaný se odstraní také.
+- **Viditelné pro všechny:** dotaz `AI_` ve Správci dotazů se stane reportem,
+  který může spustit každý uživatel asistenta této firemní databáze — oprávnění
+  pro Správce dotazů proto držte úzké.
+- **Projeví se** při příštím startu serveru, nebo hned, když v chatu řeknete
+  „nasaď reporty" (`sap_deploy_queries`; náhled ukáže, co by se změnilo, aniž by
+  cokoli zapsal).
+
+Pravidla, kontrolovaná u každého dotazu — odmítnutý dotaz se nahlásí s důvodem,
+všechny ostatní se nasadí:
+- Parametry jako `/*#Name#*/`, ne `[%0]`.
+- Pojmenujte sloupce — `SELECT *` Service Layer nepovoluje.
+- Jen tabulky uvolněné pro SQL Service Layeru; uživatelské tabulky (`@…`) nejsou
+  standardně uvolněné.
+- `TOP n` ve vlastním reportu platí (např. „10 nejlepších zákazníků" vrátí
+  10 řádků).
+
+Ověřeno na SAP HANA. Na Microsoft SQL Server tato cesta zatím není otestovaná
+— zkopírovaný report tam jednou vyzkoušejte otázkou v chatu, než se na něj
+spolehnete.
 
 ## Autentizace
 | Proměnná | Význam |

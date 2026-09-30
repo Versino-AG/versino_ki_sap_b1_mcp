@@ -1,4 +1,4 @@
-<!-- translation-of: anhaenge.md@e0898831ba2e -->
+<!-- translation-of: anhaenge.md@6e05fee0d1b3 -->
 # Přílohy: jak se soubory dostanou do SAP
 
 > 🌐 [English](anhaenge.md) · [Deutsch](anhaenge.de.md) · **Česky**
@@ -45,11 +45,30 @@ odmítají):
 SAP_ATTACHMENT_DIR=C:\sapb1-mcp\attachments
 ```
 
+## Více souborů u jednoho dokladu
+
+Doklad má **jeden** záznam příloh, který může obsahovat více souborů. Má-li
+doklad již přílohy, asistent nový soubor k tomuto záznamu **připojí** — nikdy
+ho nenahradí, stávající soubory tedy zůstanou připojené. Je-li tam již soubor
+se stejným názvem, nový se uloží jako `name (2).pdf` a nepřepíše ho.
+
+Odkaz pro nahrání bez pevného názvu souboru přijme **až 10 souborů najednou**
+(dohromady v rámci `SAP_UPLOAD_MAX_MB`); všechny se připojí ke stejnému
+dokladu. Odmítne-li SAP jeden z nich, ostatní přesto dorazí a asistent uvede
+ten chybějící. Odkaz s pevným názvem souboru přijme právě jeden soubor.
+
+## PDF dokladu
+Tiskový výstup SAP asistent vytvořit neumí. Když se zeptáte na PDF dokladu,
+nejprve se podívá do jeho příloh: v mnoha instalacích se PDF při přidání nebo
+schválení dokladu ukládá automaticky tam — například pomocí CoreSuite. Pokud
+tam je, asistent nabídne stažení. Jinak se PDF tiskne nebo odesílá z klienta
+SAP; aby bylo k dispozici v chatu, nastavte automatické ukládání jako přílohu.
+
 ## Limity
 
 | Proměnná | Výchozí | Význam |
 |---|---|---|
-| `SAP_UPLOAD_MAX_MB` | `25` | maximální velikost souboru pro všechny tři cesty |
+| `SAP_UPLOAD_MAX_MB` | `25` | maximální velikost souboru pro všechny tři cesty; více souborů přes jeden odkaz v prohlížeči se do ní musí vejít dohromady |
 | `SAP_ATTACHMENT_URL_ALLOWLIST` | prázdné (vypnuto) | hostitelé, ze kterých smí `source_url` stahovat |
 | `SAP_ATTACHMENT_DIR` | prázdné (vypnuto) | adresář, ze kterého smí `file_path` číst |
 

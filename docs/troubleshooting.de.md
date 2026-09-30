@@ -1,4 +1,4 @@
-<!-- translation-of: troubleshooting.md@9ae7271704d5 -->
+<!-- translation-of: troubleshooting.md@2a62805634de -->
 # Troubleshooting
 
 > 🌐 [English](troubleshooting.md) · **Deutsch** · [Česky](troubleshooting.cs.md)
@@ -86,8 +86,9 @@ Ist das Binary noch nicht signiert, kann Windows einen Fehlalarm zeigen.
   siehe [lizenz.de.md](lizenz.de.md).
 - **„… gehört zur Konfiguration dieser Instanz"** — die Schreib-Tools können die
   Steuerflächen des Servers bewusst nicht anfassen: `SQLQueries`, `SQLViews`,
-  `Users`, `UserPermissionTree`, `UserObjectsMD`, `UserTablesMD`, `UserFieldsMD`
-  und `B1Sessions`. Das ist kein Berechtigungsproblem — Ihr SAP-Benutzer darf das
+  `Users`, `UserPermissionTree`, `UserObjectsMD`, `UserTablesMD`, `UserFieldsMD`,
+  `B1Sessions` und den Abfrage-Manager (`UserQueries`, `QueryCategories`,
+  `FormattedSearches`). Das ist kein Berechtigungsproblem — Ihr SAP-Benutzer darf das
   möglicherweise sehr wohl. Es ist eine Grenze der Chat-Schnittstelle: Ein
   Assistent, der eine kuratierte Auswertung umschreiben kann, könnte manipulierte
   Zahlen als geprüfte ausgeben. Dafür den SAP-Client nutzen, für kuratierte

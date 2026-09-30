@@ -45,7 +45,11 @@ interval over a signed connection. That serves two purposes:
 - **Automatic subscription renewal:** with monthly/yearly billing the server
   re-signs the token with a new expiry date and delivers it over the **same**
   channel; the installation adopts it by itself — **no manual key swap** per
-  billing period.
+  billing period. It takes effect on the next start.
+- **Always the licence issued last:** the installation uses the most recently
+  issued licence — a newer key file you put in place, or a newer token from
+  the server, even if it has fewer seats or ends earlier (e.g. after a
+  cancellation). An older licence is never taken back, however long it runs.
 
 Only metadata is transmitted (`customer_id`, `edition`, `version`, seat count) —
 no business data.
@@ -98,7 +102,22 @@ Versino can switch it off for you; you then receive keys without the enrollment
 claim (and without automatic renewal).
 
 ## Seats
-`max_seats` limits the number of **distinct** SAP users. If you need more,
-upgrade via the license portal — the new `versino.key` replaces the old one.
+`max_seats` limits how many **distinct** SAP users work **at the same time**. It
+does not matter who — 100 SAP users may share 13 seats; first come, first served.
+
+A seat is taken while a session is in use and frees up again when
+
+* the user disconnects,
+* the session reaches its maximum lifetime (`SAP_SESSION_MAX_SECONDS`, for a
+  browser sign-in `SAP_TICKET_SESSION_MAX_SECONDS`), or
+* the session has made **no request for 30 minutes** — for example because the
+  chat window was closed. This interval is fixed and cannot be configured.
+
+An inactive session is not signed out. If its user comes back and a seat is
+free, they simply carry on; if all seats are taken meanwhile, they get a clear
+message and can retry shortly without signing in again.
+
+If you need more seats, upgrade via the license portal — the new `versino.key`
+replaces the old one.
 
 License questions: **support@versino.de**

@@ -1,4 +1,4 @@
-<!-- translation-of: erste-schritte.md@e26e7d2321e1 -->
+<!-- translation-of: erste-schritte.md@6f06ccac82e6 -->
 # Erste Schritte (für Anwender)
 
 > 🌐 [English](erste-schritte.md) · **Deutsch** · [Česky](erste-schritte.cs.md)
@@ -53,6 +53,12 @@ SAP-Rechten ab. Falls aktiviert, geht z. B.:
 
 - *„Lege einen neuen Geschäftspartner ‚Beispiel AG' als Kunde an."*
 - *„Setze beim Auftrag 1234 das Lieferdatum auf nächsten Freitag."*
+- *„Entferne Position 3 aus dem Angebot 4711."* — geht bei offenen Angeboten,
+  Aufträgen, Bestellanforderungen, Einkaufsangeboten und Bestellungen. Eine
+  Position, die schon in einen Folgebeleg übernommen wurde, bleibt, und die
+  letzte Position lässt sich nicht entfernen (dann den Beleg schließen oder
+  stornieren). Eine Verkaufsstückliste geht nur als Ganzes: Mit der Kopfzeile
+  gehen die Komponenten mit; eine einzelne Komponente ist in SAP fest.
 
 > ⚠️ Änderungen wirken **direkt im echten SAP**. Prüft, was der Assistent vorschlägt, bevor
 > ihr bestätigt. Sind keine Schreib-Tools verfügbar, ist die Instanz im **Nur-Lese-Modus**

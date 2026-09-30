@@ -1,4 +1,4 @@
-<!-- translation-of: anhaenge.md@e0898831ba2e -->
+<!-- translation-of: anhaenge.md@6e05fee0d1b3 -->
 # Anhänge: Wie Dateien nach SAP kommen
 
 > 🌐 [English](anhaenge.md) · **Deutsch** · [Česky](anhaenge.cs.md)
@@ -46,11 +46,32 @@ außen werden abgelehnt):
 SAP_ATTACHMENT_DIR=C:\sapb1-mcp\attachments
 ```
 
+## Mehrere Dateien an einem Beleg
+
+Ein Beleg hat **einen** Anhangseintrag, der mehrere Dateien aufnehmen kann. Hat
+ein Beleg schon Anhänge, **hängt** der Assistent eine neue Datei an diesen
+Eintrag an — er ersetzt ihn nie, die vorhandenen Dateien bleiben also erhalten.
+Liegt dort schon eine Datei mit gleichem Namen, wird die neue als
+`name (2).pdf` abgelegt, statt sie zu überschreiben.
+
+Ein Upload-Link ohne festen Dateinamen nimmt **bis zu 10 Dateien auf einmal**
+(zusammen innerhalb von `SAP_UPLOAD_MAX_MB`); alle landen am selben Beleg.
+Lehnt SAP eine davon ab, kommen die übrigen trotzdem an, und der Assistent nennt
+die fehlende. Ein Link mit festem Dateinamen nimmt genau eine Datei.
+
+## Beleg-PDF
+Das Druckbild von SAP kann der Assistent nicht erzeugen. Fragt ihr nach dem
+PDF eines Belegs, schaut er zuerst in dessen Anhänge: In vielen Installationen
+wird das PDF beim Hinzufügen oder Freigeben eines Belegs automatisch dort
+abgelegt — etwa durch CoreSuite. Liegt es dort, bietet der Assistent den
+Download an. Sonst wird das PDF im SAP-Client gedruckt oder versendet; damit es
+im Chat verfügbar ist, die automatische Ablage als Anhang einrichten.
+
 ## Grenzen
 
 | Variable | Default | Bedeutung |
 |---|---|---|
-| `SAP_UPLOAD_MAX_MB` | `25` | maximale Größe pro Datei für alle drei Wege |
+| `SAP_UPLOAD_MAX_MB` | `25` | maximale Größe pro Datei für alle drei Wege; mehrere Dateien über einen Browser-Link müssen zusammen hineinpassen |
 | `SAP_ATTACHMENT_URL_ALLOWLIST` | leer (aus) | Hosts, von denen `source_url` laden darf |
 | `SAP_ATTACHMENT_DIR` | leer (aus) | Verzeichnis, aus dem `file_path` lesen darf |
 

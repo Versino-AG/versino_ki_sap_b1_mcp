@@ -54,6 +54,11 @@ SAP permissions. If enabled, things like this work:
 
 - *"Create a new business partner 'Beispiel AG' as a customer."*
 - *"Set the delivery date of order 1234 to next Friday."*
+- *"Remove line 3 from quotation 4711."* — works on open quotations, orders,
+  purchase requests, purchase quotations and purchase orders. A line already
+  carried into a follow-up document stays, and the last line cannot be removed
+  (close or cancel the document instead). A sales BOM goes as a whole: removing
+  its parent line removes the components; a single component is fixed in SAP.
 
 > ⚠️ Changes take effect **directly in the real SAP**. Review what the assistant
 > proposes before you confirm. If no write tools are available, the instance is

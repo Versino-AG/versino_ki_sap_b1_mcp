@@ -48,6 +48,7 @@ SAP_PUBLIC_URL=http://127.0.0.1:8000
 | `SAP_MAX_CONCURRENT_REQUESTS` | `10` | parallel SL requests |
 | `SAP_TIMEOUT_SECONDS` | `60` | HTTP timeout for Service Layer requests |
 | `SAP_IDLE_LOGOUT_SECONDS` | `1500` | idle time after which a user session is signed out automatically |
+| `SAP_LOG_LEVEL` | `INFO` | level of the console / service log (`DEBUG`, `INFO`, `WARNING`, `ERROR`). The log file and the sign-in audit file keep `WARNING` and above regardless. `DEBUG` applies to the server itself only; third-party libraries stay at `INFO` — their debug trace contains the SAP session cookie. An unknown value falls back to `INFO` with a warning |
 | `SAP_SESSION_MAX_SECONDS` | `28800` | absolute lifetime of a user session (8 h) on top of the idle logout; afterwards the assistant is told to run `connect` again. `0` = unlimited |
 | `SAP_PHONE_HOME_INTERVAL_SECONDS` | `3600` | interval of the license phone-home check |
 | `SAP_DB_SERVER_TYPE` | _auto_ | override the database type (`HANA` / `MSSQL`); normally detected automatically — set only if detection is wrong |
@@ -61,8 +62,46 @@ queries, and an edition that can run the reports. In read-only mode
 (`READ_ONLY`) this is skipped, and with a master-data edition (BASIC) it is
 skipped as well — `sap_curated_query` is not offered there, so the reports would
 sit unusable in your `SQLQueries`. Everything else works unchanged. Self-written `AI_*` queries are never
-overwritten. If needed, trigger the deployment in the chat
+overwritten — and neither is a shipped one you changed in SAP: the server
+notices the change, leaves the query alone and reports it as *customized*. To
+get the shipped version back, delete the query; the next connect restores it.
+(A query changed before this version cannot be recognised and is updated one
+last time if a release changes it.) If needed, trigger the deployment in the chat
 (`sap_deploy_queries`) or disable it with `SAP_AUTO_DEPLOY_QUERIES=false`.
+
+### Your own reports (SAP Query Manager)
+You adapt or add reports in the **SAP B1 Query Manager** — no files, no
+developer needed. Who may do that is decided by SAP's own Query Manager
+authorisation; the chat tools cannot write there.
+
+- **Adapt a shipped report:** save a copy in the Query Manager under exactly the
+  same name (e.g. `AI_Vertrieb_umsatz_kunde`) and change it — add the UDF you
+  need, for instance. Your version then replaces the shipped one. If a later
+  release changes the shipped report, the server keeps your version and reports
+  it as *outdated*, so you can compare and take over what you want.
+- **New report:** save it in the Query Manager under a name starting with
+  `AI_` (letters, digits, underscores). Any category works; queries without the
+  prefix are ignored.
+- **Back to the shipped version:** delete your copy in the Query Manager. A new
+  report deleted there is removed as well.
+- **Visible to everyone:** an `AI_` query in the Query Manager becomes a report
+  every assistant user of this company database can run — keep the Query
+  Manager authorisation accordingly narrow.
+- **Takes effect** on the next server start, or immediately when you say in the
+  chat "deploy the reports" (`sap_deploy_queries`; its preview shows what would
+  change without writing anything).
+
+Rules, checked per query — a refused query is reported with its reason, all
+others still land:
+- Parameters as `/*#Name#*/`, not `[%0]`.
+- Name the columns — `SELECT *` is not allowed by the Service Layer.
+- Only tables released for Service Layer SQL; user tables (`@…`) are not
+  released by default.
+- `TOP n` in your own report is honoured (e.g. "the 10 best customers" returns
+  10 rows).
+
+Verified on SAP HANA. On Microsoft SQL Server this way is not tested yet —
+check a copied report once with a question in the chat before relying on it.
 
 ## Authentication
 | Variable | Meaning |

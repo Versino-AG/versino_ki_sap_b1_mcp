@@ -1,4 +1,4 @@
-<!-- translation-of: konfiguration.md@79126fc98aea -->
+<!-- translation-of: konfiguration.md@9372b17bed93 -->
 # Konfiguration (`.env`)
 
 > 🌐 [English](konfiguration.md) · **Deutsch** · [Česky](konfiguration.cs.md)
@@ -47,6 +47,7 @@ SAP_PUBLIC_URL=http://127.0.0.1:8000
 | `SAP_MAX_CONCURRENT_REQUESTS` | `10` | parallele SL-Requests |
 | `SAP_TIMEOUT_SECONDS` | `60` | HTTP-Timeout für Service-Layer-Requests |
 | `SAP_IDLE_LOGOUT_SECONDS` | `1500` | Leerlauf, nach dem eine Nutzer-Session automatisch abgemeldet wird |
+| `SAP_LOG_LEVEL` | `INFO` | Level der Konsole bzw. des Dienstprotokolls (`DEBUG`, `INFO`, `WARNING`, `ERROR`). Logdatei und Anmelde-Audit-Datei behalten unabhängig davon `WARNING` und höher. `DEBUG` gilt nur für den Server selbst; Fremdbibliotheken bleiben auf `INFO` — ihr Debug-Trace enthält den SAP-Sitzungscookie. Ein unbekannter Wert fällt mit einer Warnung auf `INFO` zurück |
 | `SAP_SESSION_MAX_SECONDS` | `28800` | absolute Lebensdauer einer Nutzer-Session (8 h) zusätzlich zum Leerlauf-Logout; danach wird der Assistent aufgefordert, `connect` erneut aufzurufen. `0` = unbegrenzt |
 | `SAP_PHONE_HOME_INTERVAL_SECONDS` | `3600` | Intervall der Lizenz-Phone-Home-Prüfung |
 | `SAP_DB_SERVER_TYPE` | _auto_ | Datenbanktyp übersteuern (`HANA` / `MSSQL`); normalerweise automatisch erkannt — nur bei fehlerhafter Erkennung setzen |
@@ -60,9 +61,51 @@ B1-Benutzer, der Abfragen anlegen darf, und eine Edition, welche die
 Auswertungen ausführen kann. Im Lesebetrieb (`READ_ONLY`) wird das übersprungen,
 und mit einer Stammdaten-Edition (BASIC) ebenfalls — dort gibt es
 `sap_curated_query` nicht, die Auswertungen lägen also unbenutzbar in euren
-`SQLQueries`. Alles andere funktioniert unverändert. Selbst geschriebene `AI_*`-Abfragen werden nie überschrieben.
+`SQLQueries`. Alles andere funktioniert unverändert. Selbst geschriebene `AI_*`-Abfragen werden nie überschrieben —
+und auch keine mitgelieferte, die ihr in SAP geändert habt: Der Server bemerkt
+die Änderung, lässt die Abfrage in Ruhe und meldet sie als *angepasst*. Um die
+mitgelieferte Fassung zurückzubekommen, die Abfrage löschen; das nächste
+Verbinden stellt sie wieder her. (Eine vor dieser Version geänderte Abfrage ist
+nicht erkennbar und wird ein letztes Mal aktualisiert, wenn ein Release sie
+ändert.)
 Bei Bedarf lässt sich die Ausbringung im Chat gezielt anstoßen
 (`sap_deploy_queries`) oder mit `SAP_AUTO_DEPLOY_QUERIES=false` abschalten.
+
+### Eigene Auswertungen (SAP-Abfrage-Manager)
+Auswertungen passt ihr im **Abfrage-Manager von SAP B1** an oder legt neue an —
+ohne Dateien, ohne Entwickler. Wer das darf, regelt die SAP-Berechtigung für den
+Abfrage-Manager; die Chat-Tools können dort nicht schreiben.
+
+- **Mitgelieferte Auswertung anpassen:** im Abfrage-Manager eine Kopie unter
+  genau demselben Namen speichern (z. B. `AI_Vertrieb_umsatz_kunde`) und
+  ändern — etwa das benötigte UDF ergänzen. Eure Fassung ersetzt dann die
+  mitgelieferte. Ändert ein späteres Release die mitgelieferte Auswertung,
+  bleibt eure Fassung bestehen und wird als *veraltet* gemeldet — ihr könnt
+  vergleichen und übernehmen, was ihr wollt.
+- **Neue Auswertung:** im Abfrage-Manager unter einem Namen speichern, der mit
+  `AI_` beginnt (Buchstaben, Ziffern, Unterstriche). Die Kategorie ist egal;
+  Abfragen ohne das Präfix werden ignoriert.
+- **Zurück zur mitgelieferten Fassung:** eure Kopie im Abfrage-Manager löschen.
+  Eine dort gelöschte neue Auswertung wird ebenfalls entfernt.
+- **Für alle sichtbar:** eine `AI_`-Abfrage im Abfrage-Manager wird eine
+  Auswertung, die jeder Assistent-Benutzer dieser Company-Datenbank ausführen
+  kann — die Berechtigung für den Abfrage-Manager entsprechend eng halten.
+- **Wirksam** beim nächsten Serverstart oder sofort, wenn ihr im Chat sagt
+  „Auswertungen ausbringen" (`sap_deploy_queries`; die Vorschau zeigt, was sich
+  ändern würde, ohne zu schreiben).
+
+Regeln, je Abfrage geprüft — eine abgelehnte Abfrage wird mit Grund gemeldet,
+alle anderen kommen trotzdem an:
+- Parameter als `/*#Name#*/`, nicht `[%0]`.
+- Spalten benennen — `SELECT *` lässt der Service Layer nicht zu.
+- Nur Tabellen, die für Service-Layer-SQL freigegeben sind; Benutzertabellen
+  (`@…`) sind standardmäßig nicht freigegeben.
+- `TOP n` in einer eigenen Auswertung gilt (z. B. „die 10 besten Kunden" liefert
+  10 Zeilen).
+
+Geprüft auf SAP HANA. Auf Microsoft SQL Server ist dieser Weg noch nicht
+getestet — eine kopierte Auswertung dort einmal mit einer Frage im Chat
+prüfen, bevor ihr euch darauf verlasst.
 
 ## Authentifizierung
 | Variable | Bedeutung |

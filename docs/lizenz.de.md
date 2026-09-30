@@ -1,4 +1,4 @@
-<!-- translation-of: lizenz.md@d11b4e7994d7 -->
+<!-- translation-of: lizenz.md@314d7dfc32b5 -->
 # Lizenz (`versino.key`)
 
 > 🌐 [English](lizenz.md) · **Deutsch** · [Česky](lizenz.cs.md)
@@ -47,6 +47,11 @@ signierte Verbindung zum Lizenzserver auf. Das erfüllt zwei Zwecke:
 - **Automatische Abo-Erneuerung:** Bei monatlicher/jährlicher Abrechnung re-signiert der
   Server den Token mit neuem Ablaufdatum und liefert ihn über **denselben** Kanal aus; die
   Installation übernimmt ihn selbst — **kein manueller Key-Tausch** pro Abrechnungszeitraum.
+  Wirksam wird er beim nächsten Start.
+- **Immer die zuletzt ausgestellte Lizenz:** Die Installation nutzt die zuletzt
+  ausgestellte Lizenz — eine neuere Schlüsseldatei, die ihr hinterlegt, oder einen neueren
+  Token vom Server, auch wenn er weniger Plätze hat oder früher endet (etwa nach einer
+  Kündigung). Eine ältere Lizenz wird nie wieder übernommen, egal wie lange sie läuft.
 
 Übertragen werden dabei nur Metadaten (`customer_id`, `edition`, `version`, Seat-Anzahl) —
 keine Geschäftsdaten.
@@ -101,7 +106,24 @@ abschalten lassen; ihr bekommt dann Schlüssel ohne Registrierungsmerkmal (und
 damit ohne automatische Erneuerung).
 
 ## Seats
-`max_seats` begrenzt die Anzahl **distinkter** SAP-Nutzer. Werden mehr benötigt, über
-das Lizenzportal aufstocken — die neue `versino.key` ersetzt die alte.
+`max_seats` begrenzt, wie viele **verschiedene** SAP-Nutzer **gleichzeitig** arbeiten.
+Wer das ist, spielt keine Rolle — 100 SAP-Benutzer können sich 13 Plätze teilen;
+wer zuerst kommt, arbeitet zuerst.
+
+Ein Platz ist belegt, solange eine Sitzung genutzt wird, und wird wieder frei, wenn
+
+* sich der Nutzer abmeldet,
+* die Sitzung ihre Höchstdauer erreicht (`SAP_SESSION_MAX_SECONDS`, beim
+  Browser-Login `SAP_TICKET_SESSION_MAX_SECONDS`) oder
+* die Sitzung **30 Minuten lang nichts angefragt** hat — etwa weil das
+  Chatfenster geschlossen wurde. Diese Dauer ist fest und nicht einstellbar.
+
+Eine inaktive Sitzung wird dabei nicht abgemeldet. Kommt ihr Nutzer zurück und
+ist ein Platz frei, arbeitet er einfach weiter; sind inzwischen alle Plätze
+belegt, bekommt er eine klare Meldung und kann es gleich noch einmal versuchen,
+ohne sich neu anzumelden.
+
+Werden mehr Plätze benötigt, über das Lizenzportal aufstocken — die neue
+`versino.key` ersetzt die alte.
 
 Fragen zur Lizenz: **support@versino.de**

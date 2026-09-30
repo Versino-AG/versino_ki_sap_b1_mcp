@@ -42,11 +42,33 @@ the base directory; files must lie below it (symlinks out of it are refused):
 SAP_ATTACHMENT_DIR=C:\sapb1-mcp\attachments
 ```
 
+## Several files on one document
+
+A document keeps **one** attachment entry that can hold several files. When a
+document already has attachments, the assistant **appends** a new file to that
+entry — it never replaces the entry, so existing files stay attached. If a file
+with the same name is already there, the new one is stored as `name (2).pdf`
+instead of overwriting it.
+
+An upload link without a fixed file name takes **up to 10 files at once**
+(together within `SAP_UPLOAD_MAX_MB`); all of them go onto the same document.
+If one of them is refused by SAP, the others still arrive and the assistant
+names the one that is missing. A link with a fixed file name takes exactly one
+file.
+
+## Document PDF
+The assistant cannot render SAP's print layout. Ask it for a document's PDF and
+it first looks at the document's attachments: many installations file the PDF
+there automatically when a document is added or approved — CoreSuite does
+this, for instance. If it is there, the assistant offers the download. If not,
+the PDF is printed or sent from the SAP client; to have it available in the
+chat, set up the automatic filing as an attachment.
+
 ## Limits
 
 | Variable | Default | Meaning |
 |---|---|---|
-| `SAP_UPLOAD_MAX_MB` | `25` | maximum size per file for all three ways |
+| `SAP_UPLOAD_MAX_MB` | `25` | maximum size per file for all three ways; several files on one browser link must fit into it together |
 | `SAP_ATTACHMENT_URL_ALLOWLIST` | empty (off) | hosts `source_url` may fetch from |
 | `SAP_ATTACHMENT_DIR` | empty (off) | directory `file_path` may read from |
 

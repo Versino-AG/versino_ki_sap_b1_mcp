@@ -84,7 +84,8 @@ If the binary is not signed yet, Windows may show a false positive.
 - **"… is part of this instance's own configuration"** — the write tools
   deliberately cannot touch the server's own control surfaces: `SQLQueries`,
   `SQLViews`, `Users`, `UserPermissionTree`, `UserObjectsMD`, `UserTablesMD`,
-  `UserFieldsMD` and `B1Sessions`. That is not a permission problem — your SAP
+  `UserFieldsMD`, `B1Sessions` and the Query Manager (`UserQueries`,
+  `QueryCategories`, `FormattedSearches`). That is not a permission problem — your SAP
   user may well be allowed to. It is a boundary of the chat interface: an
   assistant that can rewrite a curated report could present manipulated figures
   as a vetted one. Use the SAP client for those, and `sap_deploy_queries` to roll
