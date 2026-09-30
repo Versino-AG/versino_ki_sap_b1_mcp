@@ -1,4 +1,4 @@
-<!-- translation-of: troubleshooting.md@2a62805634de -->
+<!-- translation-of: troubleshooting.md@0030157a50c9 -->
 
 # Řešení problémů
 
@@ -39,6 +39,19 @@ Nenalezena platná licence. Zkontrolovat:
 - není klíč prošlý? (nový přes [licenční portál](https://aishop.versino.de))
 
 Detaily: [lizenz.cs.md](lizenz.cs.md).
+
+## Přihlášení odmítnuto: `license.revoked_by_server` / `install/customer mismatch`
+V protokolu startu je `license.revoked_by_server` s důvodem
+`install/customer mismatch`; přihlášení je odmítnuto (před verzí 3.8.3 web
+login odpověděl „Internal Server Error"). Instalace se u licenčního serveru
+zaregistrovala pro jednoho zákazníka, ale nyní uložený `versino.key` patří
+jinému — typicky po nově vytvořeném klíči v administraci.
+
+Řešení: zastavte server, smažte `install_identity.json` v pracovním adresáři
+serveru (při spuštění dvojklikem: složka programu; nebo v
+`SAP_INSTALL_IDENTITY_PATH` — `sapb1-mcp doctor` ukáže cestu) a spusťte ho znovu. Instalace se pak zaregistruje
+s aktuální licencí. Jiné důvody (předplatné skončilo, odvoláno) se řeší na
+licenčním serveru.
 
 ## Nahrání přílohy selže s chybou SAP `-43`
 `-43` je interní chyba SAP typu *cesta / složka*. Při nahrání přílohy znamená, že

@@ -1,10 +1,18 @@
-<!-- translation-of: neuigkeiten.md@14ee1cfb4e07 -->
+<!-- translation-of: neuigkeiten.md@16ccc823c5f7 -->
 # Novinky
 
 > 🌐 [English](neuigkeiten.md) · [Deutsch](neuigkeiten.de.md) · **Česky**
 
 Nejdůležitější změny v každé verzi, jednoduše. Běžící verzi ukáže
 `sapb1-mcp --version` a asistent ji zná také (zeptejte se *„Jaká verze běží?"*).
+
+## 3.8.3 — 2026-09-30
+
+- **Odmítnutá licence je vysvětlena místo „Internal Server Error".** Když
+  licenční server instalaci odmítne nebo jsou obsazena všechna místa, řekne to
+  teď přihlašovací stránka. Pro nejčastější případ — instalace je registrovaná
+  pro jiného zákazníka než nyní uložená licence — uvede řešení
+  → [troubleshooting.cs.md](troubleshooting.cs.md).
 
 ## 3.8.2 — 2026-09-30
 

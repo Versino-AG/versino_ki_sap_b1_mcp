@@ -1,4 +1,4 @@
-<!-- translation-of: troubleshooting.md@2a62805634de -->
+<!-- translation-of: troubleshooting.md@0030157a50c9 -->
 # Troubleshooting
 
 > 🌐 [English](troubleshooting.md) · **Deutsch** · [Česky](troubleshooting.cs.md)
@@ -41,6 +41,20 @@ Keine gültige Lizenz gefunden. Prüfen:
 - ist der Schlüssel nicht abgelaufen? (neue über das [Lizenzportal](https://aishop.versino.de))
 
 Details: [lizenz.de.md](lizenz.de.md).
+
+## Anmeldung abgelehnt: `license.revoked_by_server` / `install/customer mismatch`
+Im Startprotokoll steht `license.revoked_by_server` mit dem Grund
+`install/customer mismatch`; die Anmeldung wird abgelehnt (vor 3.8.3 antwortete
+der Web-Login mit „Internal Server Error"). Die Installation hat sich beim
+Lizenzserver für einen Kunden registriert, der jetzt hinterlegte `versino.key`
+gehört aber zu einem anderen — typischerweise nach einem im Adminportal neu
+erzeugten Schlüssel.
+
+Abhilfe: Server beenden, `install_identity.json` im Arbeitsverzeichnis des
+Servers löschen (beim Start per Doppelklick: der Programmordner; bzw. unter
+`SAP_INSTALL_IDENTITY_PATH` — `sapb1-mcp doctor` zeigt den Pfad) und neu starten. Die Installation
+registriert sich dann mit der aktuellen Lizenz neu. Andere Gründe (Abo beendet,
+widerrufen) werden auf dem Lizenzserver gelöst.
 
 ## Anhang-Upload scheitert mit SAP-Fehler `-43`
 `-43` ist SAPs interner *Pfad-/Ordner*-Fehler. Beim Anhang-Upload heißt das: Der

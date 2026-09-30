@@ -40,6 +40,20 @@ No valid license found. Check:
 
 Details: [lizenz.md](lizenz.md).
 
+## Sign-in refused: `license.revoked_by_server` / `install/customer mismatch`
+The start log shows `license.revoked_by_server` with the reason
+`install/customer mismatch`; sign-in is refused (before 3.8.3 the web login
+answered "Internal Server Error"). The installation registered itself with the
+license server for one customer, and the `versino.key` now in place belongs to
+another — typically after a key was re-issued in the admin portal.
+
+Fix: stop the server, delete `install_identity.json` in the server's working
+directory (started by double-click: the program folder; or at
+`SAP_INSTALL_IDENTITY_PATH` — `sapb1-mcp doctor` shows the path) and start it
+again. The installation then
+registers anew with the current license. Other reasons (subscription ended,
+revoked) are resolved on the license server.
+
 ## Attachment upload fails with SAP error `-43`
 `-43` is SAP's internal *path / folder* error. On an attachment upload it means the
 **Service Layer** could not write into the attachment folder — it is not a problem

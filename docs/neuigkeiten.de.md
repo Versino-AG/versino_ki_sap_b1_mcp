@@ -1,4 +1,4 @@
-<!-- translation-of: neuigkeiten.md@14ee1cfb4e07 -->
+<!-- translation-of: neuigkeiten.md@16ccc823c5f7 -->
 # Neuigkeiten
 
 > 🌐 [English](neuigkeiten.md) · **Deutsch** · [Česky](neuigkeiten.cs.md)
@@ -6,6 +6,14 @@
 Die wichtigsten Änderungen je Version, in einfachen Worten. Die laufende Version
 zeigt `sapb1-mcp --version`, und der Assistent kennt sie auch (fragt *„Welche
 Version läuft?"*).
+
+## 3.8.3 — 2026-09-30
+
+- **Eine abgelehnte Lizenz wird erklärt statt „Internal Server Error".** Lehnt
+  der Lizenzserver die Installation ab oder sind alle Plätze belegt, sagt die
+  Anmeldeseite das jetzt. Für den häufigsten Fall — die Installation ist für
+  einen anderen Kunden registriert als die jetzt hinterlegte Lizenz — nennt sie
+  die Abhilfe → [troubleshooting.de.md](troubleshooting.de.md).
 
 ## 3.8.2 — 2026-09-30
 

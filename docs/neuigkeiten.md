@@ -6,6 +6,14 @@ The most important changes per version, in plain words. The running version is
 shown by `sapb1-mcp --version`, and the assistant knows it too (ask *"Which
 version is running?"*).
 
+## 3.8.3 — 2026-09-30
+
+- **A refused license is explained, not an "Internal Server Error".** If the
+  license server refuses the installation or all seats are taken, the sign-in
+  page now says so. For the most common case — the installation was registered
+  for another customer than the license now in place — it names the fix
+  → [troubleshooting.md](troubleshooting.md).
+
 ## 3.8.2 — 2026-09-30
 
 - **Adapt reports in the SAP Query Manager.** Copy a shipped report there under
