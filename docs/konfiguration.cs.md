@@ -1,4 +1,4 @@
-<!-- translation-of: konfiguration.md@9372b17bed93 -->
+<!-- translation-of: konfiguration.md@144d9c7ddc76 -->
 
 # Konfigurace (`.env`)
 
@@ -53,6 +53,7 @@ SAP_PUBLIC_URL=http://127.0.0.1:8000
 | `SAP_PHONE_HOME_INTERVAL_SECONDS` | `3600` | interval licenční kontroly phone-home |
 | `SAP_DB_SERVER_TYPE` | _auto_ | přepsat typ databáze (`HANA` / `MSSQL`); běžně rozpoznán automaticky — nastavte jen při chybné detekci |
 | `SAP_AUTO_DEPLOY_QUERIES` | `true` | nasadit dodávané reporty při prvním připojení dané CompanyDB |
+| `SAP_READ_ONLY_DEPLOY_QUERIES` | `false` | nasadit reporty i v režimu čtení (při připojení a přes `sap_deploy_queries`); zapisuje se jen do `SQLQueries`, všechny ostatní zápisy zůstávají zakázané a zápisové nástroje skryté |
 
 ### Dodávané reporty
 Server při **prvním připojení** dané CompanyDB sám nasadí své hotové reporty
@@ -68,6 +69,13 @@ nejbližší připojení ho obnoví. (Dotaz změněný před touto verzí nelze 
 při změně v novém vydání se naposledy aktualizuje.) V případě potřeby lze
 nasazení v chatu cíleně spustit (`sap_deploy_queries`) nebo vypnout přes
 `SAP_AUTO_DEPLOY_QUERIES=false`.
+
+**Instance v režimu čtení:** s `SAP_READ_ONLY_DEPLOY_QUERIES=true` se reporty
+nasadí i v režimu `READ_ONLY`. Zapisovat se smí jen do `SQLQueries`; zápisové
+nástroje zůstávají skryté a každý jiný zápis je odmítnut. Nasadí se i vaše vlastní
+reporty `AI_` ze Správce dotazů (viz níže) — stále jen pro čtení, ale viditelné pro
+každého uživatele asistenta dané firemní databáze. Uživatel SAP, který se připojuje,
+potřebuje právo vytvářet dotazy.
 
 ### Vlastní reporty (SAP Query Manager)
 Reporty upravujete nebo přidáváte ve **Správci dotazů (Query Manager) SAP B1** —

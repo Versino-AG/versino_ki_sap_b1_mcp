@@ -1,4 +1,4 @@
-<!-- translation-of: konfiguration.md@9372b17bed93 -->
+<!-- translation-of: konfiguration.md@144d9c7ddc76 -->
 # Konfiguration (`.env`)
 
 > 🌐 [English](konfiguration.md) · **Deutsch** · [Česky](konfiguration.cs.md)
@@ -52,6 +52,7 @@ SAP_PUBLIC_URL=http://127.0.0.1:8000
 | `SAP_PHONE_HOME_INTERVAL_SECONDS` | `3600` | Intervall der Lizenz-Phone-Home-Prüfung |
 | `SAP_DB_SERVER_TYPE` | _auto_ | Datenbanktyp übersteuern (`HANA` / `MSSQL`); normalerweise automatisch erkannt — nur bei fehlerhafter Erkennung setzen |
 | `SAP_AUTO_DEPLOY_QUERIES` | `true` | mitgelieferte Auswertungen beim ersten Verbinden je CompanyDB ausbringen |
+| `SAP_READ_ONLY_DEPLOY_QUERIES` | `false` | Auswertungen auch im Lesebetrieb ausbringen (beim Verbinden und über `sap_deploy_queries`); beschrieben wird nur `SQLQueries`, alle anderen Schreibzugriffe bleiben gesperrt, die Schreib-Tools verborgen |
 
 ### Mitgelieferte Auswertungen
 Der Server bringt seine fertigen Auswertungen (`AI_*`-Abfragen in
@@ -70,6 +71,14 @@ nicht erkennbar und wird ein letztes Mal aktualisiert, wenn ein Release sie
 ändert.)
 Bei Bedarf lässt sich die Ausbringung im Chat gezielt anstoßen
 (`sap_deploy_queries`) oder mit `SAP_AUTO_DEPLOY_QUERIES=false` abschalten.
+
+**Instanz im Lesebetrieb:** Mit `SAP_READ_ONLY_DEPLOY_QUERIES=true` werden die
+Auswertungen auch im `READ_ONLY`-Modus ausgebracht. Dabei darf nur in
+`SQLQueries` geschrieben werden; die Schreib-Tools bleiben verborgen, jeder andere
+Schreibzugriff wird abgelehnt. Ausgebracht werden auch eure eigenen
+`AI_`-Auswertungen aus dem Abfrage-Manager (siehe unten) — weiterhin nur lesend,
+aber für jeden Assistent-Benutzer der Company-Datenbank sichtbar. Der SAP-Benutzer,
+der sich verbindet, braucht das Recht, Abfragen anzulegen.
 
 ### Eigene Auswertungen (SAP-Abfrage-Manager)
 Auswertungen passt ihr im **Abfrage-Manager von SAP B1** an oder legt neue an —

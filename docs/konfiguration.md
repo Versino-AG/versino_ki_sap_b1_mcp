@@ -53,6 +53,7 @@ SAP_PUBLIC_URL=http://127.0.0.1:8000
 | `SAP_PHONE_HOME_INTERVAL_SECONDS` | `3600` | interval of the license phone-home check |
 | `SAP_DB_SERVER_TYPE` | _auto_ | override the database type (`HANA` / `MSSQL`); normally detected automatically — set only if detection is wrong |
 | `SAP_AUTO_DEPLOY_QUERIES` | `true` | deploy the bundled reports on first connect per CompanyDB |
+| `SAP_READ_ONLY_DEPLOY_QUERIES` | `false` | deploy the reports in read-only mode as well (on connect and via `sap_deploy_queries`); only `SQLQueries` is written, every other write stays refused and the write tools stay hidden |
 
 ### Bundled reports
 The server deploys its ready-made reports (`AI_*` queries in `SQLQueries`) on
@@ -68,6 +69,13 @@ get the shipped version back, delete the query; the next connect restores it.
 (A query changed before this version cannot be recognised and is updated one
 last time if a release changes it.) If needed, trigger the deployment in the chat
 (`sap_deploy_queries`) or disable it with `SAP_AUTO_DEPLOY_QUERIES=false`.
+
+**Read-only instance:** with `SAP_READ_ONLY_DEPLOY_QUERIES=true` the reports are
+deployed in `READ_ONLY` mode too. The deploy may write `SQLQueries` and nothing
+else; the write tools stay hidden and every other write is refused. It also
+deploys your own `AI_` reports from the Query Manager (see below) — still reads
+only, but visible to every assistant user of the company database. The SAP user
+who connects needs the right to create queries.
 
 ### Your own reports (SAP Query Manager)
 You adapt or add reports in the **SAP B1 Query Manager** — no files, no

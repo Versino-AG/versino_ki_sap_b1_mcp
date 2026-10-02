@@ -1,4 +1,4 @@
-<!-- translation-of: neuigkeiten.md@16ccc823c5f7 -->
+<!-- translation-of: neuigkeiten.md@378f9ffb6ea5 -->
 # Neuigkeiten
 
 > 🌐 [English](neuigkeiten.md) · **Deutsch** · [Česky](neuigkeiten.cs.md)
@@ -6,6 +6,13 @@
 Die wichtigsten Änderungen je Version, in einfachen Worten. Die laufende Version
 zeigt `sapb1-mcp --version`, und der Assistent kennt sie auch (fragt *„Welche
 Version läuft?"*).
+
+## 3.8.4 — 2026-10-02
+
+- **Auswertungen auch im Lesebetrieb.** Mit `SAP_READ_ONLY_DEPLOY_QUERIES=true`
+  bringt eine `READ_ONLY`-Instanz die Auswertungen selbst aus — auch eure eigenen
+  aus dem Abfrage-Manager. Beschrieben wird nur der Auswertungsspeicher; jede
+  andere Änderung an SAP bleibt gesperrt → [konfiguration.de.md](konfiguration.de.md).
 
 ## 3.8.3 — 2026-09-30
 

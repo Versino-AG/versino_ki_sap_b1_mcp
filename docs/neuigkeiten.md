@@ -6,6 +6,13 @@ The most important changes per version, in plain words. The running version is
 shown by `sapb1-mcp --version`, and the assistant knows it too (ask *"Which
 version is running?"*).
 
+## 3.8.4 — 2026-10-02
+
+- **Reports on a read-only instance.** With `SAP_READ_ONLY_DEPLOY_QUERIES=true`
+  a `READ_ONLY` instance deploys the reports itself — including your own from
+  the Query Manager. Only the report storage is written; every other change to
+  SAP stays blocked → [konfiguration.md](konfiguration.md).
+
 ## 3.8.3 — 2026-09-30
 
 - **A refused license is explained, not an "Internal Server Error".** If the

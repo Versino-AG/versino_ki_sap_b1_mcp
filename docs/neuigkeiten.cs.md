@@ -1,10 +1,17 @@
-<!-- translation-of: neuigkeiten.md@16ccc823c5f7 -->
+<!-- translation-of: neuigkeiten.md@378f9ffb6ea5 -->
 # Novinky
 
 > 🌐 [English](neuigkeiten.md) · [Deutsch](neuigkeiten.de.md) · **Česky**
 
 Nejdůležitější změny v každé verzi, jednoduše. Běžící verzi ukáže
 `sapb1-mcp --version` a asistent ji zná také (zeptejte se *„Jaká verze běží?"*).
+
+## 3.8.4 — 2026-10-02
+
+- **Reporty i v režimu čtení.** S `SAP_READ_ONLY_DEPLOY_QUERIES=true` instance v
+  režimu `READ_ONLY` sama nasadí reporty — i vaše vlastní ze Správce dotazů.
+  Zapisuje se jen do úložiště reportů; každá jiná změna v SAP zůstává zakázaná
+  → [konfiguration.cs.md](konfiguration.cs.md).
 
 ## 3.8.3 — 2026-09-30
 
