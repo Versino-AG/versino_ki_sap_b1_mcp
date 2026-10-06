@@ -1,4 +1,4 @@
-<!-- translation-of: neuigkeiten.md@378f9ffb6ea5 -->
+<!-- translation-of: neuigkeiten.md@1f2abddb4424 -->
 # Neuigkeiten
 
 > 🌐 [English](neuigkeiten.md) · **Deutsch** · [Česky](neuigkeiten.cs.md)
@@ -6,6 +6,13 @@
 Die wichtigsten Änderungen je Version, in einfachen Worten. Die laufende Version
 zeigt `sapb1-mcp --version`, und der Assistent kennt sie auch (fragt *„Welche
 Version läuft?"*).
+
+## 3.8.5 — 2026-10-06
+
+- **Ein zweiter Upload- oder Login-Link öffnet den zweiten Link.** Bisher konnte
+  die Seite beim ersten stehen bleiben — im normalen Browser-Tab und vor allem im
+  integrierten Browser von Claude Cowork. Jeder Link hat jetzt eine eigene
+  Adresse.
 
 ## 3.8.4 — 2026-10-02
 

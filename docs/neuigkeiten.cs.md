@@ -1,10 +1,16 @@
-<!-- translation-of: neuigkeiten.md@378f9ffb6ea5 -->
+<!-- translation-of: neuigkeiten.md@1f2abddb4424 -->
 # Novinky
 
 > 🌐 [English](neuigkeiten.md) · [Deutsch](neuigkeiten.de.md) · **Česky**
 
 Nejdůležitější změny v každé verzi, jednoduše. Běžící verzi ukáže
 `sapb1-mcp --version` a asistent ji zná také (zeptejte se *„Jaká verze běží?"*).
+
+## 3.8.5 — 2026-10-06
+
+- **Druhý odkaz pro nahrání nebo přihlášení otevře druhý odkaz.** Dříve mohla
+  stránka zůstat u prvního — v běžné záložce prohlížeče a hlavně v integrovaném
+  prohlížeči Claude Cowork. Každý odkaz má nyní vlastní adresu.
 
 ## 3.8.4 — 2026-10-02
 

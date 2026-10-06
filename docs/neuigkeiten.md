@@ -6,6 +6,13 @@ The most important changes per version, in plain words. The running version is
 shown by `sapb1-mcp --version`, and the assistant knows it too (ask *"Which
 version is running?"*).
 
+## 3.8.5 — 2026-10-06
+
+- **A second upload or login link opens the second link.** Before, the page
+  could stay on the first one — in an ordinary browser tab and especially in
+  the built-in browser of Claude Cowork. Every link now has an address of its
+  own.
+
 ## 3.8.4 — 2026-10-02
 
 - **Reports on a read-only instance.** With `SAP_READ_ONLY_DEPLOY_QUERIES=true`
