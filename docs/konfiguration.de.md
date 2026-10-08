@@ -1,4 +1,4 @@
-<!-- translation-of: konfiguration.md@144d9c7ddc76 -->
+<!-- translation-of: konfiguration.md@4cf28b9523af -->
 # Konfiguration (`.env`)
 
 > 🌐 [English](konfiguration.md) · **Deutsch** · [Česky](konfiguration.cs.md)
@@ -47,7 +47,7 @@ SAP_PUBLIC_URL=http://127.0.0.1:8000
 | `SAP_MAX_CONCURRENT_REQUESTS` | `10` | parallele SL-Requests |
 | `SAP_TIMEOUT_SECONDS` | `60` | HTTP-Timeout für Service-Layer-Requests |
 | `SAP_IDLE_LOGOUT_SECONDS` | `1500` | Leerlauf, nach dem eine Nutzer-Session automatisch abgemeldet wird |
-| `SAP_LOG_LEVEL` | `INFO` | Level der Konsole bzw. des Dienstprotokolls (`DEBUG`, `INFO`, `WARNING`, `ERROR`). Logdatei und Anmelde-Audit-Datei behalten unabhängig davon `WARNING` und höher. `DEBUG` gilt nur für den Server selbst; Fremdbibliotheken bleiben auf `INFO` — ihr Debug-Trace enthält den SAP-Sitzungscookie. Ein unbekannter Wert fällt mit einer Warnung auf `INFO` zurück |
+| `SAP_LOG_LEVEL` | `INFO` | Level der Konsole bzw. des Dienstprotokolls (`DEBUG`, `INFO`, `WARNING`, `ERROR`). Logdatei und Anmelde-Audit-Datei behalten unabhängig davon `WARNING` und höher. `DEBUG` gilt nur für den Server selbst; Fremdbibliotheken bleiben auf `INFO` — ihr Debug-Trace enthält den SAP-Sitzungscookie. `DEBUG` schreibt jede Service-Layer-Anfrage mit URL auf die Konsole, samt Filterwerten (Geschäftsdaten) — nichts für gemeinsam genutzte Terminals. Ein unbekannter Wert fällt mit einer Warnung auf `INFO` zurück |
 | `SAP_SESSION_MAX_SECONDS` | `28800` | absolute Lebensdauer einer Nutzer-Session (8 h) zusätzlich zum Leerlauf-Logout; danach wird der Assistent aufgefordert, `connect` erneut aufzurufen. `0` = unbegrenzt |
 | `SAP_PHONE_HOME_INTERVAL_SECONDS` | `3600` | Intervall der Lizenz-Phone-Home-Prüfung |
 | `SAP_DB_SERVER_TYPE` | _auto_ | Datenbanktyp übersteuern (`HANA` / `MSSQL`); normalerweise automatisch erkannt — nur bei fehlerhafter Erkennung setzen |
@@ -121,6 +121,8 @@ prüfen, bevor ihr euch darauf verlasst.
 |---|---|
 | `SAP_AUTH_MODE` | `basic` (User/Passwort direkt an SL) oder `bearer` (Browser-SSO mit PKCE, Token bei jedem Aufruf — ab FP 2208 mit Tokens des SAP-Authentication-Servers; stellt ein eigener Identity Provider die Tokens selbst aus, siehe Hinweis in sso-keycloak.de.md) |
 | `SAP_DISABLE_INLINE_LOGIN` | Login nur via Dialog/Web-UI, nie als Chat-Argument. **Standard `true`, sobald `SAP_PUBLIC_URL` gesetzt ist** (Netzwerk-Installation); `false` nur lokal oder als bewusstes Opt-in (`doctor` warnt) |
+| `SAP_LOGIN_DOMAIN` | Domäne, die beim Login einem Benutzernamen ohne Backslash vorangestellt wird, z. B. macht `CLOUDIAX` aus `c12345` ein `CLOUDIAX\c12345` (gehostetes SAP, bei dem jedes Konto die Domäne trägt). Nur der Name, kein Backslash. Gibt der Benutzer selbst eine Domäne an, bleibt sie, wie getippt. Leer (Standard) = aus |
+| `SAP_WEB_LOGIN_AUTO_CLOSE` | nach erfolgreichem Browser-Login schließt die Seite ihren Tab selbst, der Benutzer ist direkt wieder im Chat (Standard `true`). Gilt für den Anmeldelink aus dem Chat; wo der Browser das verweigert (SSO-Rücksprung, eingebettete Browser, ein Tab mit Verlauf), bleibt die Erfolgsseite mit dem Ticket wie bisher stehen. `false` lässt die Seite immer stehen, z. B. damit ein Passwortmanager das Speichern anbieten kann |
 | `SAP_ALLOWED_CLIENTS` | Adressen/Netze (IP/CIDR, kommagetrennt), die den Server überhaupt erreichen dürfen. Leer (Default) = jeder, der den Port erreicht. **Keine Anmeldung** — die bleibt Benutzer/Passwort/Datenbank; es entfernt nur das offene Internet. Ein Tippfehler bricht den Start ab und nennt den Eintrag |
 | `SAP_TICKET_SESSION_MAX_SECONDS` | absolute Lebensdauer einer Sitzung, die über einen Browser-Login-Schlüssel angesprochen wird, in Sekunden (Default `3600`, `0` = aus). Dieser Schlüssel reiste durch den Chatverlauf und wird bei jedem Aufruf mitgegeben, ist also enger begrenzt als `SAP_SESSION_MAX_SECONDS`; es gilt die kürzere der beiden Grenzen. Nutzer melden sich danach über `connect` neu an |
 | `SAP_TRUSTED_PROXIES` | Reverse-Proxy-Adressen (IPs/CIDRs, kommagetrennt), deren `X-Forwarded-For` der Server für die Login-Drossel und das Audit-Log vertraut — z. B. `127.0.0.1`, wenn nginx auf derselben Maschine läuft. Leer = der Socket-Peer gilt als Client (hinter einem Proxy wäre das der Proxy selbst, das ganze Büro teilt sich dann einen Zähler). Ein Alles-Eintrag (`0.0.0.0/0`, `::/0`) wird beim Start abgewiesen: Jedem zu vertrauen hieße, dass jeder Client pro Anfrage eine neue Adresse behaupten kann — die Drossel wäre aus |

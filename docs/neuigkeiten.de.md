@@ -1,4 +1,4 @@
-<!-- translation-of: neuigkeiten.md@1f2abddb4424 -->
+<!-- translation-of: neuigkeiten.md@7f90b7886242 -->
 # Neuigkeiten
 
 > 🌐 [English](neuigkeiten.md) · **Deutsch** · [Česky](neuigkeiten.cs.md)
@@ -6,6 +6,21 @@
 Die wichtigsten Änderungen je Version, in einfachen Worten. Die laufende Version
 zeigt `sapb1-mcp --version`, und der Assistent kennt sie auch (fragt *„Welche
 Version läuft?"*).
+
+## 3.8.6 — 2026-10-08
+
+- **Anmelden nur mit dem Benutzernamen.** Bei gehostetem SAP trägt jedes Konto
+  eine Domäne (`CLOUDIAX\c12345`). Mit `SAP_LOGIN_DOMAIN` in der `.env`
+  ergänzt der Server sie für euch — `c12345` genügt. Wer die Domäne ohnehin
+  tippt, bleibt wie getippt → [konfiguration.de.md](konfiguration.de.md).
+- **Der Login-Tab schließt sich selbst.** Nach erfolgreicher Anmeldung seid ihr
+  direkt wieder im Chat. Wo der Browser das nicht erlaubt, bleibt die Seite wie
+  bisher; `SAP_WEB_LOGIN_AUTO_CLOSE=false` lässt sie immer stehen
+  → [konfiguration.de.md](konfiguration.de.md).
+- **Eigene Auswertungen aus dem Abfrage-Manager erscheinen als eure.** Name und
+  Beschreibung erreichen den Assistenten gefiltert und als Kundendaten
+  gekennzeichnet, und eine Kopie einer mitgelieferten Auswertung gilt nicht mehr
+  als die mitgelieferte.
 
 ## 3.8.5 — 2026-10-06
 

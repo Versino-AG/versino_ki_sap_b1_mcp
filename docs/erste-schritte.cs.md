@@ -1,4 +1,4 @@
-<!-- translation-of: erste-schritte.md@6f06ccac82e6 -->
+<!-- translation-of: erste-schritte.md@9b152fdc18a1 -->
 
 # První kroky (pro uživatele)
 
@@ -18,6 +18,8 @@ vašeho systému tam uvidíte:
 
 - **Přihlašovací stránku asistenta** (klasické přihlášení): tam zadáte svého
   **SAP B1 uživatele + heslo** a vyberete **databázi (firmu)**.
+  Po úspěšném přihlášení se karta sama zavře; pokud zůstane otevřená
+  (některé prohlížeče to nedovolí), prostě ji zavřete.
 - **Single Sign-On:** Při více firmách se nejdřív zobrazí malá stránka
   **„Vybrat databázi"** — vyberte firmu, klikněte na **„Pokračovat na přihlášení"**.
   Poté (nebo rovnou, pokud je jen jedna firma) se dostanete na **centrální

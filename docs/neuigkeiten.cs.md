@@ -1,10 +1,24 @@
-<!-- translation-of: neuigkeiten.md@1f2abddb4424 -->
+<!-- translation-of: neuigkeiten.md@7f90b7886242 -->
 # Novinky
 
 > 🌐 [English](neuigkeiten.md) · [Deutsch](neuigkeiten.de.md) · **Česky**
 
 Nejdůležitější změny v každé verzi, jednoduše. Běžící verzi ukáže
 `sapb1-mcp --version` a asistent ji zná také (zeptejte se *„Jaká verze běží?"*).
+
+## 3.8.6 — 2026-10-08
+
+- **Přihlášení jen uživatelským jménem.** U hostovaného SAP nese každý účet
+  doménu (`CLOUDIAX\c12345`). S `SAP_LOGIN_DOMAIN` v `.env` ji server doplní za
+  vás — stačí `c12345`. Kdo doménu stejně zadává, zůstane tak, jak ji napsal
+  → [konfiguration.cs.md](konfiguration.cs.md).
+- **Karta s přihlášením se sama zavře.** Po úspěšném přihlášení jste rovnou zpět
+  v chatu. Kde to prohlížeč nedovolí, stránka zůstane jako dosud;
+  `SAP_WEB_LOGIN_AUTO_CLOSE=false` ji ponechá vždy
+  → [konfiguration.cs.md](konfiguration.cs.md).
+- **Vlastní sestavy ze Správce dotazů se zobrazují jako vaše.** Jejich název a
+  popis se k asistentovi dostanou filtrované a označené jako zákaznická data a
+  kopie dodávané sestavy se už nevydává za dodávanou.
 
 ## 3.8.5 — 2026-10-06
 

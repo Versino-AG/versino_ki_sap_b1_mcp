@@ -1,4 +1,4 @@
-<!-- translation-of: konfiguration.md@144d9c7ddc76 -->
+<!-- translation-of: konfiguration.md@4cf28b9523af -->
 
 # Konfigurace (`.env`)
 
@@ -48,7 +48,7 @@ SAP_PUBLIC_URL=http://127.0.0.1:8000
 | `SAP_MAX_CONCURRENT_REQUESTS` | `10` | paralelní SL požadavky |
 | `SAP_TIMEOUT_SECONDS` | `60` | HTTP timeout požadavků na Service Layer |
 | `SAP_IDLE_LOGOUT_SECONDS` | `1500` | nečinnost, po které se uživatelská relace automaticky odhlásí |
-| `SAP_LOG_LEVEL` | `INFO` | úroveň logu konzole / protokolu služby (`DEBUG`, `INFO`, `WARNING`, `ERROR`). Soubor logu a auditní soubor přihlášení si nezávisle na tom ponechávají `WARNING` a výše. `DEBUG` platí jen pro server samotný; knihovny třetích stran zůstávají na `INFO` — jejich debug trace obsahuje cookie relace SAP. Neznámá hodnota se s varováním vrátí na `INFO` |
+| `SAP_LOG_LEVEL` | `INFO` | úroveň logu konzole / protokolu služby (`DEBUG`, `INFO`, `WARNING`, `ERROR`). Soubor logu a auditní soubor přihlášení si nezávisle na tom ponechávají `WARNING` a výše. `DEBUG` platí jen pro server samotný; knihovny třetích stran zůstávají na `INFO` — jejich debug trace obsahuje cookie relace SAP. `DEBUG` vypisuje na konzoli každý požadavek na Service Layer včetně URL a hodnot filtrů (obchodní data) — ne pro sdílené terminály. Neznámá hodnota se s varováním vrátí na `INFO` |
 | `SAP_SESSION_MAX_SECONDS` | `28800` | absolutní délka uživatelské relace (8 h) navíc k odhlášení při nečinnosti; poté je asistent vyzván znovu zavolat `connect`. `0` = bez omezení |
 | `SAP_PHONE_HOME_INTERVAL_SECONDS` | `3600` | interval licenční kontroly phone-home |
 | `SAP_DB_SERVER_TYPE` | _auto_ | přepsat typ databáze (`HANA` / `MSSQL`); běžně rozpoznán automaticky — nastavte jen při chybné detekci |
@@ -117,6 +117,8 @@ spolehnete.
 |---|---|
 | `SAP_AUTH_MODE` | `basic` (uživatel/heslo přímo na SL) nebo `bearer` (browser SSO s PKCE, token při každém volání — od FP 2208 s tokeny SAP Authentication Serveru; pokud tokeny vydává vlastní Identity Provider, viz poznámka v sso-keycloak.cs.md) |
 | `SAP_DISABLE_INLINE_LOGIN` | přihlášení jen přes dialog/web UI, nikdy jako argument v chatu. **Výchozí `true`, jakmile je nastaveno `SAP_PUBLIC_URL`** (síťová instalace); `false` jen lokálně nebo jako vědomé opt-in (`doctor` varuje) |
+| `SAP_LOGIN_DOMAIN` | doména, která se při přihlášení předřadí uživatelskému jménu zadanému bez zpětného lomítka, např. `CLOUDIAX` udělá z `c12345` jméno `CLOUDIAX\c12345` (hostované SAP, kde každý účet nese doménu). Jen název, bez lomítka. Zadá-li uživatel doménu sám, zůstane tak, jak ji napsal. Prázdné (výchozí) = vypnuto |
+| `SAP_WEB_LOGIN_AUTO_CLOSE` | po úspěšném přihlášení v prohlížeči stránka sama zavře svou kartu, uživatel je rovnou zpět v chatu (výchozí `true`). Platí pro přihlašovací odkaz z chatu; kde to prohlížeč odmítne (návrat ze SSO, vestavěné prohlížeče, karta s historií), zůstane stránka s tiketem jako dosud. `false` stránku vždy ponechá, např. aby správce hesel mohl nabídnout uložení |
 | `SAP_ALLOWED_CLIENTS` | adresy/sítě (IP/CIDR, oddělené čárkou), které smějí server vůbec oslovit. Prázdné (výchozí) = každý, kdo dosáhne na port. **Není to autentizace** — přihlášení zůstává uživatel/heslo/databáze; jen to odstraní otevřený internet. Překlep ukončí start a pojmenuje záznam |
 | `SAP_TICKET_SESSION_MAX_SECONDS` | absolutní životnost relace oslovené klíčem z přihlášení v prohlížeči, v sekundách (výchozí `3600`, `0` = vypnuto). Tento klíč putoval chatem a předává se při každém volání, je proto omezen přísněji než `SAP_SESSION_MAX_SECONDS`; platí kratší z obou. Uživatelé se poté znovu přihlásí přes `connect` |
 | `SAP_TRUSTED_PROXIES` | adresy reverse proxy (IP/CIDR, oddělené čárkou), jejichž `X-Forwarded-For` server důvěřuje pro omezení přihlášení a audit log — např. `127.0.0.1`, když nginx běží na stejném stroji. Prázdné = za klienta se bere socket peer (za proxy by to byla proxy sama, celá kancelář by pak sdílela jedno počítadlo). Záznam pro vše (`0.0.0.0/0`, `::/0`) je při startu odmítnut: důvěřovat všem by znamenalo, že si každý klient může na každý požadavek nárokovat novou adresu — omezovač by byl vypnutý |

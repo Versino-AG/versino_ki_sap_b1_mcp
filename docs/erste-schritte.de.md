@@ -1,4 +1,4 @@
-<!-- translation-of: erste-schritte.md@6f06ccac82e6 -->
+<!-- translation-of: erste-schritte.md@9b152fdc18a1 -->
 # Erste Schritte (für Anwender)
 
 > 🌐 [English](erste-schritte.md) · **Deutsch** · [Česky](erste-schritte.cs.md)
@@ -17,6 +17,8 @@ Einrichtung eures Systems seht ihr dort:
 
 - **Anmeldeseite des Assistenten** (klassische Anmeldung): Dort euren
   **SAP-B1-Benutzer + Passwort** eingeben und die **Datenbank (Firma)** wählen.
+  Nach erfolgreicher Anmeldung schließt sich der Tab von selbst; bleibt er
+  offen (manche Browser erlauben das nicht), einfach schließen.
 - **Single Sign-On:** Bei mehreren Firmen erscheint zuerst eine kleine Seite
   **„Datenbank wählen"** — Firma auswählen, **„Weiter zur Anmeldung"** klicken.
   Danach (oder direkt, wenn es nur eine Firma gibt) landet ihr auf der

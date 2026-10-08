@@ -1,4 +1,4 @@
-<!-- translation-of: installation-zentral.md@a7edd0be3160 -->
+<!-- translation-of: installation-zentral.md@77721e113cc6 -->
 # SAP-B1-MCP zentral betreiben (eine Instanz für alle Arbeitsplätze)
 
 > 🌐 [English](installation-zentral.md) · **Deutsch** · [Česky](installation-zentral.cs.md)
@@ -190,7 +190,7 @@ weiß, wem er vertrauen darf:
           proxy_buffering off;
           proxy_read_timeout 3600s;
       }
-      location ~ ^/(api/login|login)$ {
+      location ~ ^/(api/login|login(/[A-Za-z0-9_-]+)?)$ {
           limit_req zone=sapb1_login burst=20 nodelay;
           proxy_pass http://127.0.0.1:8000;
           proxy_set_header Host $host;

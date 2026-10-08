@@ -193,7 +193,7 @@ Behind a proxy it only sees the proxy's address unless you tell it whom to trust
           proxy_buffering off;
           proxy_read_timeout 3600s;
       }
-      location ~ ^/(api/login|login)$ {
+      location ~ ^/(api/login|login(/[A-Za-z0-9_-]+)?)$ {
           limit_req zone=sapb1_login burst=20 nodelay;
           proxy_pass http://127.0.0.1:8000;
           proxy_set_header Host $host;

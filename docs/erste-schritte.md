@@ -16,6 +16,8 @@ system is set up, you will see:
 
 - **The assistant's sign-in page** (classic login): enter your
   **SAP B1 user + password** there and choose the **database (company)**.
+  After a successful sign-in the tab closes by itself; if it stays open
+  (some browsers do not allow that), just close it.
 - **Single sign-on:** with several companies a small page
   **"Choose database"** appears first — pick the company, click
   **"Continue to sign-in"**. After that (or directly, if there is only one

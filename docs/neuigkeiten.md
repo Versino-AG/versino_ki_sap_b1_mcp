@@ -6,6 +6,20 @@ The most important changes per version, in plain words. The running version is
 shown by `sapb1-mcp --version`, and the assistant knows it too (ask *"Which
 version is running?"*).
 
+## 3.8.6 — 2026-10-08
+
+- **Sign in with just your user name.** On hosted SAP every account carries a
+  domain (`CLOUDIAX\c12345`). With `SAP_LOGIN_DOMAIN` in the `.env` the server
+  adds it for you — `c12345` is enough. Who types the domain anyway is left as
+  typed → [konfiguration.md](konfiguration.md).
+- **The login tab closes itself.** After a successful sign-in you are straight
+  back in the chat. Where the browser does not allow that, the page stays as
+  before; `SAP_WEB_LOGIN_AUTO_CLOSE=false` keeps it in every case
+  → [konfiguration.md](konfiguration.md).
+- **Your own reports from the Query Manager are shown as yours.** Their names
+  and descriptions reach the assistant filtered and marked as customer data, and
+  a copy of a shipped report is no longer presented as the shipped one.
+
 ## 3.8.5 — 2026-10-06
 
 - **A second upload or login link opens the second link.** Before, the page
