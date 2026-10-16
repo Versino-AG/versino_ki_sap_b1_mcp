@@ -1,10 +1,19 @@
-<!-- translation-of: neuigkeiten.md@7f90b7886242 -->
+<!-- translation-of: neuigkeiten.md@1b113039252d -->
 # Novinky
 
 > 🌐 [English](neuigkeiten.md) · [Deutsch](neuigkeiten.de.md) · **Česky**
 
 Nejdůležitější změny v každé verzi, jednoduše. Běžící verzi ukáže
 `sapb1-mcp --version` a asistent ji zná také (zeptejte se *„Jaká verze běží?"*).
+
+## 3.8.7 — 2026-10-15
+
+- **V provozu se nic nemění.** Tato verze pochází z nového sestavovacího
+  prostředí; program se chová přesně jako 3.8.6, aktualizace je tedy volitelná.
+- **Ke stažení je přiložen seznam všech součástí.**
+  `sapb1-mcp-3.8.7.cdx.json` uvádí každou knihovnu v programu včetně její
+  verze. Vaše IT podle něj může ověřit, zda se vás týká zveřejněné bezpečnostní
+  upozornění.
 
 ## 3.8.6 — 2026-10-08
 

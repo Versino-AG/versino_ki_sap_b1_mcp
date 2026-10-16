@@ -6,6 +6,15 @@ The most important changes per version, in plain words. The running version is
 shown by `sapb1-mcp --version`, and the assistant knows it too (ask *"Which
 version is running?"*).
 
+## 3.8.7 — 2026-10-15
+
+- **Nothing changes in use.** This version comes from a new build system; the
+  program behaves exactly like 3.8.6, so updating is optional.
+- **A list of all components comes with the download.**
+  `sapb1-mcp-3.8.7.cdx.json` names every library inside the program with its
+  version. Your IT can use it to check whether a published security advisory
+  affects you.
+
 ## 3.8.6 — 2026-10-08
 
 - **Sign in with just your user name.** On hosted SAP every account carries a

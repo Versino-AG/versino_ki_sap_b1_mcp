@@ -1,4 +1,4 @@
-<!-- translation-of: neuigkeiten.md@7f90b7886242 -->
+<!-- translation-of: neuigkeiten.md@1b113039252d -->
 # Neuigkeiten
 
 > 🌐 [English](neuigkeiten.md) · **Deutsch** · [Česky](neuigkeiten.cs.md)
@@ -6,6 +6,16 @@
 Die wichtigsten Änderungen je Version, in einfachen Worten. Die laufende Version
 zeigt `sapb1-mcp --version`, und der Assistent kennt sie auch (fragt *„Welche
 Version läuft?"*).
+
+## 3.8.7 — 2026-10-15
+
+- **Im Betrieb ändert sich nichts.** Diese Version stammt aus einer neuen
+  Build-Umgebung; das Programm verhält sich genau wie 3.8.6, das Update ist
+  also optional.
+- **Eine Liste aller Bestandteile liegt dem Download bei.**
+  `sapb1-mcp-3.8.7.cdx.json` nennt jede Bibliothek im Programm mit ihrer
+  Version. Eure IT kann damit prüfen, ob eine veröffentlichte Sicherheitsmeldung
+  euch betrifft.
 
 ## 3.8.6 — 2026-10-08
 
