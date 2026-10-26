@@ -1,4 +1,4 @@
-<!-- translation-of: installation-zentral.md@77721e113cc6 -->
+<!-- translation-of: installation-zentral.md@16a7a297f550 -->
 # SAP-B1-MCP zentral betreiben (eine Instanz für alle Arbeitsplätze)
 
 > 🌐 [English](installation-zentral.md) · **Deutsch** · [Česky](installation-zentral.cs.md)
@@ -130,8 +130,8 @@ Start deutlich. Danach ist der Endpunkt direkt `https://<host>:<port>/mcp` —
 Firewall entsprechend öffnen (Abschnitt 6).
 
 ### Variante B — TLS-Reverse-Proxy (davorgeschaltet)
-Der Proxy terminiert HTTPS und leitet **alle** Pfade (`/mcp`, `/login`, `/api/login`) an
-den lokalen Server weiter. Wichtig: **langes Lese-Timeout** und **kein Response-Buffering**
+Der Proxy terminiert HTTPS und leitet **alle** Pfade (`/mcp`, `/login`, `/api/login`, `/branding/`)
+an den lokalen Server weiter. Wichtig: **langes Lese-Timeout** und **kein Response-Buffering**
 (Streamable HTTP / Server-Sent Events). Sinnvoll, wenn ohnehin ein zentraler Proxy
 existiert oder automatische Zertifikate (z. B. Caddy/Let's Encrypt) gewünscht sind.
 

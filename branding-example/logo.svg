@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 190 42" width="190" height="42">
+  <rect x="0" y="3" width="36" height="36" rx="9" fill="#2fa36b"/>
+  <path d="M10 27 L18 13 L26 27 Z" fill="#ffffff"/>
+  <text x="46" y="28" font-family="Segoe UI, Arial, sans-serif" font-size="19" font-weight="600" fill="#16242f">Example Ltd</text>
+</svg>

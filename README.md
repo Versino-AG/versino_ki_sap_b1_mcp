@@ -65,6 +65,7 @@ Für eigene Verzeichnisse, eigenen Dienst-Wrapper, Reverse-Proxy oder Linux:
 - [Installation Linux (manuell)](docs/installation-linux.de.md)
 - [Zentrale Installation (eine Instanz für alle Arbeitsplätze)](docs/installation-zentral.de.md)
 - [Konfiguration (`.env`)](docs/konfiguration.de.md)
+- [Browserseiten im eigenen Design (Logo, Farben, Texte)](docs/branding.de.md)
 - [SSO über Keycloak (OIDC) — Einrichtungsanleitung](docs/sso-keycloak.de.md)
 - [Lizenz (`versino.key`, Erneuerung, Seats)](docs/lizenz.de.md)
 - [Anhänge: Dateien nach SAP hochladen (Browser / URL / Pfad)](docs/anhaenge.de.md)

@@ -132,7 +132,7 @@ reported clearly at startup. The endpoint is then directly
 
 ### Variant B — TLS reverse proxy (in front)
 The proxy terminates HTTPS and forwards **all** paths (`/mcp`, `/login`,
-`/api/login`) to the local server. Important: **long read timeout** and **no
+`/api/login`, `/branding/`) to the local server. Important: **long read timeout** and **no
 response buffering** (Streamable HTTP / server-sent events). Sensible when a
 central proxy exists anyway or automatic certificates (e.g. Caddy/Let's
 Encrypt) are wanted.

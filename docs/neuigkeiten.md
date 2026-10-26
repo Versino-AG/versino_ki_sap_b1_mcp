@@ -6,6 +6,18 @@ The most important changes per version, in plain words. The running version is
 shown by `sapb1-mcp --version`, and the assistant knows it too (ask *"Which
 version is running?"*).
 
+## 3.9.0 — 2026-10-26
+
+- **The browser pages in your own design.** Put a folder `branding` with your
+  logo, colours and texts next to the server, and the login, database choice,
+  confirmation and upload pages carry them. No new version needed for a change,
+  a restart is enough → [branding.md](branding.md).
+- **Pages in the browser's language.** The pages now speak English, German or
+  Czech, whichever the browser asks for. Messages in the chat stay in
+  `SAP_LANG`.
+- **Designs for partners.** `SAP_WEB_THEME=cloudiax` switches to the Cloudiax
+  design.
+
 ## 3.8.7 — 2026-10-15
 
 - **Nothing changes in use.** This version comes from a new build system; the

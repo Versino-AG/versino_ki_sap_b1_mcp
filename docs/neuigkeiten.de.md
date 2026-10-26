@@ -1,4 +1,4 @@
-<!-- translation-of: neuigkeiten.md@1b113039252d -->
+<!-- translation-of: neuigkeiten.md@43e2827b9fbc -->
 # Neuigkeiten
 
 > 🌐 [English](neuigkeiten.md) · **Deutsch** · [Česky](neuigkeiten.cs.md)
@@ -6,6 +6,18 @@
 Die wichtigsten Änderungen je Version, in einfachen Worten. Die laufende Version
 zeigt `sapb1-mcp --version`, und der Assistent kennt sie auch (fragt *„Welche
 Version läuft?"*).
+
+## 3.9.0 — 2026-10-26
+
+- **Die Browserseiten im eigenen Design.** Legen Sie einen Ordner `branding` mit
+  Ihrem Logo, Ihren Farben und Texten neben den Server, dann tragen Anmeldung,
+  Datenbankwahl, Bestätigung und Upload sie. Für eine Änderung braucht es keine
+  neue Version, ein Neustart genügt → [branding.de.md](branding.de.md).
+- **Seiten in der Sprache des Browsers.** Die Seiten sprechen jetzt Englisch,
+  Deutsch oder Tschechisch, je nachdem, was der Browser verlangt. Meldungen im
+  Chat bleiben bei `SAP_LANG`.
+- **Designs für Partner.** `SAP_WEB_THEME=cloudiax` schaltet auf das
+  Cloudiax-Design um.
 
 ## 3.8.7 — 2026-10-15
 

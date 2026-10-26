@@ -1,4 +1,4 @@
-<!-- translation-of: konfiguration.md@4cf28b9523af -->
+<!-- translation-of: konfiguration.md@b951f97a79df -->
 
 # Konfigurace (`.env`)
 
@@ -119,6 +119,8 @@ spolehnete.
 | `SAP_DISABLE_INLINE_LOGIN` | přihlášení jen přes dialog/web UI, nikdy jako argument v chatu. **Výchozí `true`, jakmile je nastaveno `SAP_PUBLIC_URL`** (síťová instalace); `false` jen lokálně nebo jako vědomé opt-in (`doctor` varuje) |
 | `SAP_LOGIN_DOMAIN` | doména, která se při přihlášení předřadí uživatelskému jménu zadanému bez zpětného lomítka, např. `CLOUDIAX` udělá z `c12345` jméno `CLOUDIAX\c12345` (hostované SAP, kde každý účet nese doménu). Jen název, bez lomítka. Zadá-li uživatel doménu sám, zůstane tak, jak ji napsal. Prázdné (výchozí) = vypnuto |
 | `SAP_WEB_LOGIN_AUTO_CLOSE` | po úspěšném přihlášení v prohlížeči stránka sama zavře svou kartu, uživatel je rovnou zpět v chatu (výchozí `true`). Platí pro přihlašovací odkaz z chatu; kde to prohlížeč odmítne (návrat ze SSO, vestavěné prohlížeče, karta s historií), zůstane stránka s tiketem jako dosud. `false` stránku vždy ponechá, např. aby správce hesel mohl nabídnout uložení |
+| `SAP_WEB_THEME` | vzhled stránek v prohlížeči: `versino` (výchozí) nebo `cloudiax` (vzhled partnera). Neznámá hodnota zastaví start a vypíše povolené. Viz branding.cs.md |
+| `SAP_BRANDING_DIR` | složka s `branding.json` a/nebo logem pro stránky v prohlížeči (barvy, texty, patička). Bez zadání: složka `branding` vedle binárky. Čte se při startu; chyba v ní start zastaví. Viz branding.cs.md |
 | `SAP_ALLOWED_CLIENTS` | adresy/sítě (IP/CIDR, oddělené čárkou), které smějí server vůbec oslovit. Prázdné (výchozí) = každý, kdo dosáhne na port. **Není to autentizace** — přihlášení zůstává uživatel/heslo/databáze; jen to odstraní otevřený internet. Překlep ukončí start a pojmenuje záznam |
 | `SAP_TICKET_SESSION_MAX_SECONDS` | absolutní životnost relace oslovené klíčem z přihlášení v prohlížeči, v sekundách (výchozí `3600`, `0` = vypnuto). Tento klíč putoval chatem a předává se při každém volání, je proto omezen přísněji než `SAP_SESSION_MAX_SECONDS`; platí kratší z obou. Uživatelé se poté znovu přihlásí přes `connect` |
 | `SAP_TRUSTED_PROXIES` | adresy reverse proxy (IP/CIDR, oddělené čárkou), jejichž `X-Forwarded-For` server důvěřuje pro omezení přihlášení a audit log — např. `127.0.0.1`, když nginx běží na stejném stroji. Prázdné = za klienta se bere socket peer (za proxy by to byla proxy sama, celá kancelář by pak sdílela jedno počítadlo). Záznam pro vše (`0.0.0.0/0`, `::/0`) je při startu odmítnut: důvěřovat všem by znamenalo, že si každý klient může na každý požadavek nárokovat novou adresu — omezovač by byl vypnutý |

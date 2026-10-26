@@ -1,10 +1,20 @@
-<!-- translation-of: neuigkeiten.md@1b113039252d -->
+<!-- translation-of: neuigkeiten.md@43e2827b9fbc -->
 # Novinky
 
 > 🌐 [English](neuigkeiten.md) · [Deutsch](neuigkeiten.de.md) · **Česky**
 
 Nejdůležitější změny v každé verzi, jednoduše. Běžící verzi ukáže
 `sapb1-mcp --version` a asistent ji zná také (zeptejte se *„Jaká verze běží?"*).
+
+## 3.9.0 — 2026-10-26
+
+- **Stránky v prohlížeči ve vlastním vzhledu.** Vedle serveru vytvořte složku
+  `branding` se svým logem, barvami a texty a ponesou je přihlášení, výběr
+  databáze, potvrzení i nahrání. Změna nepotřebuje novou verzi, stačí restart
+  → [branding.cs.md](branding.cs.md).
+- **Stránky v jazyce prohlížeče.** Stránky nyní mluví anglicky, německy nebo
+  česky podle toho, co prohlížeč žádá. Zprávy v chatu zůstávají v `SAP_LANG`.
+- **Vzhledy pro partnery.** `SAP_WEB_THEME=cloudiax` přepne na vzhled Cloudiax.
 
 ## 3.8.7 — 2026-10-15
 

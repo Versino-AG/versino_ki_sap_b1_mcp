@@ -1,0 +1,13 @@
+{
+  "colors": { "accent": "#1f6f4a", "accent2": "#2fa36b", "bg": "#0f1d17", "bg2": "#163326" },
+  "eyebrow": { "en": "Example Ltd", "de": "Muster GmbH", "cs": "Vzor s.r.o." },
+  "title": { "en": "SAP assistant sign-in", "de": "Anmeldung SAP-Assistent", "cs": "Přihlášení k asistentovi SAP" },
+  "subtitle": {
+    "en": "Sign in with your SAP user.",
+    "de": "Mit Ihrem SAP-Benutzer anmelden.",
+    "cs": "Přihlaste se svým uživatelem SAP."
+  },
+  "footer": { "en": "Questions: it@example.com", "de": "Fragen: it@example.com", "cs": "Dotazy: it@example.com" },
+  "page_title": "Example – SAP assistant",
+  "support_url": "https://intranet.example.com/sap-help"
+}
