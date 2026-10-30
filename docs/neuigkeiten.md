@@ -6,6 +6,20 @@ The most important changes per version, in plain words. The running version is
 shown by `sapb1-mcp --version`, and the assistant knows it too (ask *"Which
 version is running?"*).
 
+## 3.10.0 — 2026-10-30
+
+- **Protection against instructions hidden in SAP data.** The assistant reads
+  remarks, item texts and comments, and such text can carry instructions. The
+  server now marks every query result as data for the model and removes hidden
+  characters. Visible text is not changed → [sicherheit-ki.md](sicherheit-ki.md).
+- **Narrow what the assistant may write.** `SAP_WRITABLE_ENTITIES` names the
+  object types the assistant may change; everything else is refused.
+  `SAP_WRITES_PER_HOUR` caps writes per user (default 100).
+- **Confirm chosen changes.** With `SAP_WRITE_CONFIRMATION`, for example
+  `delete,Cancel`, these changes wait for a confirmation that lists exactly what
+  will be written: in the chat client's dialog, or on a browser page if the
+  client shows none.
+
 ## 3.9.0 — 2026-10-26
 
 - **The browser pages in your own design.** Put a folder `branding` with your

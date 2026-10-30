@@ -1,4 +1,4 @@
-<!-- translation-of: konfiguration.md@b951f97a79df -->
+<!-- translation-of: konfiguration.md@1004ddec4a29 -->
 
 # Konfigurace (`.env`)
 
@@ -120,6 +120,9 @@ spolehnete.
 | `SAP_LOGIN_DOMAIN` | doména, která se při přihlášení předřadí uživatelskému jménu zadanému bez zpětného lomítka, např. `CLOUDIAX` udělá z `c12345` jméno `CLOUDIAX\c12345` (hostované SAP, kde každý účet nese doménu). Jen název, bez lomítka. Zadá-li uživatel doménu sám, zůstane tak, jak ji napsal. Prázdné (výchozí) = vypnuto |
 | `SAP_WEB_LOGIN_AUTO_CLOSE` | po úspěšném přihlášení v prohlížeči stránka sama zavře svou kartu, uživatel je rovnou zpět v chatu (výchozí `true`). Platí pro přihlašovací odkaz z chatu; kde to prohlížeč odmítne (návrat ze SSO, vestavěné prohlížeče, karta s historií), zůstane stránka s tiketem jako dosud. `false` stránku vždy ponechá, např. aby správce hesel mohl nabídnout uložení |
 | `SAP_WEB_THEME` | vzhled stránek v prohlížeči: `versino` (výchozí) nebo `cloudiax` (vzhled partnera). Neznámá hodnota zastaví start a vypíše povolené. Viz branding.cs.md |
+| `SAP_WRITABLE_ENTITIES` | typy objektů, které smí asistent vůbec zapisovat, oddělené čárkou (např. `Orders,BusinessPartners`); `*unbound*` povolí servisní akce, `Attachments2` nahrávání příloh. Prázdné (výchozí) = všechny. Chybná položka zastaví start. Viz sicherheit-ki.cs.md |
+| `SAP_WRITES_PER_HOUR` | zápisy na uživatele SAP a hodinu přes asistenta (výchozí `100`, `0` = vypnuto). Viz sicherheit-ki.cs.md |
+| `SAP_WRITE_CONFIRMATION` | zápisy, které proběhnou až po potvrzení: názvy nástrojů (`delete`), akce (`Cancel`) nebo typy objektů (`Invoices`), oddělené čárkou. Nejprve se ptá dialog chatovacího klienta, jinak stránka v prohlížeči, která vyžaduje `SAP_PUBLIC_URL`. Prázdné (výchozí) = bez potvrzení. Viz sicherheit-ki.cs.md |
 | `SAP_BRANDING_DIR` | složka s `branding.json` a/nebo logem pro stránky v prohlížeči (barvy, texty, patička). Bez zadání: složka `branding` vedle binárky. Čte se při startu; chyba v ní start zastaví. Viz branding.cs.md |
 | `SAP_ALLOWED_CLIENTS` | adresy/sítě (IP/CIDR, oddělené čárkou), které smějí server vůbec oslovit. Prázdné (výchozí) = každý, kdo dosáhne na port. **Není to autentizace** — přihlášení zůstává uživatel/heslo/databáze; jen to odstraní otevřený internet. Překlep ukončí start a pojmenuje záznam |
 | `SAP_TICKET_SESSION_MAX_SECONDS` | absolutní životnost relace oslovené klíčem z přihlášení v prohlížeči, v sekundách (výchozí `3600`, `0` = vypnuto). Tento klíč putoval chatem a předává se při každém volání, je proto omezen přísněji než `SAP_SESSION_MAX_SECONDS`; platí kratší z obou. Uživatelé se poté znovu přihlásí přes `connect` |

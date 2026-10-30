@@ -1,4 +1,4 @@
-<!-- translation-of: neuigkeiten.md@43e2827b9fbc -->
+<!-- translation-of: neuigkeiten.md@714797e5161e -->
 # Neuigkeiten
 
 > 🌐 [English](neuigkeiten.md) · **Deutsch** · [Česky](neuigkeiten.cs.md)
@@ -6,6 +6,21 @@
 Die wichtigsten Änderungen je Version, in einfachen Worten. Die laufende Version
 zeigt `sapb1-mcp --version`, und der Assistent kennt sie auch (fragt *„Welche
 Version läuft?"*).
+
+## 3.10.0 — 2026-10-30
+
+- **Schutz vor Anweisungen, die in SAP-Daten versteckt sind.** Der Assistent liest
+  Bemerkungen, Artikeltexte und Kommentare, und solcher Text kann Anweisungen
+  enthalten. Der Server kennzeichnet jetzt jedes Abfrageergebnis für das Modell
+  als Daten und entfernt versteckte Zeichen. Sichtbarer Text bleibt unverändert
+  → [sicherheit-ki.de.md](sicherheit-ki.de.md).
+- **Eingrenzen, was der Assistent schreiben darf.** `SAP_WRITABLE_ENTITIES` nennt
+  die Objektarten, die der Assistent ändern darf; alles andere wird abgelehnt.
+  `SAP_WRITES_PER_HOUR` begrenzt Schreibzugriffe je Benutzer (Standard 100).
+- **Ausgewählte Änderungen bestätigen.** Mit `SAP_WRITE_CONFIRMATION`, zum
+  Beispiel `delete,Cancel`, warten diese Änderungen auf eine Bestätigung, die
+  genau zeigt, was geschrieben wird: im Dialog des Chat-Clients oder, wenn er
+  keinen anzeigt, auf einer Browserseite.
 
 ## 3.9.0 — 2026-10-26
 

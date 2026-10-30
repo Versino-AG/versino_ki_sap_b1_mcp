@@ -1,10 +1,24 @@
-<!-- translation-of: neuigkeiten.md@43e2827b9fbc -->
+<!-- translation-of: neuigkeiten.md@714797e5161e -->
 # Novinky
 
 > 🌐 [English](neuigkeiten.md) · [Deutsch](neuigkeiten.de.md) · **Česky**
 
 Nejdůležitější změny v každé verzi, jednoduše. Běžící verzi ukáže
 `sapb1-mcp --version` a asistent ji zná také (zeptejte se *„Jaká verze běží?"*).
+
+## 3.10.0 — 2026-10-30
+
+- **Ochrana před pokyny skrytými v datech SAP.** Asistent čte poznámky, texty
+  položek a komentáře a takový text může obsahovat pokyny. Server nyní každý
+  výsledek dotazu označí pro model jako data a odstraní skryté znaky. Viditelný
+  text se nemění → [sicherheit-ki.cs.md](sicherheit-ki.cs.md).
+- **Omezení toho, co smí asistent zapisovat.** `SAP_WRITABLE_ENTITIES` uvádí typy
+  objektů, které smí asistent měnit; vše ostatní se odmítne.
+  `SAP_WRITES_PER_HOUR` omezuje zápisy na uživatele (výchozí 100).
+- **Potvrzení vybraných změn.** S `SAP_WRITE_CONFIRMATION`, například
+  `delete,Cancel`, čekají tyto změny na potvrzení, které přesně ukazuje, co se
+  zapíše: v dialogu chatovacího klienta, nebo na stránce v prohlížeči, pokud
+  klient dialog nezobrazí.
 
 ## 3.9.0 — 2026-10-26
 

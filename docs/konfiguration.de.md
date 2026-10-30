@@ -1,4 +1,4 @@
-<!-- translation-of: konfiguration.md@b951f97a79df -->
+<!-- translation-of: konfiguration.md@1004ddec4a29 -->
 # Konfiguration (`.env`)
 
 > 🌐 [English](konfiguration.md) · **Deutsch** · [Česky](konfiguration.cs.md)
@@ -124,6 +124,9 @@ prüfen, bevor ihr euch darauf verlasst.
 | `SAP_LOGIN_DOMAIN` | Domäne, die beim Login einem Benutzernamen ohne Backslash vorangestellt wird, z. B. macht `CLOUDIAX` aus `c12345` ein `CLOUDIAX\c12345` (gehostetes SAP, bei dem jedes Konto die Domäne trägt). Nur der Name, kein Backslash. Gibt der Benutzer selbst eine Domäne an, bleibt sie, wie getippt. Leer (Standard) = aus |
 | `SAP_WEB_LOGIN_AUTO_CLOSE` | nach erfolgreichem Browser-Login schließt die Seite ihren Tab selbst, der Benutzer ist direkt wieder im Chat (Standard `true`). Gilt für den Anmeldelink aus dem Chat; wo der Browser das verweigert (SSO-Rücksprung, eingebettete Browser, ein Tab mit Verlauf), bleibt die Erfolgsseite mit dem Ticket wie bisher stehen. `false` lässt die Seite immer stehen, z. B. damit ein Passwortmanager das Speichern anbieten kann |
 | `SAP_WEB_THEME` | Aussehen der Browserseiten: `versino` (Standard) oder `cloudiax` (Partner-Design). Ein unbekannter Wert verhindert den Start und nennt die erlaubten. Siehe branding.de.md |
+| `SAP_WRITABLE_ENTITIES` | Objektarten, die der Assistent überhaupt schreiben darf, kommagetrennt (z. B. `Orders,BusinessPartners`); `*unbound*` erlaubt Service-Aktionen, `Attachments2` Anhang-Uploads. Leer (Standard) = alle. Ein fehlerhafter Eintrag verhindert den Start. Siehe sicherheit-ki.de.md |
+| `SAP_WRITES_PER_HOUR` | Schreibzugriffe je SAP-Benutzer und Stunde über den Assistenten (Standard `100`, `0` = aus). Siehe sicherheit-ki.de.md |
+| `SAP_WRITE_CONFIRMATION` | Schreibzugriffe, die erst nach einer Bestätigung laufen: Tool-Namen (`delete`), Aktionen (`Cancel`) oder Objektarten (`Invoices`), kommagetrennt. Gefragt wird zuerst im Dialog des Chat-Clients, sonst auf einer Browserseite, die `SAP_PUBLIC_URL` braucht. Leer (Standard) = keine Bestätigung. Siehe sicherheit-ki.de.md |
 | `SAP_BRANDING_DIR` | Ordner mit `branding.json` und/oder Logo für die Browserseiten (Farben, Texte, Fußzeile). Ohne Angabe: der Ordner `branding` neben dem Binary. Gelesen beim Start; ein Fehler darin verhindert den Start. Siehe branding.de.md |
 | `SAP_ALLOWED_CLIENTS` | Adressen/Netze (IP/CIDR, kommagetrennt), die den Server überhaupt erreichen dürfen. Leer (Default) = jeder, der den Port erreicht. **Keine Anmeldung** — die bleibt Benutzer/Passwort/Datenbank; es entfernt nur das offene Internet. Ein Tippfehler bricht den Start ab und nennt den Eintrag |
 | `SAP_TICKET_SESSION_MAX_SECONDS` | absolute Lebensdauer einer Sitzung, die über einen Browser-Login-Schlüssel angesprochen wird, in Sekunden (Default `3600`, `0` = aus). Dieser Schlüssel reiste durch den Chatverlauf und wird bei jedem Aufruf mitgegeben, ist also enger begrenzt als `SAP_SESSION_MAX_SECONDS`; es gilt die kürzere der beiden Grenzen. Nutzer melden sich danach über `connect` neu an |

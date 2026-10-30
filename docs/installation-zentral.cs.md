@@ -1,4 +1,4 @@
-<!-- translation-of: installation-zentral.md@16a7a297f550 -->
+<!-- translation-of: installation-zentral.md@3eb61e7353a8 -->
 
 # SAP-B1-MCP centrální provoz (jedna instance pro všechna pracoviště)
 
@@ -128,7 +128,7 @@ ohlásí start srozumitelně. Endpoint je pak přímo `https://<host>:<port>/mcp
 firewall otevřete odpovídajícím způsobem (sekce 6).
 
 ### Varianta B — TLS reverse proxy (předřazená)
-Proxy terminuje HTTPS a přeposílá **všechny** cesty (`/mcp`, `/login`, `/api/login`, `/branding/`)
+Proxy terminuje HTTPS a přeposílá **všechny** cesty (`/mcp`, `/login`, `/api/login`, `/branding/`, `/confirm/`, `/api/confirm`)
 na lokální server. Důležité: **dlouhý read timeout** a **žádné bufferování odpovědi**
 (Streamable HTTP / Server-Sent Events). Vhodné, pokud centrální proxy stejně
 existuje nebo jsou žádoucí automatické certifikáty (např. Caddy/Let's Encrypt).
