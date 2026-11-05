@@ -1,10 +1,16 @@
-<!-- translation-of: neuigkeiten.md@714797e5161e -->
+<!-- translation-of: neuigkeiten.md@6f1440b91bcb -->
 # Novinky
 
 > 🌐 [English](neuigkeiten.md) · [Deutsch](neuigkeiten.de.md) · **Česky**
 
 Nejdůležitější změny v každé verzi, jednoduše. Běžící verzi ukáže
 `sapb1-mcp --version` a asistent ji zná také (zeptejte se *„Jaká verze běží?"*).
+
+## 3.10.1 — 2026-11-05
+
+- **Asistent opět vidí své nástroje.** Od verze 3.9.0 program chatovacímu
+  klientovi nehlásil žádné nástroje, ani `connect`; vypadalo to, jako by SAP
+  nebyl dostupný. Opraveno; ve vašem nastavení se nic nemění.
 
 ## 3.10.0 — 2026-10-30
 

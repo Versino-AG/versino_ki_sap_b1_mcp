@@ -1,4 +1,4 @@
-<!-- translation-of: neuigkeiten.md@714797e5161e -->
+<!-- translation-of: neuigkeiten.md@6f1440b91bcb -->
 # Neuigkeiten
 
 > 🌐 [English](neuigkeiten.md) · **Deutsch** · [Česky](neuigkeiten.cs.md)
@@ -6,6 +6,12 @@
 Die wichtigsten Änderungen je Version, in einfachen Worten. Die laufende Version
 zeigt `sapb1-mcp --version`, und der Assistent kennt sie auch (fragt *„Welche
 Version läuft?"*).
+
+## 3.10.1 — 2026-11-05
+
+- **Der Assistent sieht seine Tools wieder.** Seit 3.9.0 meldete das Programm
+  dem Chat-Client keine Tools, nicht einmal `connect`; es sah aus, als wäre SAP
+  nicht erreichbar. Behoben; an Ihrer Einrichtung ändert sich nichts.
 
 ## 3.10.0 — 2026-10-30
 

@@ -6,6 +6,12 @@ The most important changes per version, in plain words. The running version is
 shown by `sapb1-mcp --version`, and the assistant knows it too (ask *"Which
 version is running?"*).
 
+## 3.10.1 — 2026-11-05
+
+- **The assistant sees its tools again.** Since 3.9.0 the program did not list
+  its tools to the chat client, so not even `connect` was offered and it looked
+  as if SAP were unreachable. Fixed; nothing to change in your setup.
+
 ## 3.10.0 — 2026-10-30
 
 - **Protection against instructions hidden in SAP data.** The assistant reads
