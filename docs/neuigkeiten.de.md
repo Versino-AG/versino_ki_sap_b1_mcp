@@ -1,4 +1,4 @@
-<!-- translation-of: neuigkeiten.md@6f1440b91bcb -->
+<!-- translation-of: neuigkeiten.md@e4c87c65eda6 -->
 # Neuigkeiten
 
 > 🌐 [English](neuigkeiten.md) · **Deutsch** · [Česky](neuigkeiten.cs.md)
@@ -6,6 +6,20 @@
 Die wichtigsten Änderungen je Version, in einfachen Worten. Die laufende Version
 zeigt `sapb1-mcp --version`, und der Assistent kennt sie auch (fragt *„Welche
 Version läuft?"*).
+
+## 3.10.2 — 2026-11-16
+
+- **Anmeldung als Karte im Chat.** In Claude Desktop und claude.ai erscheint eine
+  kleine Anmeldekarte direkt im Chat: Datenbank wählen, Benutzer und Passwort
+  eingeben, fertig. Die Zugangsdaten gehen an den Server, nie an den Assistenten.
+  Erscheint keine Karte, gibt Ihnen der Assistent wie gewohnt einen Anmelde-Link.
+- **Änderungen auf einer Karte bestätigen.** Änderungen, für die Sie eine
+  Bestätigung eingestellt haben (`SAP_WRITE_CONFIRMATION`, z. B.
+  `delete,Close,Cancel,Reopen`), fragen jetzt auf einer Karte im Chat mit
+  **Änderung ausführen** und **Verwerfen**.
+- **Kein „weiter“ mehr.** Nach der Anmeldung oder der Entscheidung auf der Karte
+  macht der Assistent von selbst weiter. Alte Karten im Chat zeigen nur noch, was
+  passiert ist, und bieten nichts doppelt an.
 
 ## 3.10.1 — 2026-11-05
 

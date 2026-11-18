@@ -11,8 +11,15 @@ Just write in the chat in plain language, e.g.:
 
 > **Connect me to SAP.**
 
-The assistant then gives you a **sign-in link** (browser). Depending on how your
-system is set up, you will see:
+In chat clients that show cards in the chat (Claude Desktop, claude.ai) a small
+**sign-in card** appears right below the assistant's answer: choose the
+**database**, enter your **SAP B1 user + password**, click **Sign in**. Your
+credentials go straight to the server, not to the assistant. The assistant
+carries on by itself once you are signed in; if it does not, write **"continue"**.
+If no card appears, the assistant also gives you a sign-in link for the browser.
+
+Otherwise the assistant gives you a **sign-in link** (browser). Depending on how
+your system is set up, you will see:
 
 - **The assistant's sign-in page** (classic login): enter your
   **SAP B1 user + password** there and choose the **database (company)**.
@@ -31,8 +38,8 @@ Tip: you can also name the company right in the chat
 Afterwards switch back to the chat and briefly write **"done"**.
 
 > 🔒 **Important:** never type your SAP password **directly into the chat** —
-> only on the sign-in page in the browser. The assistant never asks for the
-> password in the chat.
+> only on the sign-in card or the sign-in page in the browser. The assistant
+> never asks for the password in the chat.
 
 The sign-in lasts for the current session. You work with **your** SAP
 permissions — you only see and change what your SAP user may anyway.

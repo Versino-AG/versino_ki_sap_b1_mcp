@@ -6,6 +6,19 @@ The most important changes per version, in plain words. The running version is
 shown by `sapb1-mcp --version`, and the assistant knows it too (ask *"Which
 version is running?"*).
 
+## 3.10.2 — 2026-11-16
+
+- **Sign in on a card in the chat.** In Claude Desktop and claude.ai a small
+  sign-in card appears right in the chat: choose the database, enter user and
+  password, done. Your credentials go to the server, never to the assistant. If
+  no card appears, the assistant gives you the usual sign-in link.
+- **Confirm changes on a card.** Changes you configured for confirmation
+  (`SAP_WRITE_CONFIRMATION`, e.g. `delete,Close,Cancel,Reopen`) now ask on a card
+  in the chat with **Run change** and **Discard**.
+- **No more "continue".** After signing in or deciding on the card, the
+  assistant carries on by itself. Old cards in the chat show only what happened,
+  they offer nothing twice.
+
 ## 3.10.1 — 2026-11-05
 
 - **The assistant sees its tools again.** Since 3.9.0 the program did not list

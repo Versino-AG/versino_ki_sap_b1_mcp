@@ -35,7 +35,7 @@ server does not try to. It limits what a misled assistant can do instead.
 |---|---|---|
 | `SAP_WRITABLE_ENTITIES` | The assistant may write only the listed object types, e.g. `Orders,BusinessPartners`. Everything else is refused before SAP is asked. `*unbound*` admits service actions without an object, `Attachments2` attachment uploads. | The first thing to set. Name only what users really change through the assistant. |
 | `SAP_WRITES_PER_HOUR` | Writes per SAP user and hour, default `100`, `0` = off. Stops an instruction that writes in a loop. | Keep the default unless users maintain data in bulk. |
-| `SAP_WRITE_CONFIRMATION` | Named writes wait for a confirmation: tool names (`delete`), actions (`Cancel`) or object types (`Invoices`). The chat client's dialog first, a browser page otherwise; the page needs `SAP_PUBLIC_URL`. | For irreversible steps only, e.g. `delete,Cancel,IncomingPayments`. Confirming every write makes people click without reading. |
+| `SAP_WRITE_CONFIRMATION` | Named writes wait for a confirmation: tool names (`delete`), actions (`Cancel`) or object types (`Invoices`). The chat client's dialog first, then a card in the chat, a browser page otherwise; only the page needs `SAP_PUBLIC_URL`. | For irreversible steps only, e.g. `delete,Cancel,IncomingPayments`. Confirming every write makes people click without reading. |
 
 ### How a confirmation looks
 
@@ -44,14 +44,20 @@ it asks for the SAP login. The dialog lists what will be written: the kind of
 change, the object type, the key and the field values. **Yes** writes exactly
 this; **No** writes nothing, and the server does not ask again elsewhere.
 
-If the client shows no dialog, or it is closed without an answer, the assistant
-answers with a link instead of making the change. The page lists the same
+Chat clients that show cards in the chat (MCP Apps, e.g. Claude Desktop and
+claude.ai) get a confirmation card instead, right below the assistant's answer.
+It lists the same summary; **Run change** writes exactly this, **Discard** writes
+nothing. The buttons talk to the server directly: the assistant can show the
+card but cannot press them. No `SAP_PUBLIC_URL` is needed for the card.
+
+If the client shows neither, or the dialog is closed without an answer, the
+assistant answers with a link instead of making the change. The page lists the same
 summary. **Run change** writes exactly this, **Discard** writes nothing. The link
 is valid for five minutes and works once; whoever opens it can decide, so treat
 it like the upload link and do not forward it. The assistant then picks up the
 outcome in the chat. The summary comes from the server, not from the assistant,
 so a misled assistant cannot describe the change differently from what runs.
-Without a dialog and without `SAP_PUBLIC_URL` a named write is refused.
+Without a dialog, without cards and without `SAP_PUBLIC_URL` a named write is refused.
 
 ## Recommendations
 

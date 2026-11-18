@@ -1,4 +1,4 @@
-<!-- translation-of: installation-windows.md@b1c629aea651 -->
+<!-- translation-of: installation-windows.md@329da3256497 -->
 
 # Připojení SAP-B1-MCP k Claude Desktop a dalším LLM (Windows, manuálně)
 
@@ -22,6 +22,13 @@ Pro zjednodušení přejmenovat na `sapb1-mcp.exe` a umístit spolu s ostatními
 - `.env` — konfigurace (→ [konfiguration.cs.md](konfiguration.cs.md))
 
 ## 2. Konfigurace `.env` (minimální)
+**Vytvoření souboru:** zkopírujte `.env.cs.example` a kopii pojmenujte `.env`.
+Průzkumník Windows odmítne název začínající tečkou („musíte zadat název souboru“):
+napište **`.env.`** s tečkou na konci, Průzkumník ji odstraní a zůstane `.env`.
+Případně v příkazovém řádku v této složce: `copy .env.cs.example .env`. V nabídce
+**Zobrazení → Přípony názvů souborů** ověřte, že se soubor nejmenuje `.env.txt` —
+ten server nečte.
+
 **Důležité:** komentáře vždy pište na **vlastní řádek** — **ne** za hodnotu na stejný
 řádek (inline komentáře mohou podle parseru hodnotu zkomolit).
 

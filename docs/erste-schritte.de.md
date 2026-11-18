@@ -1,4 +1,4 @@
-<!-- translation-of: erste-schritte.md@9b152fdc18a1 -->
+<!-- translation-of: erste-schritte.md@e20a528448f2 -->
 # Erste Schritte (für Anwender)
 
 > 🌐 [English](erste-schritte.md) · **Deutsch** · [Česky](erste-schritte.cs.md)
@@ -12,7 +12,15 @@ Schreibt im Chat einfach in normaler Sprache, z. B.:
 
 > **Verbinde mich mit SAP.**
 
-Daraufhin gibt euch der Assistent einen **Anmelde-Link** (Browser). Je nach
+In Chat-Clients, die Karten im Chat anzeigen (Claude Desktop, claude.ai),
+erscheint direkt unter der Antwort des Assistenten eine kleine **Anmeldekarte**:
+**Datenbank** wählen, **SAP-B1-Benutzer + Passwort** eingeben, **Anmelden**
+klicken. Die Zugangsdaten gehen direkt an den Server, nicht an den Assistenten.
+Nach der Anmeldung macht der Assistent von selbst weiter; tut er das nicht,
+schreibt kurz **„weiter“**. Erscheint keine Karte, gibt euch der Assistent
+zusätzlich einen Anmelde-Link für den Browser.
+
+Sonst gibt euch der Assistent einen **Anmelde-Link** (Browser). Je nach
 Einrichtung eures Systems seht ihr dort:
 
 - **Anmeldeseite des Assistenten** (klassische Anmeldung): Dort euren
@@ -32,7 +40,8 @@ Tipp: Ihr könnt die Firma auch gleich im Chat nennen
 Danach zurück in den Chat wechseln und kurz **„fertig"** schreiben.
 
 > 🔒 **Wichtig:** Tippt euer SAP-Passwort **nie direkt in den Chat** — immer nur auf der
-> Login-Seite im Browser. Der Assistent fragt euch nie nach dem Passwort im Chat.
+> Anmeldekarte oder der Login-Seite im Browser. Der Assistent fragt euch nie nach
+> dem Passwort im Chat.
 
 Die Anmeldung gilt für die laufende Sitzung. Ihr arbeitet mit **euren** SAP-Rechten —
 ihr seht und ändert nur, was euer SAP-Benutzer ohnehin darf.

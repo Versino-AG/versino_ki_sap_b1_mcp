@@ -21,6 +21,13 @@ and put it with the other files into **one** folder (e.g. `C:\sapb1-mcp\`):
 - `.env` — configuration (→ [konfiguration.md](konfiguration.md))
 
 ## 2. Configure the `.env` (minimal)
+**Creating the file:** copy `.env.example` (or `.env.en.example`) and name the copy
+`.env`. Windows Explorer refuses a name that starts with a dot ("you must type a
+file name"): type **`.env.`** with a trailing dot, Explorer drops it and keeps
+`.env`. Alternatively in a command prompt in that folder: `copy .env.en.example .env`.
+Turn on **View → File name extensions** to make sure the file is not called `.env.txt`
+— the server does not read that.
+
 **Important:** always put comments on their **own line** — **not** behind the
 value on the same line (inline comments can corrupt the value depending on the
 parser).

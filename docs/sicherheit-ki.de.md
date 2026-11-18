@@ -1,4 +1,4 @@
-<!-- translation-of: sicherheit-ki.md@74a122156d80 -->
+<!-- translation-of: sicherheit-ki.md@abef70b5ac2c -->
 # Sicherheit mit einem KI-Assistenten
 
 > 🌐 [English](sicherheit-ki.md) · **Deutsch** · [Česky](sicherheit-ki.cs.md)
@@ -39,7 +39,7 @@ Assistent tun kann.
 |---|---|---|
 | `SAP_WRITABLE_ENTITIES` | Der Assistent darf nur die genannten Objektarten schreiben, z. B. `Orders,BusinessPartners`. Alles andere lehnt der Server ab, bevor SAP gefragt wird. `*unbound*` erlaubt Service-Aktionen ohne Objekt, `Attachments2` das Hochladen von Anhängen. | Als Erstes setzen. Nur nennen, was Benutzer wirklich über den Assistenten ändern. |
 | `SAP_WRITES_PER_HOUR` | Schreibzugriffe je SAP-Benutzer und Stunde, Standard `100`, `0` = aus. Bremst eine Anweisung, die in einer Schleife schreibt. | Standard lassen, außer Benutzer pflegen Daten in Massen. |
-| `SAP_WRITE_CONFIRMATION` | Genannte Schreibzugriffe warten auf eine Bestätigung: Tool-Namen (`delete`), Aktionen (`Cancel`) oder Objektarten (`Invoices`). Zuerst im Dialog des Chat-Clients, sonst auf einer Browserseite; die Seite braucht `SAP_PUBLIC_URL`. | Nur für nicht umkehrbare Schritte, z. B. `delete,Cancel,IncomingPayments`. Wer jede Änderung bestätigen muss, klickt irgendwann ohne zu lesen. |
+| `SAP_WRITE_CONFIRMATION` | Genannte Schreibzugriffe warten auf eine Bestätigung: Tool-Namen (`delete`), Aktionen (`Cancel`) oder Objektarten (`Invoices`). Zuerst im Dialog des Chat-Clients, dann auf einer Karte im Chat, sonst auf einer Browserseite; nur die Seite braucht `SAP_PUBLIC_URL`. | Nur für nicht umkehrbare Schritte, z. B. `delete,Cancel,IncomingPayments`. Wer jede Änderung bestätigen muss, klickt irgendwann ohne zu lesen. |
 
 ### So sieht eine Bestätigung aus
 
@@ -48,15 +48,23 @@ bei der SAP-Anmeldung. Der Dialog zeigt, was geschrieben wird: die Art der
 Änderung, die Objektart, den Schlüssel und die Feldwerte. **Ja** schreibt genau
 das; **Nein** schreibt nichts, und der Server fragt nicht noch einmal woanders.
 
-Zeigt der Client keinen Dialog oder wird er ohne Antwort geschlossen, antwortet
-der Assistent mit einem Link, statt die Änderung vorzunehmen. Die Seite zeigt
+Chat-Clients, die Karten im Chat anzeigen (MCP Apps, z. B. Claude Desktop und
+claude.ai), bekommen stattdessen eine Bestätigungskarte direkt unter der Antwort
+des Assistenten. Sie zeigt dieselbe Zusammenfassung; **Änderung ausführen**
+schreibt genau das, **Verwerfen** schreibt nichts. Die Knöpfe sprechen direkt mit
+dem Server: Der Assistent kann die Karte zeigen, sie aber nicht bedienen. Für die
+Karte ist kein `SAP_PUBLIC_URL` nötig.
+
+Zeigt der Client beides nicht oder wird der Dialog ohne Antwort geschlossen,
+antwortet der Assistent mit einem Link, statt die Änderung vorzunehmen. Die Seite zeigt
 dieselbe Zusammenfassung. **Änderung ausführen** schreibt genau das,
 **Verwerfen** schreibt nichts. Der Link gilt fünf Minuten und funktioniert
 einmal; wer ihn öffnet, kann entscheiden, also wie den Upload-Link behandeln und
 nicht weitergeben. Danach holt der Assistent das Ergebnis im Chat ab. Die Zusammenfassung
 kommt vom Server, nicht vom Assistenten; ein fehlgeleiteter Assistent kann die
-Änderung also nicht anders beschreiben, als sie ausgeführt wird. Ohne Dialog
-und ohne `SAP_PUBLIC_URL` lehnt der Server einen genannten Schreibzugriff ab.
+Änderung also nicht anders beschreiben, als sie ausgeführt wird. Ohne Dialog,
+ohne Karten und ohne `SAP_PUBLIC_URL` lehnt der Server einen genannten
+Schreibzugriff ab.
 
 ## Empfehlungen
 

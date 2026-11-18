@@ -1,4 +1,4 @@
-<!-- translation-of: erste-schritte.md@9b152fdc18a1 -->
+<!-- translation-of: erste-schritte.md@e20a528448f2 -->
 
 # První kroky (pro uživatele)
 
@@ -13,7 +13,14 @@ V chatu napište prostě normální řečí, např.:
 
 > **Připoj mě k SAP.**
 
-Asistent vám na to vrátí **přihlašovací odkaz** (prohlížeč). Podle nastavení
+V chatovacích klientech, které v chatu zobrazují karty (Claude Desktop,
+claude.ai), se přímo pod odpovědí asistenta objeví malá **přihlašovací karta**:
+vyberte **databázi**, zadejte **SAP B1 uživatele + heslo**, klikněte na
+**Přihlásit**. Přihlašovací údaje jdou přímo na server, ne k asistentovi. Po
+přihlášení asistent pokračuje sám; pokud ne, napište krátce **„pokračuj“**. Pokud se karta
+neobjeví, asistent vám navíc dá přihlašovací odkaz do prohlížeče.
+
+Jinak vám asistent vrátí **přihlašovací odkaz** (prohlížeč). Podle nastavení
 vašeho systému tam uvidíte:
 
 - **Přihlašovací stránku asistenta** (klasické přihlášení): tam zadáte svého
@@ -33,7 +40,8 @@ Tip: Firmu můžete rovnou zmínit v chatu
 Poté se vraťte zpět do chatu a napište krátce **„hotovo"**.
 
 > 🔒 **Důležité:** Své SAP heslo **nikdy nepište přímo do chatu** — vždy jen na
-> přihlašovací stránce v prohlížeči. Asistent se vás na heslo v chatu nikdy neptá.
+> přihlašovací kartě nebo přihlašovací stránce v prohlížeči. Asistent se vás na
+> heslo v chatu nikdy neptá.
 
 Přihlášení platí pro běžící relaci. Pracujete se **svými** SAP oprávněními —
 vidíte a měníte jen to, co váš SAP uživatel smí i jinak.

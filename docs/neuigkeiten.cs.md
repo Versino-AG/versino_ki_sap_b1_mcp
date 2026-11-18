@@ -1,10 +1,23 @@
-<!-- translation-of: neuigkeiten.md@6f1440b91bcb -->
+<!-- translation-of: neuigkeiten.md@e4c87c65eda6 -->
 # Novinky
 
 > 🌐 [English](neuigkeiten.md) · [Deutsch](neuigkeiten.de.md) · **Česky**
 
 Nejdůležitější změny v každé verzi, jednoduše. Běžící verzi ukáže
 `sapb1-mcp --version` a asistent ji zná také (zeptejte se *„Jaká verze běží?"*).
+
+## 3.10.2 — 2026-11-16
+
+- **Přihlášení na kartě v chatu.** V Claude Desktop a claude.ai se přímo v chatu
+  objeví malá přihlašovací karta: vyberte databázi, zadejte uživatele a heslo,
+  hotovo. Přihlašovací údaje jdou na server, nikdy k asistentovi. Pokud se karta
+  neobjeví, asistent vám jako obvykle dá přihlašovací odkaz.
+- **Potvrzení změn na kartě.** Změny, pro které jste nastavili potvrzení
+  (`SAP_WRITE_CONFIRMATION`, např. `delete,Close,Cancel,Reopen`), se nyní ptají
+  na kartě v chatu s tlačítky **Provést změnu** a **Zahodit**.
+- **Už žádné „pokračuj“.** Po přihlášení nebo rozhodnutí na kartě asistent
+  pokračuje sám. Staré karty v chatu ukazují jen to, co se stalo, a nic
+  nenabízejí dvakrát.
 
 ## 3.10.1 — 2026-11-05
 

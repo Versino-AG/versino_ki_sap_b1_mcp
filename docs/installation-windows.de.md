@@ -1,4 +1,4 @@
-<!-- translation-of: installation-windows.md@b1c629aea651 -->
+<!-- translation-of: installation-windows.md@329da3256497 -->
 # SAP-B1-MCP an Claude Desktop & andere LLMs anbinden (Windows, manuell)
 
 > 🌐 [English](installation-windows.md) · **Deutsch** · [Česky](installation-windows.cs.md)
@@ -21,6 +21,13 @@ Ordner legen (z. B. `C:\sapb1-mcp\`):
 - `.env` — Konfiguration (→ [konfiguration.de.md](konfiguration.de.md))
 
 ## 2. `.env` konfigurieren (minimal)
+**Datei anlegen:** `.env.example` kopieren und die Kopie `.env` nennen. Der
+Windows-Explorer lehnt einen Namen ab, der mit einem Punkt beginnt („Sie müssen
+einen Dateinamen eingeben“): **`.env.`** mit Punkt am Ende eintippen, der Explorer
+entfernt ihn und es bleibt `.env`. Alternativ in einer Eingabeaufforderung in diesem
+Ordner: `copy .env.example .env`. Unter **Ansicht → Dateinamenerweiterungen**
+prüfen, dass die Datei nicht `.env.txt` heißt — die liest der Server nicht.
+
 **Wichtig:** Kommentare immer in eine **eigene Zeile** schreiben — **nicht** hinter den
 Wert in dieselbe Zeile (Inline-Kommentare können je nach Parser den Wert verfälschen).
 

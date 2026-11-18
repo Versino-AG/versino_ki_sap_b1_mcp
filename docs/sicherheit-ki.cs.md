@@ -1,4 +1,4 @@
-<!-- translation-of: sicherheit-ki.md@74a122156d80 -->
+<!-- translation-of: sicherheit-ki.md@abef70b5ac2c -->
 # Bezpečnost s asistentem AI
 
 > 🌐 [English](sicherheit-ki.md) · [Deutsch](sicherheit-ki.de.md) · **Česky**
@@ -34,7 +34,7 @@ nepokouší. Místo toho omezuje, co může zmatený asistent udělat.
 |---|---|---|
 | `SAP_WRITABLE_ENTITIES` | Asistent smí zapisovat jen uvedené typy objektů, např. `Orders,BusinessPartners`. Vše ostatní server odmítne dřív, než se zeptá SAP. `*unbound*` povolí servisní akce bez objektu, `Attachments2` nahrávání příloh. | Nastavte jako první. Uveďte jen to, co uživatelé přes asistenta skutečně mění. |
 | `SAP_WRITES_PER_HOUR` | Zápisy na uživatele SAP a hodinu, výchozí `100`, `0` = vypnuto. Brzdí pokyn, který zapisuje ve smyčce. | Ponechte výchozí, pokud uživatelé neudržují data hromadně. |
-| `SAP_WRITE_CONFIRMATION` | Uvedené zápisy čekají na potvrzení: názvy nástrojů (`delete`), akce (`Cancel`) nebo typy objektů (`Invoices`). Nejprve v dialogu chatovacího klienta, jinak na stránce v prohlížeči; stránka vyžaduje `SAP_PUBLIC_URL`. | Jen pro nevratné kroky, např. `delete,Cancel,IncomingPayments`. Kdo musí potvrzovat každou změnu, začne klikat bez čtení. |
+| `SAP_WRITE_CONFIRMATION` | Uvedené zápisy čekají na potvrzení: názvy nástrojů (`delete`), akce (`Cancel`) nebo typy objektů (`Invoices`). Nejprve v dialogu chatovacího klienta, pak na kartě v chatu, jinak na stránce v prohlížeči; `SAP_PUBLIC_URL` vyžaduje jen stránka. | Jen pro nevratné kroky, např. `delete,Cancel,IncomingPayments`. Kdo musí potvrzovat každou změnu, začne klikat bez čtení. |
 
 ### Jak vypadá potvrzení
 
@@ -43,13 +43,19 @@ jako při přihlášení do SAP. Dialog ukáže, co se zapíše: druh změny, ty
 klíč a hodnoty polí. **Ano** zapíše přesně toto; **Ne** nezapíše nic a server se
 už jinde neptá.
 
-Nezobrazí-li klient dialog nebo se zavře bez odpovědi, asistent místo provedení
-změny odpoví odkazem. Stránka ukáže stejné shrnutí. **Provést změnu** zapíše přesně toto,
+Chatovací klienti, kteří v chatu zobrazují karty (MCP Apps, např. Claude Desktop
+a claude.ai), dostanou místo toho potvrzovací kartu přímo pod odpovědí asistenta.
+Ukáže stejné shrnutí; **Provést změnu** zapíše přesně toto, **Zahodit** nezapíše
+nic. Tlačítka komunikují přímo se serverem: asistent kartu ukázat může, ale
+ovládat ji nemůže. Karta nevyžaduje `SAP_PUBLIC_URL`.
+
+Nezobrazí-li klient ani jedno nebo se dialog zavře bez odpovědi, asistent místo
+provedení změny odpoví odkazem. Stránka ukáže stejné shrnutí. **Provést změnu** zapíše přesně toto,
 **Zahodit** nezapíše nic. Odkaz platí pět minut a funguje jednou; rozhodnout může kdokoli, kdo ho otevře,
 proto s ním zacházejte jako s odkazem pro nahrání a nepřeposílejte ho. Asistent si pak
 výsledek vyzvedne v chatu. Shrnutí pochází ze serveru, ne od asistenta, takže
-zmatený asistent nemůže změnu popsat jinak, než jak proběhne. Bez dialogu
-a bez `SAP_PUBLIC_URL` server uvedený zápis odmítne.
+zmatený asistent nemůže změnu popsat jinak, než jak proběhne. Bez dialogu,
+bez karet a bez `SAP_PUBLIC_URL` server uvedený zápis odmítne.
 
 ## Doporučení
 
